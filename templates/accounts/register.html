@@ -1,0 +1,274 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}注册 - 学生学习平台{% endblock %}
+
+{% block content %}
+<!-- 沉浸式背景 -->
+<div class="floating-shapes">
+    <div class="shape shape-1"></div>
+    <div class="shape shape-2"></div>
+    <div class="shape shape-3"></div>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-7">
+        <div class="glass-card fade-in">
+            <div class="card-body p-5">
+                <!-- Logo和标题 -->
+                <div class="text-center mb-4">
+                    <div class="d-inline-block position-relative mb-3">
+                        <div class="avatar-glow"></div>
+                        <div class="pulse-icon" style="width: 80px; height: 80px; font-size: 2rem; background: linear-gradient(135deg, #28a745, #20c997);">
+                            <i class="fas fa-user-plus"></i>
+                        </div>
+                    </div>
+                    <h2 class="card-title fw-bold text-dark">用户注册</h2>
+                    <p class="text-dark mb-0">创建您的学习账号</p>
+                </div>
+
+                <!-- 注册表单 -->
+                <form id="registerForm">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="username" class="form-label text-dark">
+                                <i class="fas fa-user me-2"></i>用户名 <span class="text-danger">*</span>
+                            </label>
+                            <input type="text" class="form-control"
+                                   id="username" name="username" required placeholder="请输入用户名">
+                            <div class="form-text text-muted">用户名将作为您的登录账号</div>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label for="nickname" class="form-label text-dark">
+                                <i class="fas fa-id-badge me-2"></i>昵称 <span class="text-danger">*</span>
+                            </label>
+                            <input type="text" class="form-control"
+                                   id="nickname" name="nickname" required placeholder="请输入昵称">
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="password" class="form-label text-dark">
+                                <i class="fas fa-lock me-2"></i>密码 <span class="text-danger">*</span>
+                            </label>
+                            <div class="input-group">
+                                <input type="password" class="form-control"
+                                       id="password" name="password" required placeholder="请输入密码" minlength="6">
+                                <button class="btn btn-outline-light" type="button" id="togglePassword">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                            <div class="form-text text-muted">密码至少6位</div>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label for="password_confirm" class="form-label text-dark">
+                                <i class="fas fa-lock me-2"></i>确认密码 <span class="text-danger">*</span>
+                            </label>
+                            <div class="input-group">
+                                <input type="password" class="form-control"
+                                       id="password_confirm" name="password_confirm" required placeholder="请再次输入密码">
+                                <button class="btn btn-outline-light" type="button" id="toggleConfirmPassword">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="birth_date" class="form-label">
+                                <i class="fas fa-birthday-cake me-2"></i>出生年月 <span class="text-danger">*</span>
+                            </label>
+                            <input type="date" class="form-control" id="birth_date" name="birth_date" required>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label for="grade_level" class="form-label">
+                                <i class="fas fa-school me-2"></i>当前年级 <span class="text-danger">*</span>
+                            </label>
+                            <select class="form-select" id="grade_level" name="grade_level" required>
+                                <option value="">请选择年级</option>
+                                <option value="1">一年级</option>
+                                <option value="2">二年级</option>
+                                <option value="3">三年级</option>
+                                <option value="4">四年级</option>
+                                <option value="5">五年级</option>
+                                <option value="6">六年级</option>
+                                <option value="7">七年级</option>
+                                <option value="8">八年级</option>
+                                <option value="9">九年级</option>
+                                <option value="10">高一</option>
+                                <option value="11">高二</option>
+                                <option value="12">高三</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="email" class="form-label">
+                            <i class="fas fa-envelope me-2"></i>邮箱 (可选)
+                        </label>
+                        <input type="email" class="form-control" id="email" name="email"
+                               placeholder="请输入邮箱地址">
+                        <div class="form-text">可用于找回密码</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="agreeTerms" required>
+                            <label class="form-check-label" for="agreeTerms">
+                                我已阅读并同意 <a href="#" class="text-primary">用户协议</a> 和 <a href="#" class="text-primary">隐私政策</a>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-success btn-lg" id="registerBtn">
+                            <i class="fas fa-user-plus me-2"></i>立即注册
+                        </button>
+                    </div>
+
+                    <div class="text-center mt-3">
+                        <span class="text-muted">已有账号？</span>
+                        <a href="{% url 'web:login' %}" class="text-success text-decoration-none">立即登录</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const registerForm = document.getElementById('registerForm');
+    const registerBtn = document.getElementById('registerBtn');
+    const togglePassword = document.getElementById('togglePassword');
+    const toggleConfirmPassword = document.getElementById('toggleConfirmPassword');
+    const passwordInput = document.getElementById('password');
+    const confirmPasswordInput = document.getElementById('password_confirm');
+
+    // 密码显示/隐藏切换
+    togglePassword.addEventListener('click', function() {
+        const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+        passwordInput.setAttribute('type', type);
+        this.innerHTML = type === 'password' ? '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
+    });
+
+    toggleConfirmPassword.addEventListener('click', function() {
+        const type = confirmPasswordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+        confirmPasswordInput.setAttribute('type', type);
+        this.innerHTML = type === 'password' ? '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
+    });
+
+    // 密码确认验证
+    confirmPasswordInput.addEventListener('input', function() {
+        if (this.value && this.value !== passwordInput.value) {
+            this.setCustomValidity('密码不匹配');
+        } else {
+            this.setCustomValidity('');
+        }
+    });
+
+    // 注册表单提交
+    registerForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        // 获取表单数据
+        const formData = new FormData(registerForm);
+        const data = Object.fromEntries(formData);
+
+        // 验证密码确认
+        if (data.password !== data.password_confirm) {
+            showMessage('两次输入的密码不一致', 'danger');
+            return;
+        }
+
+        // 验证密码长度
+        if (data.password.length < 6) {
+            showMessage('密码至少需要6位', 'danger');
+            return;
+        }
+
+        // 显示加载状态
+        registerBtn.disabled = true;
+        registerBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>注册中...';
+
+        try {
+            const response = await fetch('/api/auth/register/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            });
+
+            const responseData = await response.json();
+
+            if (response.ok) {
+                // 保存token
+                localStorage.setItem('access_token', responseData.tokens.access);
+                localStorage.setItem('refresh_token', responseData.tokens.refresh);
+                localStorage.setItem('user_info', JSON.stringify(responseData.user));
+
+                // 显示成功消息
+                showMessage('注册成功！正在跳转到首页...', 'success');
+
+                // 跳转到首页
+                setTimeout(() => {
+                    window.location.href = "{% url 'web:dashboard' %}";
+                }, 1500);
+
+            } else {
+                // 处理错误
+                let errorMessage = '注册失败，请重试';
+
+                if (responseData.password) {
+                    errorMessage = responseData.password[0];
+                } else if (responseData.username) {
+                    errorMessage = responseData.username[0];
+                } else if (responseData.error) {
+                    errorMessage = responseData.error;
+                }
+
+                showMessage(errorMessage, 'danger');
+            }
+
+        } catch (error) {
+            console.error('注册错误:', error);
+            showMessage('网络错误，请重试', 'danger');
+        } finally {
+            // 恢复按钮状态
+            registerBtn.disabled = false;
+            registerBtn.innerHTML = '<i class="fas fa-user-plus me-2"></i>立即注册';
+        }
+    });
+
+    // 设置默认出生日期为10年前
+    const today = new Date();
+    const defaultBirthDate = new Date(today.getFullYear() - 10, today.getMonth(), today.getDate());
+    document.getElementById('birth_date').value = defaultBirthDate.toISOString().split('T')[0];
+
+    // 根据出生日期自动建议年级
+    document.getElementById('birth_date').addEventListener('change', function() {
+        const birthDate = new Date(this.value);
+        const today = new Date();
+        const age = today.getFullYear() - birthDate.getFullYear();
+
+        let suggestedGrade = '';
+        if (age >= 6 && age <= 18) {
+            suggestedGrade = age - 6;
+        }
+
+        if (suggestedGrade) {
+            document.getElementById('grade_level').value = suggestedGrade;
+        }
+    });
+});
+</script>
+{% endblock %}

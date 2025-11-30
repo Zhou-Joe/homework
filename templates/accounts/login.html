@@ -1,0 +1,165 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}登录 - 学生学习平台{% endblock %}
+
+{% block content %}
+<!-- 沉浸式背景 -->
+<div class="floating-shapes">
+    <div class="shape shape-1"></div>
+    <div class="shape shape-2"></div>
+    <div class="shape shape-3"></div>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-md-6 col-lg-5">
+        <div class="glass-card fade-in">
+            <div class="card-body p-5">
+                <!-- Logo和标题 -->
+                <div class="text-center mb-4">
+                    <div class="d-inline-block position-relative mb-3">
+                        <div class="avatar-glow"></div>
+                        <div class="pulse-icon" style="width: 80px; height: 80px; font-size: 2rem;">
+                            <i class="fas fa-graduation-cap"></i>
+                        </div>
+                    </div>
+                    <h2 class="card-title fw-bold text-dark">学生学习平台</h2>
+                    <p class="text-dark mb-0">
+                        <span class="typewriter">智能错题分析与练习系统</span>
+                    </p>
+                </div>
+
+              <!-- 登录表单 -->
+                <form id="loginForm">
+                    {% csrf_token %}
+                    <div class="mb-4">
+                        <label for="username" class="form-label text-dark">
+                            <i class="fas fa-user me-2"></i>用户名
+                        </label>
+                        <input type="text" class="form-control form-control-lg"
+                               id="username" name="username" required placeholder="请输入用户名">
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="password" class="form-label text-dark">
+                            <i class="fas fa-lock me-2"></i>密码
+                        </label>
+                        <div class="input-group">
+                            <input type="password" class="form-control form-control-lg"
+                                   id="password" name="password" required placeholder="请输入密码">
+                            <button class="btn btn-outline-secondary" type="button" id="togglePassword">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="mb-4 form-check">
+                        <input type="checkbox" class="form-check-input" id="rememberMe">
+                        <label class="form-check-label text-dark" for="rememberMe">
+                            <i class="fas fa-heart me-1 text-danger"></i>记住我
+                        </label>
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary btn-lg" id="loginBtn">
+                            <i class="fas fa-sign-in-alt me-2"></i>立即登录
+                        </button>
+                    </div>
+
+                    <div class="text-center mt-4">
+                        <span class="text-dark">还没有账号？</span>
+                        <a href="{% url 'web:register' %}" class="text-primary text-decoration-none fw-bold">立即注册</a>
+                    </div>
+                </form>
+
+                <!-- 登录提示 -->
+                <div class="alert alert-success mt-4">
+                    <h6><i class="fas fa-shield-alt me-2"></i>安全登录</h6>
+                    <div class="small">
+                        请使用您注册的账号登录系统。<br>
+                        如遇问题，请联系系统管理员。
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const loginForm = document.getElementById('loginForm');
+    const loginBtn = document.getElementById('loginBtn');
+    const togglePassword = document.getElementById('togglePassword');
+    const passwordInput = document.getElementById('password');
+
+    // 密码显示/隐藏切换
+    togglePassword.addEventListener('click', function() {
+        const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+        passwordInput.setAttribute('type', type);
+        this.innerHTML = type === 'password' ? '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
+    });
+
+    // 登录表单提交
+    loginForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+
+        if (!username || !password) {
+            showMessage('请填写完整的登录信息', 'warning');
+            return;
+        }
+
+        // 显示加载状态
+        loginBtn.disabled = true;
+        loginBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>登录中...';
+
+        try {
+            const response = await fetch('/api/auth/login/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    username: username,
+                    password: password
+                })
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                // 保存token
+                localStorage.setItem('access_token', data.tokens.access);
+                localStorage.setItem('refresh_token', data.tokens.refresh);
+                localStorage.setItem('user_info', JSON.stringify(data.user));
+
+                // 显示成功消息
+                showMessage('登录成功！正在跳转...', 'success');
+
+                // 跳转到首页
+                setTimeout(() => {
+                    window.location.href = "{% url 'web:dashboard' %}";
+                }, 1000);
+
+            } else {
+                showMessage(data.error || '登录失败，请检查用户名和密码', 'danger');
+            }
+
+        } catch (error) {
+            console.error('登录错误:', error);
+            showMessage('网络错误，请重试', 'danger');
+        } finally {
+            // 恢复按钮状态
+            loginBtn.disabled = false;
+            loginBtn.innerHTML = '<i class="fas fa-sign-in-alt me-2"></i>登录';
+        }
+    });
+
+    // 移除了测试账号自动填充功能以确保系统安全
+});
+</script>
+{% endblock %}

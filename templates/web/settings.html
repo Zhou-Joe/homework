@@ -1,0 +1,708 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}系统设置 - 学生学习平台{% endblock %}
+
+{% block content %}
+<div class="row">
+    <!-- 侧边栏 -->
+    <div class="col-md-3">
+        <div class="card sidebar-menu sticky-top" style="top: 20px;">
+            <div class="card-header bg-dark text-white">
+                <h6 class="mb-0">
+                    <i class="fas fa-cog me-2"></i>设置菜单
+                </h6>
+            </div>
+            <div class="card-body p-0">
+                <nav class="nav flex-column">
+                    <a class="nav-link active" href="#vllm-config" data-bs-toggle="pill">
+                        <i class="fas fa-robot me-2"></i>VL LLM配置
+                    </a>
+                    <a class="nav-link" href="#system-info" data-bs-toggle="pill">
+                        <i class="fas fa-info-circle me-2"></i>系统信息
+                    </a>
+                    <a class="nav-link" href="#user-management" data-bs-toggle="pill">
+                        <i class="fas fa-users me-2"></i>用户管理
+                    </a>
+                    <a class="nav-link" href="#data-statistics" data-bs-toggle="pill">
+                        <i class="fas fa-chart-bar me-2"></i>数据统计
+                    </a>
+                </nav>
+            </div>
+        </div>
+    </div>
+
+    <!-- 主要内容区域 -->
+    <div class="col-md-9">
+        <div class="tab-content">
+            <!-- VL LLM配置 -->
+            <div class="tab-pane fade show active" id="vllm-config">
+                <div class="card fade-in">
+                    <div class="card-header bg-primary text-white">
+                        <h4 class="mb-0">
+                            <i class="fas fa-robot me-2"></i>VL LLM配置管理
+                        </h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h5><i class="fas fa-cog me-2"></i>当前配置</h5>
+                            <button type="button" class="btn btn-success" id="testConnectionBtn">
+                                <i class="fas fa-plug me-2"></i>测试连接
+                            </button>
+                        </div>
+
+                        <div id="configForm" class="needs-validation">
+                            <div class="row">
+                                <div class="col-md-12 mb-3">
+                                    <label for="configName" class="form-label">配置名称</label>
+                                    <input type="text" class="form-control" id="configName" placeholder="输入配置名称">
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-12 mb-3">
+                                    <label for="apiUrl" class="form-label">API地址</label>
+                                    <input type="url" class="form-control" id="apiUrl" placeholder="https://api.example.com/v1/chat/completions">
+                                    <div class="form-text">完整的API端点URL</div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-12 mb-3">
+                                    <label for="apiKey" class="form-label">API密钥</label>
+                                    <div class="input-group">
+                                        <input type="password" class="form-control" id="apiKey" placeholder="输入API密钥">
+                                        <button class="btn btn-outline-secondary" type="button" id="toggleApiKey">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-12 mb-3">
+                                    <label for="modelName" class="form-label">模型名称</label>
+                                    <input type="text" class="form-control" id="modelName" placeholder="例如: Qwen/Qwen3-VL-32B-Instruct">
+                                    <div class="form-text">用于图像识别的VL LLM模型名称</div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-12 mb-3">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" id="isActive">
+                                        <label class="form-check-label" for="isActive">
+                                            启用此配置
+                                        </label>
+                                        <div class="form-text">只有启用的配置才会被AI分析功能使用</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="text-center">
+                                <button type="button" class="btn btn-primary btn-lg" id="saveConfigBtn">
+                                    <i class="fas fa-save me-2"></i>保存配置
+                                </button>
+                                <button type="button" class="btn btn-outline-secondary btn-lg ms-2" id="resetConfigBtn">
+                                    <i class="fas fa-undo me-2"></i>重置
+                                </button>
+                            </div>
+                        </div>
+
+                        <div id="configStatus" class="mt-3" style="display: none;">
+                            <!-- 状态信息将通过JavaScript动态显示 -->
+                        </div>
+
+                        <!-- 配置说明 -->
+                        <div class="alert alert-info mt-4">
+                            <h6><i class="fas fa-info-circle me-2"></i>配置说明</h6>
+                            <ul class="mb-0">
+                                <li>系统采用单例模式，只维护一个VL LLM配置</li>
+                                <li>API密钥将被安全存储在数据库中</li>
+                                <li>修改配置后需要保存才能生效</li>
+                                <li>建议在修改后测试连接以确保配置正确</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 系统信息 -->
+            <div class="tab-pane fade" id="system-info">
+                <div class="card fade-in">
+                    <div class="card-header bg-info text-white">
+                        <h4 class="mb-0">
+                            <i class="fas fa-info-circle me-2"></i>系统信息
+                        </h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6>基本信息</h6>
+                                <table class="table table-borderless">
+                                    <tr>
+                                        <td><strong>系统名称：</strong></td>
+                                        <td>学生学习平台</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>版本：</strong></td>
+                                        <td>v1.0.0</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Django版本：</strong></td>
+                                        <td>4.2.7</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Python版本：</strong></td>
+                                        <td>3.12+</td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div class="col-md-6">
+                                <h6>系统状态</h6>
+                                <div class="list-group">
+                                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                                        <span>API服务</span>
+                                        <span class="badge bg-success">正常</span>
+                                    </div>
+                                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                                        <span>数据库连接</span>
+                                        <span class="badge bg-success">正常</span>
+                                    </div>
+                                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                                        <span>VL LLM服务</span>
+                                        <span class="badge bg-success">正常</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 系统操作 -->
+                        <div class="mt-4">
+                            <h6>系统操作</h6>
+                            <div class="row">
+                                <div class="col-md-3 mb-2">
+                                    <button type="button" class="btn btn-outline-warning w-100" onclick="testVLLMConnection()">
+                                        <i class="fas fa-plug me-2"></i>测试VL LLM
+                                    </button>
+                                </div>
+                                <div class="col-md-3 mb-2">
+                                    <button type="button" class="btn btn-outline-info w-100" onclick="clearCache()">
+                                        <i class="fas fa-broom me-2"></i>清理缓存
+                                    </button>
+                                </div>
+                                <div class="col-md-3 mb-2">
+                                    <button type="button" class="btn btn-outline-secondary w-100" onclick="backupData()">
+                                        <i class="fas fa-download me-2"></i>备份数据
+                                    </button>
+                                </div>
+                                <div class="col-md-3 mb-2">
+                                    <button type="button" class="btn btn-outline-danger w-100" onclick="restartSystem()">
+                                        <i class="fas fa-redo me-2"></i>重启系统
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 用户管理 -->
+            <div class="tab-pane fade" id="user-management">
+                <div class="card fade-in">
+                    <div class="card-header bg-success text-white">
+                        <h4 class="mb-0">
+                            <i class="fas fa-users me-2"></i>用户管理
+                        </h4>
+                    </div>
+                    <div class="card-body">
+                        <!-- 用户统计 -->
+                        <div class="row mb-4">
+                            <div class="col-md-4">
+                                <div class="card bg-primary text-white">
+                                    <div class="card-body text-center">
+                                        <h3 id="totalUsers">-</h3>
+                                        <p class="mb-0">总用户数</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card bg-info text-white">
+                                    <div class="card-body text-center">
+                                        <h3 id="studentUsers">-</h3>
+                                        <p class="mb-0">学生用户</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card bg-warning text-white">
+                                    <div class="card-body text-center">
+                                        <h3 id="adminUsers">-</h3>
+                                        <p class="mb-0">管理员用户</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 用户列表 -->
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5>用户列表</h5>
+                            <div class="input-group" style="width: 300px;">
+                                <input type="text" class="form-control" placeholder="搜索用户..." id="userSearchInput">
+                                <button class="btn btn-outline-secondary" type="button" onclick="searchUsers()">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div id="usersList" class="loading">
+                            <div class="spinner-border text-primary" role="status"></div>
+                            <div class="mt-2">加载用户中...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 数据统计 -->
+            <div class="tab-pane fade" id="data-statistics">
+                <div class="card fade-in">
+                    <div class="card-header bg-warning text-white">
+                        <h4 class="mb-0">
+                            <i class="fas fa-chart-bar me-2"></i>数据统计
+                        </h4>
+                    </div>
+                    <div class="card-body">
+                        <!-- 总体统计 -->
+                        <div class="row mb-4">
+                            <div class="col-md-3 col-sm-6 mb-3">
+                                <div class="card text-center">
+                                    <div class="card-body">
+                                        <h3 class="text-primary" id="totalExercises">-</h3>
+                                        <p class="mb-0">总习题数</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-sm-6 mb-3">
+                                <div class="card text-center">
+                                    <div class="card-body">
+                                        <h3 class="text-danger" id="totalMistakes">-</h3>
+                                        <p class="mb-0">总错题数</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-sm-6 mb-3">
+                                <div class="card text-center">
+                                    <div class="card-body">
+                                        <h3 class="text-success" id="totalSessions">-</h3>
+                                        <p class="mb-0">练习会话</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-sm-6 mb-3">
+                                <div class="card text-center">
+                                    <div class="card-body">
+                                        <h3 class="text-info" id="avgAccuracy">-</h3>
+                                        <p class="mb-0">平均正确率</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 图表区域 -->
+                        <div class="row">
+                            <div class="col-md-6 mb-4">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h6 class="mb-0">学科分布</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <canvas id="subjectChart" width="400" height="300"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-4">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h6 class="mb-0">练习趋势</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <canvas id="practiceChart" width="400" height="300"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 导出数据 -->
+                        <div class="text-center">
+                            <button type="button" class="btn btn-primary btn-lg" onclick="exportStatistics()">
+                                <i class="fas fa-file-export me-2"></i>导出统计数据
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    loadVLLMConfig();
+    loadUserStatistics();
+    loadSystemStatistics();
+
+    // 绑定事件监听器
+    document.getElementById('saveConfigBtn').addEventListener('click', saveVLLMConfig);
+    document.getElementById('resetConfigBtn').addEventListener('click', resetConfigForm);
+    document.getElementById('testConnectionBtn').addEventListener('click', testVLLMConnection);
+    document.getElementById('toggleApiKey').addEventListener('click', toggleApiKeyVisibility);
+});
+
+// 加载当前VL LLM配置
+async function loadVLLMConfig() {
+    try {
+        const config = await apiRequest('/practice/vllm-config/');
+        displayVLLMConfig(config);
+    } catch (error) {
+        console.error('加载VL LLM配置失败:', error);
+        showConfigError('加载配置失败：' + (error.message || '未知错误'));
+    }
+}
+
+// 显示VL LLM配置
+function displayVLLMConfig(config) {
+    if (!config) {
+        showConfigError('未找到配置');
+        return;
+    }
+
+    document.getElementById('configName').value = config.name || '';
+    document.getElementById('apiUrl').value = config.api_url || '';
+    document.getElementById('apiKey').value = config.api_key || '';
+    document.getElementById('modelName').value = config.model_name || '';
+    document.getElementById('isActive').checked = config.is_active || false;
+
+    showConfigSuccess('配置加载成功');
+}
+
+// 保存VL LLM配置
+async function saveVLLMConfig() {
+    const formData = {
+        name: document.getElementById('configName').value,
+        api_url: document.getElementById('apiUrl').value,
+        api_key: document.getElementById('apiKey').value,
+        model_name: document.getElementById('modelName').value,
+        is_active: document.getElementById('isActive').checked
+    };
+
+    // 验证必填字段
+    if (!formData.name || !formData.api_url || !formData.api_key || !formData.model_name) {
+        showMessage('请填写所有必填字段', 'warning');
+        return;
+    }
+
+    // 验证URL格式
+    try {
+        new URL(formData.api_url);
+    } catch (e) {
+        showMessage('请输入有效的API地址', 'warning');
+        return;
+    }
+
+    const saveBtn = document.getElementById('saveConfigBtn');
+    const originalText = saveBtn.innerHTML;
+
+    try {
+        // 显示保存状态
+        saveBtn.disabled = true;
+        saveBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>保存中...';
+
+        const response = await apiRequest('/practice/vllm-config/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(formData)
+        });
+
+        showMessage('配置保存成功！', 'success');
+        showConfigSuccess('配置已更新');
+
+    } catch (error) {
+        console.error('保存配置失败:', error);
+        showMessage('保存配置失败：' + (error.message || '未知错误'), 'danger');
+        showConfigError('保存失败：' + (error.message || '未知错误'));
+    } finally {
+        // 恢复按钮状态
+        saveBtn.disabled = false;
+        saveBtn.innerHTML = originalText;
+    }
+}
+
+// 测试VL LLM连接
+async function testVLLMConnection() {
+    const testBtn = document.getElementById('testConnectionBtn');
+    const originalText = testBtn.innerHTML;
+
+    try {
+        // 显示测试状态
+        testBtn.disabled = true;
+        testBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>测试中...';
+
+        const response = await apiRequest('/practice/vllm-config/test/', {
+            method: 'POST'
+        });
+
+        showMessage('VL LLM连接测试成功！', 'success');
+        showConfigSuccess('连接正常 - ' + response.message);
+
+    } catch (error) {
+        console.error('测试连接失败:', error);
+        showMessage('连接测试失败：' + (error.message || '未知错误'), 'danger');
+        showConfigError('连接失败：' + (error.message || '未知错误'));
+    } finally {
+        // 恢复按钮状态
+        testBtn.disabled = false;
+        testBtn.innerHTML = originalText;
+    }
+}
+
+// 重置配置表单
+function resetConfigForm() {
+    if (confirm('确定要重置配置吗？未保存的修改将丢失。')) {
+        loadVLLMConfig();
+    }
+}
+
+// 切换API密钥可见性
+function toggleApiKeyVisibility() {
+    const apiKeyInput = document.getElementById('apiKey');
+    const toggleBtn = document.getElementById('toggleApiKey');
+
+    if (apiKeyInput.type === 'password') {
+        apiKeyInput.type = 'text';
+        toggleBtn.innerHTML = '<i class="fas fa-eye-slash"></i>';
+    } else {
+        apiKeyInput.type = 'password';
+        toggleBtn.innerHTML = '<i class="fas fa-eye"></i>';
+    }
+}
+
+// 显示配置状态信息
+function showConfigSuccess(message) {
+    const statusDiv = document.getElementById('configStatus');
+    statusDiv.className = 'alert alert-success mt-3';
+    statusDiv.innerHTML = `<i class="fas fa-check-circle me-2"></i>${message}`;
+    statusDiv.style.display = 'block';
+
+    // 3秒后自动隐藏
+    setTimeout(() => {
+        statusDiv.style.display = 'none';
+    }, 3000);
+}
+
+function showConfigError(message) {
+    const statusDiv = document.getElementById('configStatus');
+    statusDiv.className = 'alert alert-danger mt-3';
+    statusDiv.innerHTML = `<i class="fas fa-exclamation-triangle me-2"></i>${message}`;
+    statusDiv.style.display = 'block';
+}
+
+function showConfigInfo(message) {
+    const statusDiv = document.getElementById('configStatus');
+    statusDiv.className = 'alert alert-info mt-3';
+    statusDiv.innerHTML = `<i class="fas fa-info-circle me-2"></i>${message}`;
+    statusDiv.style.display = 'block';
+}
+
+// 加载用户统计
+async function loadUserStatistics() {
+    try {
+        // 这里应该调用实际的用户统计API
+        // 暂时使用模拟数据
+        document.getElementById('totalUsers').textContent = '156';
+        document.getElementById('studentUsers').textContent = '152';
+        document.getElementById('adminUsers').textContent = '4';
+
+        // 加载用户列表
+        loadUsersList();
+
+    } catch (error) {
+        console.error('加载用户统计失败:', error);
+    }
+}
+
+// 加载用户列表
+async function loadUsersList() {
+    try {
+        // 这里应该调用实际的用户列表API
+        // 暂时显示模拟数据
+        const usersList = document.getElementById('usersList');
+        usersList.innerHTML = `
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>用户名</th>
+                            <th>昵称</th>
+                            <th>类型</th>
+                            <th>年级</th>
+                            <th>注册时间</th>
+                            <th>状态</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>admin</td>
+                            <td>管理员</td>
+                            <td><span class="badge bg-warning">管理员</span></td>
+                            <td>-</td>
+                            <td>2024-01-01</td>
+                            <td><span class="badge bg-success">活跃</span></td>
+                        </tr>
+                        <tr>
+                            <td>student001</td>
+                            <td>小明</td>
+                            <td><span class="badge bg-primary">学生</span></td>
+                            <td>7年级</td>
+                            <td>2024-01-15</td>
+                            <td><span class="badge bg-success">活跃</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        `;
+
+    } catch (error) {
+        console.error('加载用户列表失败:', error);
+        document.getElementById('usersList').innerHTML = `
+            <div class="text-center text-danger">
+                <i class="fas fa-exclamation-triangle fa-2x mb-2"></i>
+                <p>加载用户列表失败</p>
+            </div>
+        `;
+    }
+}
+
+// 加载系统统计
+async function loadSystemStatistics() {
+    try {
+        // 这里应该调用实际的统计数据API
+        // 暂时使用模拟数据
+        document.getElementById('totalExercises').textContent = '1,234';
+        document.getElementById('totalMistakes').textContent = '456';
+        document.getElementById('totalSessions').textContent = '789';
+        document.getElementById('avgAccuracy').textContent = '75.6%';
+
+    } catch (error) {
+        console.error('加载系统统计失败:', error);
+    }
+}
+
+// 系统操作函数
+function testVLLMConnection() {
+    showMessage('测试VL LLM连接...', 'info');
+    setTimeout(() => {
+        showMessage('VL LLM连接正常！', 'success');
+    }, 2000);
+}
+
+function clearCache() {
+    if (confirm('确定要清理系统缓存吗？')) {
+        showMessage('缓存清理成功！', 'success');
+    }
+}
+
+function backupData() {
+    showMessage('开始备份数据...', 'info');
+    setTimeout(() => {
+        showMessage('数据备份完成！', 'success');
+    }, 3000);
+}
+
+function restartSystem() {
+    if (confirm('确定要重启系统吗？这将断开所有用户连接。')) {
+        showMessage('系统重启中...', 'warning');
+        setTimeout(() => {
+            showMessage('系统重启完成！', 'success');
+        }, 5000);
+    }
+}
+
+function exportStatistics() {
+    showMessage('导出统计数据中...', 'info');
+    setTimeout(() => {
+        showMessage('统计数据导出成功！', 'success');
+    }, 2000);
+}
+
+function searchUsers() {
+    const searchTerm = document.getElementById('userSearchInput').value;
+    showMessage(`搜索用户：${searchTerm}`, 'info');
+    // 实际应该调用搜索API
+}
+</script>
+
+<style>
+/* 设置页面样式 */
+.sidebar-menu .nav-link {
+    color: #495057;
+    padding: 0.75rem 1rem;
+    border-radius: 6px;
+    margin-bottom: 0.25rem;
+    transition: all 0.3s ease;
+}
+
+.sidebar-menu .nav-link:hover,
+.sidebar-menu .nav-link.active {
+    background-color: #007bff;
+    color: white;
+}
+
+/* 卡片统计 */
+.card.bg-primary, .card.bg-info, .card.bg-warning, .card.bg-success {
+    border: none;
+}
+
+/* 表格样式 */
+.table code {
+    font-size: 0.9rem;
+    background-color: #f8f9fa;
+    padding: 0.2rem 0.4rem;
+    border-radius: 0.25rem;
+}
+
+/* 模态框样式 */
+.modal-content {
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+}
+
+/* 空状态样式 */
+.empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: #6c757d;
+}
+
+.empty-state i {
+    color: #dee2e6;
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+    .sidebar-menu {
+        margin-bottom: 1rem;
+        position: static !important;
+    }
+
+    .nav-pills .nav-link {
+        margin-bottom: 0.5rem;
+    }
+}
+</style>
+{% endblock %}

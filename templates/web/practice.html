@@ -1,0 +1,1405 @@
+{% extends 'base.html' %}
+{% load static %}
+{% now 'U' as cache_buster %}
+
+{% block title %}强化训练 - 学生学习平台{% endblock %}
+
+{% block content %}
+<!-- 沉浸式背景 -->
+<div class="floating-shapes">
+    <div class="shape shape-1"></div>
+    <div class="shape shape-2"></div>
+    <div class="shape shape-3"></div>
+</div>
+
+<div class="container-fluid">
+    <!-- 页面标题 -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="glass-card fade-in">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center">
+                        <div class="pulse-icon me-4" style="width: 60px; height: 60px; font-size: 1.5rem; background: linear-gradient(135deg, #667eea, #764ba2);">
+                            <i class="fas fa-dumbbell"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <h1 class="text-white mb-2">强化训练</h1>
+                            <p class="text-white-50 mb-0 typewriter">基于你的薄弱环节，AI智能推荐练习题目</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 主要内容区域 -->
+    <div class="row">
+        <!-- 左侧：练习控制 -->
+        <div class="col-lg-4 mb-4">
+            <div class="glass-card fade-in sticky-top" style="top: 20px;">
+                <div class="card-body p-4">
+                    <h5 class="text-dark mb-4">
+                        <i class="fas fa-sliders-h me-2"></i>练习设置
+                    </h5>
+                    <!-- 练习模式选择 -->
+                    <div class="mb-4">
+                        <h6 class="mb-3">练习模式</h6>
+                        <div class="practice-mode-selector">
+                            <div class="mode-option" data-mode="weakness">
+                                <i class="fas fa-exclamation-triangle fa-2x mb-2 text-danger"></i>
+                                <h6>薄弱强化</h6>
+                                <small>针对薄弱知识点练习</small>
+                            </div>
+                            <div class="mode-option" data-mode="mixed">
+                                <i class="fas fa-random fa-2x mb-2 text-info"></i>
+                                <h6>综合练习</h6>
+                                <small>混合各知识点练习</small>
+                            </div>
+                            <div class="mode-option" data-mode="mistakes">
+                                <i class="fas fa-redo fa-2x mb-2 text-warning"></i>
+                                <h6>错题重练</h6>
+                                <small>重新练习错题</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 学科选择 -->
+                    <div class="mb-4">
+                        <label for="subjectSelect" class="form-label text-white">
+                            <i class="fas fa-book me-2"></i>选择学科
+                        </label>
+                        <select class="form-select" id="subjectSelect">
+                            <option value="">全部学科</option>
+                            <!-- 学科选项将通过JavaScript动态加载 -->
+                        </select>
+                    </div>
+
+                    <!-- 难度选择 -->
+                    <div class="mb-4">
+                        <label class="form-label">
+                            <i class="fas fa-signal me-2"></i>题目难度
+                        </label>
+                        <div class="btn-group w-100" role="group">
+                            <input type="radio" class="btn-check" name="difficulty" id="difficultyAll" value="" checked>
+                            <label class="btn btn-outline-primary" for="difficultyAll">全部</label>
+
+                            <input type="radio" class="btn-check" name="difficulty" id="difficultyEasy" value="easy">
+                            <label class="btn btn-outline-success" for="difficultyEasy">简单</label>
+
+                            <input type="radio" class="btn-check" name="difficulty" id="difficultyMedium" value="medium">
+                            <label class="btn btn-outline-warning" for="difficultyMedium">中等</label>
+
+                            <input type="radio" class="btn-check" name="difficulty" id="difficultyHard" value="hard">
+                            <label class="btn btn-outline-danger" for="difficultyHard">困难</label>
+                        </div>
+                    </div>
+
+                    <!-- 题目数量 -->
+                    <div class="mb-4">
+                        <label for="questionCount" class="form-label">
+                            <i class="fas fa-list-ol me-2"></i>题目数量
+                        </label>
+                        <div class="d-flex align-items-center">
+                            <input type="range" class="form-range me-3" id="questionCount" min="2" max="5" value="2">
+                            <span class="badge bg-primary fs-6" id="questionCountDisplay">2</span>
+                        </div>
+                    </div>
+
+                    <!-- 开始练习按钮 -->
+                    <div class="d-grid">
+                        <button type="button" class="btn btn-success btn-lg" id="startPracticeBtn">
+                            <i class="fas fa-play me-2"></i>开始练习
+                        </button>
+                    </div>
+
+                    <!-- 练习统计 -->
+                    <div class="mt-4 p-3 rounded" style="background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1);">
+                        <h6 class="mb-3">
+                            <i class="fas fa-chart-line me-2"></i>今日练习
+                        </h6>
+                        <div class="row text-center">
+                            <div class="col-4">
+                                <div class="fw-bold" id="todayPracticed" style="color: #667eea;">0</div>
+                                <small class="text-white-50">已练习</small>
+                            </div>
+                            <div class="col-4">
+                                <div class="fw-bold" id="todayCorrect" style="color: #28a745;">0</div>
+                                <small class="text-white-50">答对</small>
+                            </div>
+                            <div class="col-4">
+                                <div class="fw-bold" id="todayAccuracy" style="color: #17a2b8;">0%</div>
+                                <small class="text-white-50">正确率</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 右侧：练习区域 -->
+        <div class="col-lg-8">
+            <!-- 练习会话列表 -->
+            <div id="practiceSessions" class="fade-in">
+                <div class="glass-card mb-4">
+                    <div class="card-body p-4">
+                        <h5 class="text-dark mb-4">
+                            <i class="fas fa-history me-2"></i>练习历史
+                        </h5>
+                        <div id="sessionsList" class="loading">
+                            <div class="spinner-border text-primary" role="status"></div>
+                            <div class="mt-2">加载中...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 练习界面 -->
+            <div id="practiceInterface" style="display: none;">
+                <!-- 题目显示区域 -->
+                <div id="questionArea" class="glass-card mb-4 fade-in">
+                    <div class="card-body p-4">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="text-dark mb-0">
+                                <i class="fas fa-question-circle me-2"></i>
+                                <span id="questionTitle">题目 1</span>
+                            </h5>
+                            <div>
+                                <span class="badge bg-secondary me-2" id="questionSubject">数学</span>
+                                <span class="badge bg-info" id="questionDifficulty">中等</span>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <!-- 题目内容 -->
+                        <div id="questionContent" class="mb-4">
+                            <div class="text-center">
+                                <div class="spinner-border text-primary" role="status"></div>
+                                <p class="mt-2">加载题目中...</p>
+                            </div>
+                        </div>
+
+                        <!-- 答题区域 -->
+                        <div id="answerArea">
+                            <h6 class="mb-3">
+                                <i class="fas fa-edit me-2"></i>请在此作答
+                            </h6>
+                            <small class="text-muted mb-3 d-block">可选择上传图片、输入文字答案，或同时提交两种形式</small>
+
+                            <!-- 文字答案输入 -->
+                            <div class="mb-4">
+                                <label for="answerTextInput" class="form-label">
+                                    <i class="fas fa-keyboard me-2"></i>文字答案
+                                </label>
+                                <textarea class="form-control" id="answerTextInput" rows="4"
+                                    placeholder="请在此输入你的答案...（适用于选择题、填空题、计算题等）"></textarea>
+                            </div>
+
+                            <!-- 图片答案上传 -->
+                            <div class="mb-4">
+                                <label for="answerImageInput" class="form-label">
+                                    <i class="fas fa-camera me-2"></i>上传答题图片
+                                </label>
+                                <div class="upload-area" id="answerUploadArea">
+                                    <div class="text-center py-4" id="uploadPlaceholder">
+                                        <i class="fas fa-camera fa-3x text-primary mb-3"></i>
+                                        <h6>拍照或上传答题图片</h6>
+                                        <p class="text-muted mb-3">支持 JPG、PNG 格式，适用于手写答案、复杂题目等</p>
+                                        <input type="file" id="answerImageInput" accept=".jpg,.jpeg,.png" style="display: none;">
+                                        <button type="button" class="btn btn-primary" id="selectImageBtn">
+                                            <i class="fas fa-camera me-2"></i>选择图片
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 答题预览区域 -->
+                            <div class="row mb-4">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label">图片预览</label>
+                                        <div id="imagePreview" class="border rounded p-3" style="min-height: 120px; background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1);">
+                                            <div class="text-center mt-3" style="color: rgba(255, 255, 255, 0.5);">
+                                                <i class="fas fa-image fa-2x mb-2"></i>
+                                                <p>上传图片后将显示预览</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label">文字答案预览</label>
+                                        <div id="textPreview" class="border rounded p-3" style="min-height: 120px; background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1);">
+                                            <div class="text-center mt-3" style="color: rgba(255, 255, 255, 0.5);">
+                                                <i class="fas fa-keyboard fa-2x mb-2"></i>
+                                                <p>输入文字后将显示预览</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 答题状态提示 -->
+                            <div class="alert alert-info mb-4">
+                                <i class="fas fa-info-circle me-2"></i>
+                                <strong>答题提示：</strong>你可以选择上传图片、输入文字答案，或同时提交两种形式。系统会自动分析你的答案。
+                            </div>
+
+                            <!-- 提交按钮 -->
+                            <div class="text-center">
+                                <button type="button" class="btn btn-primary btn-lg me-2" id="submitAnswerBtn" onclick="submitAnswer()" disabled>
+                                    <i class="fas fa-paper-plane me-2"></i>提交答案
+                                </button>
+                                <button type="button" class="btn btn-outline-secondary btn-lg" onclick="skipQuestion()">
+                                    <i class="fas fa-forward me-2"></i>跳过
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 答题结果 -->
+                <div id="answerResult" class="card mb-4" style="display: none;">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="fas fa-check-circle me-2"></i>答题结果
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="resultContent">
+                            <!-- 结果内容将通过JavaScript动态插入 -->
+                        </div>
+
+        <div class="text-center mt-4" id="resultActions">
+            <!-- 最后一题时不显示下一题按钮，显示跳转提示 -->
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle me-2"></i>
+                练习已完成！3秒后自动跳转到结果页面...
+            </div>
+        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+let currentSession = null;
+let currentQuestionIndex = 0;
+let recommendedQuestions = [];
+let answerImage = null;
+let answerText = '';
+let practiceMode = 'weakness';
+
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Practice page loaded');
+    initializePracticePage();
+    loadTodayStats();
+    loadPracticeHistory();
+
+    // 立即绑定开始练习按钮事件
+    const startBtn = document.getElementById('startPracticeBtn');
+    if (startBtn) {
+        startBtn.addEventListener('click', startPractice);
+        console.log('Start practice button bound');
+    }
+});
+
+// 初始化练习页面
+function initializePracticePage() {
+    console.log('Initializing practice page...');
+
+    // 练习模式选择
+    document.querySelectorAll('.mode-option').forEach(option => {
+        option.addEventListener('click', function() {
+            document.querySelectorAll('.mode-option').forEach(opt => opt.classList.remove('selected'));
+            this.classList.add('selected');
+            practiceMode = this.dataset.mode;
+            console.log('Practice mode changed to:', practiceMode);
+        });
+    });
+
+    // 默认选择薄弱强化模式
+    const defaultMode = document.querySelector('.mode-option[data-mode="weakness"]');
+    if (defaultMode) {
+        defaultMode.classList.add('selected');
+    }
+
+    // 题目数量滑块
+    const questionCount = document.getElementById('questionCount');
+    const questionCountDisplay = document.getElementById('questionCountDisplay');
+    if (questionCount && questionCountDisplay) {
+        questionCount.addEventListener('input', function() {
+            questionCountDisplay.textContent = this.value;
+        });
+    }
+
+    // 答题图片上传
+    const answerImageInput = document.getElementById('answerImageInput');
+    if (answerImageInput) {
+        answerImageInput.addEventListener('change', function(e) {
+            if (e.target.files.length > 0) {
+                handleAnswerImageSelect(e.target.files[0]);
+            }
+        });
+    }
+
+    // 文字答案输入监听
+    const answerTextInput = document.getElementById('answerTextInput');
+    if (answerTextInput) {
+        answerTextInput.addEventListener('input', updateSubmitButton);
+    }
+
+    // 初始化上传区域
+    initializeUploadArea();
+
+    // 单独绑定选择图片按钮事件 - 修复重复触发问题
+    const selectImageBtn = document.getElementById('selectImageBtn');
+    if (selectImageBtn) {
+        selectImageBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            e.preventDefault();
+            console.log('Select image button clicked');
+            document.getElementById('answerImageInput').click();
+        });
+    }
+
+    // 加载学科列表
+    loadSubjects();
+}
+
+// 开始练习 - 简化版本，直接调用API
+async function startPractice() {
+    console.log('Start practice clicked');
+
+    const subjectId = document.getElementById('subjectSelect').value;
+    const difficulty = document.querySelector('input[name="difficulty"]:checked').value;
+    const questionCount = parseInt(document.getElementById('questionCount').value);
+
+    console.log('Practice params:', { subjectId, difficulty, questionCount, practiceMode });
+
+    try {
+        // 显示加载状态
+        showLoading(true);
+
+        // 简化的API调用 - 直接获取推荐题目
+        let apiUrl = '/api/practice/recommended/?count=' + questionCount;
+        if (subjectId) apiUrl += '&subject_id=' + subjectId;
+        if (difficulty) apiUrl += '&difficulty=' + difficulty;
+        if (practiceMode) apiUrl += '&practice_mode=' + practiceMode;
+
+        console.log('Fetching exercises from:', apiUrl);
+
+        const response = await fetch(apiUrl, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+
+        const data = await response.json();
+        console.log('Received exercises:', data);
+
+        // 处理返回的推荐题目数据结构
+        recommendedQuestions = (data.recommended_exercises || []).map(item => {
+            const exercise = item.exercise || item; // 修复字段映射
+            return {
+                id: exercise.id,
+                title: exercise.title || '题目',
+                question_text: exercise.question_text || '',
+                question_image: exercise.question_image || '',
+                answer_text: exercise.answer_text || '',
+                answer_steps: exercise.answer_steps || '',
+                difficulty: exercise.difficulty || 'medium',
+                grade_level: exercise.grade_level || '',
+                knowledge_points: exercise.knowledge_points || [],
+                subject_name: exercise.subject_name || '',
+                // 保留推荐信息
+                weight: item.weight || 0,
+                reason: item.reason || ''
+            };
+        }).filter(q => q.question_text || q.question_image); // 过滤掉没有内容的题目
+
+        currentQuestionIndex = 0;
+
+        // 创建或获取练习会话
+        try {
+            const sessionResponse = await apiRequest('/practice/sessions/start/', {
+                method: 'POST',
+                body: JSON.stringify({
+                    subject_id: document.getElementById('subjectSelect').value || null,
+                    knowledge_point_ids: [],
+                    difficulty: document.querySelector('input[name="difficulty"]:checked')?.value || null,
+                    question_count: recommendedQuestions.length
+                })
+            });
+
+            currentSession = {
+                session_id: sessionResponse.session_id,
+                total_questions: recommendedQuestions.length,
+                correct_answers: 0
+            };
+
+            // 保存会话ID到localStorage
+            localStorage.setItem('current_practice_session', currentSession.session_id);
+
+        } catch (error) {
+            console.error('创建练习会话失败:', error);
+            // 使用临时会话ID作为fallback
+            currentSession = {
+                session_id: Date.now(),
+                total_questions: recommendedQuestions.length,
+                correct_answers: 0
+            };
+        }
+
+        if (recommendedQuestions.length === 0) {
+            showMessage('没有找到符合条件的练习题目', 'warning');
+            showLoading(false);
+            return;
+        }
+
+        // 显示练习界面
+        showPracticeInterface();
+
+        // 加载第一题
+        loadQuestion();
+
+    } catch (error) {
+        console.error('开始练习失败:', error);
+        showMessage('开始练习失败：' + (error.message || '未知错误'), 'danger');
+    } finally {
+        showLoading(false);
+    }
+}
+
+// 加载学科列表
+async function loadSubjects() {
+    try {
+        const response = await fetch('/api/exercises/subjects/', {
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+            }
+        });
+
+        if (!response.ok) throw new Error('Failed to load subjects');
+
+        const data = await response.json();
+
+        // 处理可能的分页格式或直接数组格式
+        const subjects = Array.isArray(data) ? data : (data.results || []);
+
+        const subjectSelect = document.getElementById('subjectSelect');
+
+        subjects.forEach(subject => {
+            const option = document.createElement('option');
+            option.value = subject.id;
+            option.textContent = subject.name;
+            subjectSelect.appendChild(option);
+        });
+    } catch (error) {
+        console.error('加载学科列表失败:', error);
+    }
+}
+
+// 加载今日统计数据
+async function loadTodayStats() {
+    try {
+        const response = await fetch('/api/exercises/dashboard/stats/', {
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+            }
+        });
+
+        if (!response.ok) throw new Error('Failed to load stats');
+
+        const data = await response.json();
+
+        document.getElementById('todayPracticed').textContent = data.practice_count || 0;
+
+        const correct = Math.floor((data.accuracy_rate || 0) * (data.practice_count || 0) / 100);
+        document.getElementById('todayCorrect').textContent = correct;
+        document.getElementById('todayAccuracy').textContent = formatPercentage(data.accuracy_rate || 0);
+
+    } catch (error) {
+        console.error('加载统计数据失败:', error);
+        // 设置默认值
+        document.getElementById('todayPracticed').textContent = '0';
+        document.getElementById('todayCorrect').textContent = '0';
+        document.getElementById('todayAccuracy').textContent = '0%';
+    }
+}
+
+// 加载练习历史
+async function loadPracticeHistory() {
+    try {
+        const response = await fetch('/api/practice/sessions/', {
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+            }
+        });
+
+        if (!response.ok) throw new Error('Failed to load sessions');
+
+        const data = await response.json();
+        const sessions = data.results || data;
+        const sessionsList = document.getElementById('sessionsList');
+
+        if (!sessions || !Array.isArray(sessions) || sessions.length === 0) {
+            sessionsList.innerHTML = `
+                <div class="empty-state">
+                    <i class="fas fa-dumbbell fa-3x mb-3" style="color: rgba(255, 255, 255, 0.3);"></i>
+                    <p style="color: rgba(255, 255, 255, 0.8);">还没有练习记录</p>
+                    <p style="color: rgba(255, 255, 255, 0.5);">点击"开始练习"按钮开始你的第一次练习</p>
+                </div>
+            `;
+            return;
+        }
+
+        let html = '<div class="list-group list-group-flush">';
+
+        sessions.slice(0, 5).forEach(session => {
+            const date = new Date(session.start_time);
+            const statusClass = session.accuracy_rate >= 80 ? 'success' :
+                              session.accuracy_rate >= 60 ? 'warning' : 'danger';
+
+            html += `
+                <div class="list-group-item" style="background: rgba(0, 0, 0, 0.2); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; margin-bottom: 8px; padding: 12px;">
+                    <div class="d-flex w-100 justify-content-between">
+                        <h6 class="mb-1" style="color: #ffffff;">
+                            <i class="fas fa-calendar-day me-2"></i>
+                            ${date.toLocaleDateString('zh-CN')} ${date.toLocaleTimeString('zh-CN', {hour: '2-digit', minute: '2-digit'})}
+                        </h6>
+                        <span class="badge" style="background: ${statusClass === 'success' ? 'linear-gradient(135deg, #28a745, #20c997)' :
+                                                     statusClass === 'warning' ? 'linear-gradient(135deg, #ffc107, #fd7e14)' :
+                                                     'linear-gradient(135deg, #dc3545, #e83e8c)'}; color: white;">${formatPercentage(session.accuracy_rate)}</span>
+                    </div>
+                    <div class="small" style="color: rgba(255, 255, 255, 0.7);">
+                        题目数量: ${session.total_questions} | 正确: ${session.correct_answers}
+                    </div>
+                </div>
+            `;
+        });
+
+        html += '</div>';
+        sessionsList.innerHTML = html;
+
+    } catch (error) {
+        console.error('加载练习历史失败:', error);
+        document.getElementById('sessionsList').innerHTML = `
+            <div class="text-center" style="background: rgba(220, 53, 69, 0.1); backdrop-filter: blur(10px); border: 1px solid rgba(220, 53, 69, 0.2); border-radius: 8px; padding: 20px;">
+                <i class="fas fa-exclamation-triangle fa-2x mb-2" style="color: #dc3545;"></i>
+                <p style="color: #dc3545;">加载练习历史失败</p>
+            </div>
+        `;
+    }
+}
+
+// 显示练习界面
+function showPracticeInterface() {
+    document.getElementById('practiceSessions').style.display = 'none';
+    document.getElementById('practiceInterface').style.display = 'block';
+}
+
+// 加载题目
+function loadQuestion() {
+    // 检查是否还有题目要加载
+    if (currentQuestionIndex >= recommendedQuestions.length) {
+        // 所有题目都已回答完成，显示最终分析
+        showFinalAnalysis();
+        return;
+    }
+
+    const question = recommendedQuestions[currentQuestionIndex];
+    const questionData = question.exercise || question;
+
+    console.log('Loading question:', questionData);
+
+    // 更新题目信息
+    document.getElementById('questionTitle').textContent = `题目 ${currentQuestionIndex + 1}`;
+    document.getElementById('questionSubject').textContent = questionData.subject_name || '未知学科';
+    document.getElementById('questionDifficulty').textContent = getDifficultyText(questionData.difficulty);
+
+    // 显示题目内容
+    const questionContent = document.getElementById('questionContent');
+    let questionHtml = '';
+
+    // 总是显示文本内容（如果存在）
+    if (questionData.question_text) {
+        questionHtml += `
+            <div class="alert alert-info mb-3">
+                <h5>题目内容：</h5>
+                <div id="questionTextContent">${questionData.question_text}</div>
+            </div>
+        `;
+    }
+
+    // 如果有图片，默认不显示，添加显示按钮
+    if (questionData.question_image) {
+        questionHtml += `
+            <div class="text-center mb-3">
+                <button type="button" class="btn btn-outline-primary" id="showImageBtn" onclick="toggleQuestionImage()">
+                    <i class="fas fa-image me-2"></i>显示题目图片
+                </button>
+            </div>
+            <div id="questionImageContainer" style="display: none;" class="text-center">
+                <img src="${questionData.question_image}" class="img-fluid rounded" alt="题目">
+            </div>
+        `;
+    }
+
+    // 如果既没有文本也没有图片，显示错误信息
+    if (!questionData.question_text && !questionData.question_image) {
+        questionHtml = `
+            <div class="alert alert-warning">
+                <p>题目内容加载失败</p>
+            </div>
+        `;
+    }
+
+    questionContent.innerHTML = questionHtml;
+
+    // 渲染数学公式
+    if (questionData.question_text) {
+        setMathContent('#questionTextContent', questionData.question_text);
+    }
+
+    // 重置答题区域
+    resetAnswerArea();
+
+    // 显示题目区域，隐藏结果区域
+    document.getElementById('questionArea').style.display = 'block';
+    document.getElementById('answerResult').style.display = 'none';
+}
+
+// 初始化上传区域 - 修复重复事件绑定问题
+function initializeUploadArea() {
+    const uploadArea = document.getElementById('answerUploadArea');
+    const fileInput = document.getElementById('answerImageInput');
+
+    if (uploadArea && fileInput) {
+        // 移除可能存在的旧事件监听器
+        uploadArea.removeEventListener('click', handleUploadAreaClick);
+        
+        // 添加新的事件监听器
+        uploadArea.addEventListener('click', handleUploadAreaClick);
+    }
+}
+
+// 处理上传区域点击事件
+function handleUploadAreaClick(e) {
+    // 排除按钮和按钮内的元素
+    if (!e.target.closest('button')) {
+        console.log('Upload area clicked (not button)');
+        document.getElementById('answerImageInput').click();
+    }
+}
+
+// 重置答题区域
+function resetAnswerArea() {
+    answerImage = null;
+    answerText = '';
+
+    const answerInput = document.getElementById('answerImageInput');
+    if (answerInput) answerInput.value = '';
+
+    const answerTextInput = document.getElementById('answerTextInput');
+    if (answerTextInput) answerTextInput.value = '';
+
+    // 重置图片预览
+    const imagePreview = document.getElementById('imagePreview');
+    if (imagePreview) {
+        imagePreview.innerHTML = `
+            <div class="text-center mt-3" style="color: rgba(255, 255, 255, 0.5);">
+                <i class="fas fa-image fa-2x mb-2"></i>
+                <p>上传图片后将显示预览</p>
+            </div>
+        `;
+    }
+
+    // 重置文字预览
+    const textPreview = document.getElementById('textPreview');
+    if (textPreview) {
+        textPreview.innerHTML = `
+            <div class="text-center mt-3" style="color: rgba(255, 255, 255, 0.5);">
+                <i class="fas fa-keyboard fa-2x mb-2"></i>
+                <p>输入文字后将显示预览</p>
+            </div>
+        `;
+    }
+
+    const submitBtn = document.getElementById('submitAnswerBtn');
+    if (submitBtn) submitBtn.disabled = true;
+    if (submitBtn) submitBtn.innerHTML = '<i class="fas fa-paper-plane me-2"></i>提交答案';
+}
+
+// 处理答题图片选择
+function handleAnswerImageSelect(file) {
+    // 验证文件类型
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
+    if (!allowedTypes.includes(file.type)) {
+        showMessage('请选择图片文件 (JPG、PNG)', 'warning');
+        return;
+    }
+
+    // 验证文件大小
+    const maxSize = 5 * 1024 * 1024; // 5MB
+    if (file.size > maxSize) {
+        showMessage('图片文件大小不能超过5MB', 'warning');
+        return;
+    }
+
+    answerImage = file;
+
+    // 显示图片预览
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const imagePreview = document.getElementById('imagePreview');
+        if (imagePreview) {
+            imagePreview.innerHTML = `
+                <img src="${e.target.result}" class="img-fluid rounded" style="max-height: 120px;" alt="答题图片">
+                <div class="text-center mt-2">
+                    <small style="color: rgba(255, 255, 255, 0.7);">${file.name}</small>
+                    <button type="button" class="btn btn-sm btn-outline-danger ms-2" onclick="clearImage()">
+                        <i class="fas fa-times"></i> 清除
+                    </button>
+                </div>
+            `;
+        }
+
+        // 更新提交按钮状态
+        updateSubmitButton();
+    };
+    reader.readAsDataURL(file);
+}
+
+// 清除图片
+function clearImage() {
+    answerImage = null;
+    document.getElementById('answerImageInput').value = '';
+
+    const imagePreview = document.getElementById('imagePreview');
+    if (imagePreview) {
+        imagePreview.innerHTML = `
+            <div class="text-center mt-3" style="color: rgba(255, 255, 255, 0.5);">
+                <i class="fas fa-image fa-2x mb-2"></i>
+                <p>上传图片后将显示预览</p>
+            </div>
+        `;
+    }
+
+    updateSubmitButton();
+}
+
+// 更新提交按钮状态
+function updateSubmitButton() {
+    const textAnswer = document.getElementById('answerTextInput').value.trim();
+    const hasImage = answerImage !== null;
+    const submitBtn = document.getElementById('submitAnswerBtn');
+
+    // 更新文字答案预览
+    const textPreview = document.getElementById('textPreview');
+    if (textAnswer) {
+        textPreview.innerHTML = `
+            <div class="mb-0 p-2 rounded" style="background: rgba(102, 126, 234, 0.1); border: 1px solid rgba(255, 255, 255, 0.1); color: #ffffff;">
+                <strong style="color: #ffffff;">你的文字答案：</strong><br>
+                <div id="textPreviewContent" style="color: rgba(255, 255, 255, 0.9);">${textAnswer.replace(/\n/g, '<br>')}</div>
+            </div>
+        `;
+        // 渲染数学公式
+        setMathContent('#textPreviewContent', textAnswer);
+    } else {
+        textPreview.innerHTML = `
+            <div class="text-center mt-3" style="color: rgba(255, 255, 255, 0.5);">
+                <i class="fas fa-keyboard fa-2x mb-2"></i>
+                <p>输入文字后将显示预览</p>
+            </div>
+        `;
+    }
+
+    // 只要有文字或图片任意一项，就启用提交按钮
+    if (textAnswer || hasImage) {
+        if (submitBtn) {
+            submitBtn.disabled = false;
+
+            // 更新提交按钮文字
+            if (textAnswer && hasImage) {
+                submitBtn.innerHTML = '<i class="fas fa-paper-plane me-2"></i>提交答案 (图片+文字)';
+            } else if (hasImage) {
+                submitBtn.innerHTML = '<i class="fas fa-paper-plane me-2"></i>提交答案 (图片)';
+            } else {
+                submitBtn.innerHTML = '<i class="fas fa-paper-plane me-2"></i>提交答案 (文字)';
+            }
+        }
+    } else {
+        if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-paper-plane me-2"></i>提交答案';
+        }
+    }
+}
+
+// 提交答案
+async function submitAnswer() {
+    const textAnswer = document.getElementById('answerTextInput').value.trim();
+    const hasImage = answerImage !== null;
+    const hasText = textAnswer.length > 0;
+
+    // 验证是否有至少一种答案形式
+    if (!hasImage && !hasText) {
+        showMessage('请上传答题图片或输入文字答案', 'warning');
+        return;
+    }
+
+    // 获取按钮原始文本
+    const submitBtn = document.getElementById('submitAnswerBtn');
+    const originalBtnText = submitBtn.innerHTML;
+
+    try {
+        // 显示加载状态
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>提交中...';
+
+        const question = recommendedQuestions[currentQuestionIndex];
+        const exerciseId = question.exercise ? question.exercise.id : question.id;
+
+        // 构建FormData
+        const formData = new FormData();
+        formData.append('session_id', currentSession.session_id);
+        formData.append('exercise_id', exerciseId);
+        formData.append('response_time', '60'); // 模拟响应时间
+
+        // 根据答案类型设置不同的提交参数
+        if (hasImage) {
+            formData.append('answer_image', answerImage);
+        }
+        if (hasText) {
+            formData.append('answer_text', textAnswer);
+        }
+
+        // 所有题目都使用异步分析，确保一致性
+        const apiUrl = '/api/practice/submit-answer-async/';
+
+        console.log('Submitting to:', apiUrl);
+        console.log('Has image:', hasImage, 'Has text:', hasText);
+        
+        // 检查是否是最后一题
+        const isLastQuestion = currentQuestionIndex >= recommendedQuestions.length - 1;
+        console.log('Is last question:', isLastQuestion, 'Current index:', currentQuestionIndex, 'Total:', recommendedQuestions.length);
+
+        const response = await fetch(apiUrl, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
+            },
+            body: formData
+        });
+
+        console.log('Response status:', response.status);
+
+        if (response.ok) {
+            const responseData = await response.json();
+            console.log('Submit successful:', responseData);
+            
+            if (isLastQuestion) {
+                // 最后一题，显示详细答题结果，然后跳转到结果页面
+                showAnswerResult(responseData);
+                
+                // 3秒后自动跳转到结果页面
+                setTimeout(() => {
+                    if (currentSession) {
+                        localStorage.setItem('last_practice_session', currentSession.session_id);
+                        window.location.href = `/practice-result/?session_id=${currentSession.session_id}`;
+                    } else {
+                        window.location.href = '/practice-result/';
+                    }
+                }, 3000);
+            } else {
+                // 不是最后一题，显示简化的反馈，然后跳转到下一题
+                showQuickFeedback(responseData);
+                
+                // 1.5秒后跳转到下一题
+                setTimeout(() => {
+                    currentQuestionIndex++;
+                    loadQuestion();
+                }, 1500);
+            }
+        } else {
+            const contentType = response.headers.get('content-type');
+            if (contentType && contentType.includes('application/json')) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || errorData.detail || '提交失败');
+            } else {
+                throw new Error('服务器返回了非JSON响应，可能是404或500错误');
+            }
+        }
+
+    } catch (error) {
+        console.error('提交答案失败:', error);
+        showMessage('提交失败：' + (error.message || '未知错误'), 'danger');
+    } finally {
+        // 恢复按钮状态
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalBtnText;
+        }
+    }
+}
+
+// 显示答题结果
+function showAnswerResult(result) {
+    const resultContent = document.getElementById('resultContent');
+    const isCorrect = result.is_correct;
+
+    const resultClass = isCorrect ? 'success' : 'danger';
+    const resultIcon = isCorrect ? 'check-circle' : 'times-circle';
+    const resultText = isCorrect ? '回答正确！' : '回答错误';
+
+    resultContent.innerHTML = `
+        <div class="alert alert-${resultClass}">
+            <h6 class="alert-heading">
+                <i class="fas fa-${resultIcon} me-2"></i>${resultText}
+            </h6>
+        </div>
+
+        ${result.analysis ? `
+            <div class="mb-4">
+                <h6><i class="fas fa-comment-dots me-2"></i>AI分析</h6>
+                <div class="card bg-light">
+                    <div class="card-body">
+                        <p class="mb-2"><strong>你的答案：</strong> <div id="studentAnswerContent">${result.analysis.student_answer || '未识别'}</div></p>
+                        <p class="mb-0"><strong>反馈：</strong> <div id="feedbackContent">${result.analysis.feedback || '暂无反馈'}</div></p>
+                        ${!isCorrect && result.analysis.error_analysis ? `<p class="mb-0 text-danger"><strong>错误分析：</strong> <div id="errorAnalysisContent">${result.analysis.error_analysis}</div></p>` : ''}
+                    </div>
+                </div>
+            </div>
+        ` : ''}
+
+        <div class="text-center">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <h6>当前会话得分</h6>
+                            <h2 class="text-primary">${result.session_score || 0}分</h2>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <h6>进度</h6>
+                            <h2 class="text-info">${currentQuestionIndex + 1} / ${recommendedQuestions.length}</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+
+    // 渲染数学公式
+    setTimeout(async () => {
+        if (result.analysis) {
+            if (result.analysis.student_answer) {
+                await setMathContent('#studentAnswerContent', result.analysis.student_answer);
+            }
+            if (result.analysis.feedback) {
+                await setMathContent('#feedbackContent', result.analysis.feedback);
+            }
+            if (result.analysis.error_analysis) {
+                await setMathContent('#errorAnalysisContent', result.analysis.error_analysis);
+            }
+        }
+    }, 100);
+
+    // 显示结果区域
+    document.getElementById('questionArea').style.display = 'none';
+    document.getElementById('answerResult').style.display = 'block';
+}
+
+// 显示快速反馈（用于异步提交的题目）
+function showQuickFeedback(responseData) {
+    const feedbackMessage = responseData.message || '答案已提交，AI正在后台分析';
+    
+    const feedbackHtml = `
+        <div class="card mb-4 border-info bg-light">
+            <div class="card-body text-center py-3">
+                <div class="text-info mb-2">
+                    <i class="fas fa-check-circle fa-2x"></i>
+                </div>
+                <h6 class="text-info">${feedbackMessage}</h6>
+                <small class="text-muted">正在准备下一题...</small>
+                <div class="progress mt-2" style="height: 4px;">
+                    <div class="progress-bar bg-info progress-bar-striped progress-bar-animated" style="width: 100%"></div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    // 在题目区域下方插入反馈
+    const questionArea = document.getElementById('questionArea');
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = feedbackHtml;
+    questionArea.parentNode.insertBefore(tempDiv.firstElementChild, questionArea.nextSibling);
+    
+    // 隐藏题目区域
+    questionArea.style.display = 'none';
+}
+
+// 下一题
+function nextQuestion() {
+    currentQuestionIndex++;
+    loadQuestion();
+}
+
+// 跳过题目
+function skipQuestion() {
+    nextQuestion();
+}
+
+// 结束练习
+async function endPractice() {
+    // 这个函数现在不应该被直接调用，所有题目完成应该通过showFinalAnalysis处理
+    console.log('endPractice called - this should not happen directly');
+}
+
+// 显示加载状态
+function showLoading(show) {
+    const startBtn = document.getElementById('startPracticeBtn');
+    if (startBtn) {
+        if (show) {
+            startBtn.disabled = true;
+            startBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>生成题目中...';
+        } else {
+            startBtn.disabled = false;
+            startBtn.innerHTML = '<i class="fas fa-play me-2"></i>开始练习';
+        }
+    }
+}
+
+// 获取难度文本
+function getDifficultyText(difficulty) {
+    switch (difficulty) {
+        case 'easy': return '简单';
+        case 'medium': return '中等';
+        case 'hard': return '困难';
+        default: return '未知';
+    }
+}
+
+// 显示最终分析
+async function showFinalAnalysis() {
+    // 隐藏答题区域，显示分析中状态
+    document.getElementById('questionArea').style.display = 'none';
+    document.getElementById('answerResult').style.display = 'none';
+
+    // 显示分析中界面
+    const practiceInterface = document.getElementById('practiceInterface');
+    const analysisHtml = `
+        <div class="card mb-4">
+            <div class="card-body text-center py-5">
+                <div class="spinner-border text-primary mb-3" role="status"></div>
+                <h4>AI正在分析你的答案...</h4>
+                <p class="text-muted">请稍等，正在生成详细的练习报告</p>
+                <div class="progress" style="height: 6px;">
+                    <div class="progress-bar progress-bar-striped progress-bar-animated" style="width: 100%"></div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    // 临时插入分析中界面
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = analysisHtml;
+    practiceInterface.appendChild(tempDiv.firstElementChild);
+
+    try {
+        // 轮询检查分析是否完成
+        await waitForAnalysisCompletion();
+        
+        // 分析完成后跳转到结果页面
+        if (currentSession) {
+            localStorage.setItem('last_practice_session', currentSession.session_id);
+            window.location.href = `/practice-result/?session_id=${currentSession.session_id}`;
+        } else {
+            window.location.href = '/practice-result/';
+        }
+    } catch (error) {
+        console.error('等待分析完成失败:', error);
+        showMessage('分析完成，正在跳转...', 'success');
+        setTimeout(() => {
+            if (currentSession) {
+                window.location.href = `/practice-result/?session_id=${currentSession.session_id}`;
+            } else {
+                window.location.href = '/practice-result/';
+            }
+        }, 2000);
+    }
+}
+
+// 等待分析完成
+async function waitForAnalysisCompletion() {
+    const maxAttempts = 30; // 最多等待30次，每次2秒，总共60秒
+    let attempts = 0;
+
+    while (attempts < maxAttempts) {
+        try {
+            const response = await fetch(`/api/practice/sessions/${currentSession.session_id}/analysis-status/`, {
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
+                }
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                if (data.analysis_complete) {
+                    return true;
+                }
+            }
+        } catch (error) {
+            console.error('检查分析状态失败:', error);
+        }
+
+        // 等待2秒后再检查
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        attempts++;
+    }
+
+    throw new Error('分析超时');
+}
+
+// 切换题目图片显示
+function toggleQuestionImage() {
+    const imageContainer = document.getElementById('questionImageContainer');
+    const showImageBtn = document.getElementById('showImageBtn');
+    
+    if (imageContainer.style.display === 'none') {
+        // 显示图片
+        imageContainer.style.display = 'block';
+        showImageBtn.innerHTML = '<i class="fas fa-eye-slash me-2"></i>隐藏题目图片';
+        showImageBtn.classList.remove('btn-outline-primary');
+        showImageBtn.classList.add('btn-outline-secondary');
+    } else {
+        // 隐藏图片
+        imageContainer.style.display = 'none';
+        showImageBtn.innerHTML = '<i class="fas fa-image me-2"></i>显示题目图片';
+        showImageBtn.classList.remove('btn-outline-secondary');
+        showImageBtn.classList.add('btn-outline-primary');
+    }
+}
+
+// 格式化百分比
+function formatPercentage(value) {
+    return Math.round(value) + '%';
+}
+</script>
+
+<style>
+/* 练习模式选择器 */
+.practice-mode-selector {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+/* 上传区域 */
+.upload-area {
+    border: 2px dashed #764ba2;
+    border-radius: 10px;
+    padding: 2rem;
+    text-align: center;
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+    transition: all 0.3s ease;
+    cursor: pointer;
+    backdrop-filter: blur(10px);
+}
+
+.upload-area:hover {
+    border-color: #667eea;
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.2) 0%, rgba(118, 75, 162, 0.2) 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.15);
+}
+
+/* 答题预览区域 */
+#imagePreview img {
+    max-width: 100%;
+    height: auto;
+}
+
+/* 按钮状态 */
+.btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.mode-option {
+    padding: 1rem;
+    text-align: center;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+}
+
+.mode-option:hover {
+    border-color: rgba(102, 126, 234, 0.6);
+    background: rgba(102, 126, 234, 0.1);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.2);
+}
+
+.mode-option.selected {
+    border-color: #667eea;
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.2) 0%, rgba(118, 75, 162, 0.2) 100%);
+    color: #ffffff;
+    box-shadow: 0 5px 20px rgba(102, 126, 234, 0.3);
+}
+
+/* 答题上传区域 */
+#answerUploadArea {
+    border: 2px dashed #764ba2;
+    padding: 2rem;
+    text-align: center;
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+}
+
+#answerUploadArea:hover {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.2) 0%, rgba(118, 75, 162, 0.2) 100%);
+    border-color: #667eea;
+    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.15);
+}
+
+/* 粘性定位 */
+.sticky-top {
+    position: sticky;
+}
+
+/* 空状态样式 */
+.empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: #6c757d;
+}
+
+.empty-state i {
+    color: #dee2e6;
+}
+
+/* 自定义按钮样式以匹配主题 */
+.btn-outline-primary {
+    border-color: #667eea !important;
+    color: #667eea !important;
+}
+
+.btn-outline-primary:hover {
+    background-color: #667eea !important;
+    border-color: #667eea !important;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3) !important;
+}
+
+.btn-success {
+    background: linear-gradient(135deg, #667eea, #764ba2) !important;
+    border-color: #667eea !important;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3) !important;
+}
+
+.btn-success:hover {
+    background: linear-gradient(135deg, #5a6fd8, #6a4190) !important;
+    border-color: #5a6fd8 !important;
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4) !important;
+    transform: translateY(-2px);
+}
+
+/* 统一表单元素样式 */
+.form-select, .form-control {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    color: #ffffff !important;
+    backdrop-filter: blur(10px) !important;
+}
+
+.form-select:focus, .form-control:focus {
+    background-color: rgba(255, 255, 255, 0.15) !important;
+    border-color: #667eea !important;
+    box-shadow: 0 0 0 0.25rem rgba(102, 126, 234, 0.25) !important;
+    color: #ffffff !important;
+}
+
+.form-select option {
+    background-color: #4a5568 !important;
+    color: #ffffff !important;
+}
+
+/* 统一文本颜色 */
+.text-dark {
+    color: #ffffff !important;
+}
+
+h5, h6 {
+    color: #ffffff !important;
+    font-weight: 600;
+}
+
+/* 增强玻璃卡片效果 */
+.glass-card {
+    background: rgba(0, 0, 0, 0.3) !important;
+    backdrop-filter: blur(25px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37) !important;
+}
+
+/* 添加渐变文字效果 */
+.gradient-text {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-weight: bold;
+}
+
+/* 优化进度条颜色 */
+.progress-bar {
+    background: linear-gradient(135deg, #667eea, #764ba2) !important;
+}
+
+/* 加载动画 */
+.loading {
+    text-align: center;
+    padding: 2rem;
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+    .practice-mode-selector {
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+
+    .mode-option {
+        flex: 1;
+        min-width: 120px;
+    }
+
+    .btn-group {
+        flex-direction: column;
+    }
+
+    .btn-group .btn {
+        border-radius: 0.375rem !important;
+        margin-bottom: 0.25rem;
+    }
+}
+</style>
+{% endblock %}

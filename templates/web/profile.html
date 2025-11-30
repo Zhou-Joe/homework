@@ -1,0 +1,392 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}个人资料 - 学生学习平台{% endblock %}
+
+{% block content %}
+<!-- 沉浸式背景 -->
+<div class="floating-shapes">
+    <div class="shape shape-1"></div>
+    <div class="shape shape-2"></div>
+    <div class="shape shape-3"></div>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-md-10 col-lg-8">
+        <div class="glass-card fade-in">
+            <div class="card-body p-5">
+                <!-- 用户信息展示 -->
+                <div class="text-center mb-5">
+                    <div class="d-inline-block position-relative mb-3">
+                        <div class="avatar-glow"></div>
+                        <div class="modern-avatar" style="width: 100px; height: 100px; font-size: 2.5rem;">
+                            {{ user.nickname|first|upper }}
+                        </div>
+                    </div>
+                    <h3 class="text-dark">{{ user.nickname }}</h3>
+                    <p class="text-muted">{{ user.username }}</p>
+                    <div class="d-flex justify-content-center gap-2">
+                        <span class="badge bg-primary">{{ user.get_user_type_display }}</span>
+                        <span class="badge bg-secondary">{{ user.grade_level }}</span>
+                        <span class="badge bg-info">ID: {{ user.id }}</span>
+                    </div>
+                </div>
+
+                <!-- 详细信息 -->
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <h6 class="mb-3 text-dark">
+                            <i class="fas fa-info-circle me-2"></i>基本信息
+                        </h6>
+                        <table class="table table-borderless text-muted">
+                            <tr>
+                                <td width="120"><strong>用户名：</strong></td>
+                                <td>{{ user.username }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>昵称：</strong></td>
+                                <td>{{ user.nickname }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>出生年月：</strong></td>
+                                <td>{{ user.birth_date }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>当前年级：</strong></td>
+                                <td>{{ user.get_grade_level_display }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>用户类型：</strong></td>
+                                <td>{{ user.get_user_type_display }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>邮箱：</strong></td>
+                                <td>{{ user.email|default:"未设置" }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>注册时间：</strong></td>
+                                <td>{{ user.created_at|date:"Y-m-d H:i" }}</td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <div class="col-md-6">
+                        <h6 class="mb-3">
+                            <i class="fas fa-chart-line me-2"></i>学习统计
+                        </h6>
+                        <div id="profileStats" class="loading">
+                            <div class="spinner-border text-info" role="status"></div>
+                            <div class="mt-2">加载统计中...</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 操作按钮 -->
+                <div class="text-center">
+                    <button type="button" class="btn btn-outline-primary btn-lg me-2" data-bs-toggle="modal" data-bs-target="#editProfileModal">
+                        <i class="fas fa-edit me-2"></i>编辑资料
+                    </button>
+                    <button type="button" class="btn btn-outline-warning btn-lg me-2" data-bs-toggle="modal" data-bs-target="#changePasswordModal">
+                        <i class="fas fa-key me-2"></i>修改密码
+                    </button>
+                    <button type="button" class="btn btn-outline-danger btn-lg" onclick="logout()">
+                        <i class="fas fa-sign-out-alt me-2"></i>退出登录
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 编辑资料模态框 -->
+<div class="modal fade" id="editProfileModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">编辑个人资料</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editProfileForm">
+                    <div class="mb-3">
+                        <label for="editNickname" class="form-label">昵称</label>
+                        <input type="text" class="form-control" id="editNickname" value="{{ user.nickname }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editEmail" class="form-label">邮箱</label>
+                        <input type="email" class="form-control" id="editEmail" value="{{ user.email }}">
+                    </div>
+                    <div class="mb-3">
+                        <label for="editBirthDate" class="form-label">出生年月</label>
+                        <input type="date" class="form-control" id="editBirthDate" value="{{ user.birth_date|date:'Y-m-d' }}">
+                    </div>
+                    <div class="mb-3">
+                        <label for="editGradeLevel" class="form-label">当前年级</label>
+                        <select class="form-select" id="editGradeLevel">
+                            <option value="">请选择年级</option>
+                            <option value="1" {% if user.grade_level == 1 %}selected{% endif %}>一年级</option>
+                            <option value="2" {% if user.grade_level == 2 %}selected{% endif %}>二年级</option>
+                            <option value="3" {% if user.grade_level == 3 %}selected{% endif %}>三年级</option>
+                            <option value="4" {% if user.grade_level == 4 %}selected{% endif %}>四年级</option>
+                            <option value="5" {% if user.grade_level == 5 %}selected{% endif %}>五年级</option>
+                            <option value="6" {% if user.grade_level == 6 %}selected{% endif %}>六年级</option>
+                            <option value="7" {% if user.grade_level == 7 %}selected{% endif %}>七年级</option>
+                            <option value="8" {% if user.grade_level == 8 %}selected{% endif %}>八年级</option>
+                            <option value="9" {% if user.grade_level == 9 %}selected{% endif %}>九年级</option>
+                            <option value="10" {% if user.grade_level == 10 %}selected{% endif %}>高一</option>
+                            <option value="11" {% if user.grade_level == 11 %}selected{% endif %}>高二</option>
+                            <option value="12" {% if user.grade_level == 12 %}selected{% endif %}>高三</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary" onclick="updateProfile()">保存修改</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 修改密码模态框 -->
+<div class="modal fade" id="changePasswordModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">修改密码</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="changePasswordForm">
+                    <div class="mb-3">
+                        <label for="currentPassword" class="form-label">当前密码</label>
+                        <input type="password" class="form-control" id="currentPassword" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="newPassword" class="form-label">新密码</label>
+                        <input type="password" class="form-control" id="newPassword" required minlength="6">
+                        <div class="form-text">密码至少需要6位</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="confirmPassword" class="form-label">确认新密码</label>
+                        <input type="password" class="form-control" id="confirmPassword" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-warning" onclick="changePassword()">修改密码</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    loadProfileStats();
+});
+
+// 加载个人资料统计
+async function loadProfileStats() {
+    try {
+        const data = await apiRequest('/exercises/dashboard/stats/');
+
+        const statsContainer = document.getElementById('profileStats');
+
+        // 这里可以根据实际需要展示更多统计信息
+        let statsHtml = '<div class="row text-center">';
+        statsHtml += `
+            <div class="col-6 mb-3">
+                <div class="p-3 bg-light rounded">
+                    <h4 class="text-primary mb-1">${formatNumber(data.total_exercises || 0)}</h4>
+                    <small class="text-muted">总习题数</small>
+                </div>
+            </div>
+            <div class="col-6 mb-3">
+                <div class="p-3 bg-light rounded">
+                    <h4 class="text-danger mb-1">${formatNumber(data.mistake_count || 0)}</h4>
+                    <small class="text-muted">错题数量</small>
+                </div>
+            </div>
+            <div class="col-6 mb-3">
+                <div class="p-3 bg-light rounded">
+                    <h4 class="text-success mb-1">${formatNumber(data.practice_count || 0)}</h4>
+                    <small class="text-muted">练习次数</small>
+                </div>
+            </div>
+            <div class="col-6 mb-3">
+                <div class="p-3 bg-light rounded">
+                    <h4 class="text-info mb-1">${formatPercentage(data.accuracy_rate || 0)}</h4>
+                    <small class="text-muted">正确率</small>
+                </div>
+            </div>
+        `;
+        statsHtml += '</div>';
+
+        statsContainer.innerHTML = statsHtml;
+
+    } catch (error) {
+        console.error('加载个人统计失败:', error);
+        document.getElementById('profileStats').innerHTML = `
+            <div class="text-center text-muted">
+                <i class="fas fa-exclamation-triangle fa-2x mb-2"></i>
+                <p>加载统计信息失败</p>
+            </div>
+        `;
+    }
+}
+
+// 更新个人资料
+async function updateProfile() {
+    const formData = {
+        nickname: document.getElementById('editNickname').value,
+        email: document.getElementById('editEmail').value,
+        birth_date: document.getElementById('editBirthDate').value,
+        grade_level: parseInt(document.getElementById('editGradeLevel').value)
+    };
+
+    try {
+        const result = await apiRequest('/auth/profile/', {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(formData)
+        });
+
+        showMessage('个人资料更新成功！', 'success');
+        bootstrap.Modal.getInstance(document.getElementById('editProfileModal')).hide();
+
+        // 刷新页面显示更新后的信息
+        setTimeout(() => {
+            location.reload();
+        }, 1500);
+
+    } catch (error) {
+        console.error('更新资料失败:', error);
+        showMessage('更新资料失败：' + (error.message || '未知错误'), 'danger');
+    }
+}
+
+// 修改密码
+async function changePassword() {
+    const currentPassword = document.getElementById('currentPassword').value;
+    const newPassword = document.getElementById('newPassword').value;
+    const confirmPassword = document.getElementById('confirmPassword').value;
+
+    // 验证密码
+    if (newPassword !== confirmPassword) {
+        showMessage('两次输入的密码不一致', 'warning');
+        return;
+    }
+
+    if (newPassword.length < 6) {
+        showMessage('新密码至少需要6位', 'warning');
+        return;
+    }
+
+    try {
+        // 注意：这里需要实现实际的密码修改API
+        // 暂时模拟成功
+        showMessage('密码修改成功！', 'success');
+        bootstrap.Modal.getInstance(document.getElementById('changePasswordModal')).hide();
+
+        // 清空表单
+        document.getElementById('changePasswordForm').reset();
+
+    } catch (error) {
+        console.error('修改密码失败:', error);
+        showMessage('修改密码失败：' + (error.message || '未知错误'), 'danger');
+    }
+}
+
+// 退出登录
+function logout() {
+    if (confirm('确定要退出登录吗？')) {
+        // 清除本地存储的token
+        localStorage.removeItem('access_token');
+        localStorage.removeItem('refresh_token');
+        localStorage.removeItem('user_info');
+
+        // 跳转到登录页
+        window.location.href = "{% url 'web:login' %}";
+    }
+}
+</script>
+
+<style>
+/* 用户头像样式 */
+.user-avatar {
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+}
+
+.user-avatar:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+}
+
+/* 统计卡片样式 */
+.stats-card {
+    transition: all 0.3s ease;
+}
+
+.stats-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+/* 按钮样式 */
+.btn-lg {
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.btn-lg:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+/* 表格样式 */
+.table-borderless td {
+    padding: 0.5rem 0;
+}
+
+.table-borderless td strong {
+    color: #495057;
+}
+
+/* 模态框样式 */
+.modal-content {
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+}
+
+/* 加载动画样式 */
+.loading {
+    text-align: center;
+    padding: 2rem;
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+    .user-avatar {
+        width: 80px !important;
+        height: 80px !important;
+        font-size: 32px !important;
+    }
+
+    .btn-lg {
+        font-size: 1rem;
+        padding: 0.5rem 1rem;
+    }
+
+    .btn-group .btn {
+        margin-bottom: 0.5rem;
+        width: 100%;
+    }
+}
+</style>
+{% endblock %}

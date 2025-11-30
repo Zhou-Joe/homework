@@ -1,0 +1,1737 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}学习驾驶舱 - 学生学习平台{% endblock %}
+
+{% block content %}
+<!-- 沉浸式欢迎区域 -->
+<div class="hero-section mb-5">
+    <div class="floating-shapes">
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+        <div class="shape shape-3"></div>
+    </div>
+    
+    <div class="glass-card hero-card fade-in">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="pulse-icon">
+                        <i class="fas fa-graduation-cap"></i>
+                    </div>
+                    <div class="hero-text chinese-text">
+                        <h1 class="display-6 mb-1">
+                            欢迎回来，<span class="user-name">{{ user.nickname }}</span>！
+                        </h1>
+                        <p class="text-muted mb-0">
+                            <i class="fas fa-chart-line me-2"></i>
+                            <span class="typewriter">让我们来分析你的学习轨迹...</span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 text-md-end">
+                <div class="avatar-wrapper d-inline-block me-4">
+                    <div class="user-avatar modern-avatar">
+                        {{ user.nickname|first|upper }}
+                    </div>
+                    <div class="avatar-glow"></div>
+                </div>
+                <div class="meta-info d-inline-block text-start">
+                    <div class="badge badge-grade">
+                        <i class="fas fa-layer-group me-1"></i>{{ user.grade_level }}
+                    </div>
+                    <div class="join-date">
+                        <i class="fas fa-calendar-alt me-1"></i>{{ user.created_at|date:"Y年m月d日" }}加入
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 统计卡片 - Neumorphic Design -->
+<div class="stats-grid mb-5">
+    <div class="stat-card-wrapper">
+        <div class="stat-card neumorph" data-stat="totalExercises">
+            <div class="stat-icon">
+                <i class="fas fa-book-open"></i>
+            </div>
+            <div class="stat-value" id="totalExercises">
+                <span class="skeleton-loader"></span>
+            </div>
+            <div class="stat-label chinese-text">总习题数</div>
+            <div class="stat-progress"></div>
+        </div>
+    </div>
+    
+    <div class="stat-card-wrapper">
+        <div class="stat-card neumorph" data-stat="mistakeCount">
+            <div class="stat-icon error">
+                <i class="fas fa-brain"></i>
+            </div>
+            <div class="stat-value" id="mistakeCount">
+                <span class="skeleton-loader"></span>
+            </div>
+            <div class="stat-label chinese-text">待攻克错题</div>
+            <div class="stat-progress error"></div>
+        </div>
+    </div>
+    
+    <div class="stat-card-wrapper">
+        <div class="stat-card neumorph" data-stat="practiceCount">
+            <div class="stat-icon success">
+                <i class="fas fa-rocket"></i>
+            </div>
+            <div class="stat-value" id="practiceCount">
+                <span class="skeleton-loader"></span>
+            </div>
+            <div class="stat-label chinese-text">练习次数</div>
+            <div class="stat-progress success"></div>
+        </div>
+    </div>
+    
+    <div class="stat-card-wrapper">
+        <div class="stat-card neumorph" data-stat="accuracyRate">
+            <div class="stat-icon info">
+                <i class="fas fa-bullseye"></i>
+            </div>
+            <div class="stat-value" id="accuracyRate">
+                <span class="skeleton-loader"></span>
+            </div>
+            <div class="stat-label chinese-text">正确率</div>
+            <div class="stat-progress info"></div>
+        </div>
+    </div>
+</div>
+
+<!-- 主要内容网格 -->
+<div class="content-grid mb-5">
+    <!-- 学科统计 - Glass Card -->
+    <div class="glass-section lg">
+        <div class="section-header">
+            <div class="section-icon">
+                <i class="fas fa-chart-network"></i>
+            </div>
+            <h3 class="section-title">学科掌握度分析</h3>
+            <div class="decorative-line"></div>
+        </div>
+        <div class="section-body">
+            <div id="subjectStats" class="loading-modern">
+                <div class="skeleton-grid">
+                    <div class="skeleton-item"></div>
+                    <div class="skeleton-item"></div>
+                    <div class="skeleton-item"></div>
+                    <div class="skeleton-item"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 薄弱知识点 - Warm Gradient -->
+    <div class="glass-section lg">
+        <div class="section-header warning">
+            <div class="section-icon">
+                <i class="fas fa-crosshairs"></i>
+            </div>
+            <h3 class="section-title">精准提升目标</h3>
+            <div class="decorative-line warning"></div>
+        </div>
+        <div class="section-body">
+            <div id="weakKnowledgePoints" class="loading-modern">
+                <div class="skeleton-grid-horizontal">
+                    <div class="skeleton-item-horizontal"></div>
+                    <div class="skeleton-item-horizontal"></div>
+                    <div class="skeleton-item-horizontal"></div>
+                    <div class="skeleton-item-horizontal"></div>
+                    <div class="skeleton-item-horizontal"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 最近错题 - Interactive Cards -->
+<div class="glass-section lg mb-5">
+    <div class="section-header primary">
+        <div class="section-icon">
+            <i class="fas fa-history"></i>
+        </div>
+        <h3 class="section-title">最近错题回顾</h3>
+        <a href="/upload/" class="btn-modern btn-primary">
+            <i class="fas fa-plus me-2"></i>
+            <span>上传新题</span>
+        </a>
+    </div>
+    <div class="section-body">
+        <div id="recentMistakes" class="loading-modern">
+            <div class="skeleton-mistakes">
+                <div class="skeleton-card"></div>
+                <div class="skeleton-card"></div>
+                <div class="skeleton-card"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 快速操作 - Icon Grid -->
+<div class="quick-actions">
+    <div class="section-header success">
+        <div class="section-icon">
+            <i class="fas fa-rocket"></i>
+        </div>
+        <h3 class="section-title">快速启动台</h3>
+    </div>
+    <div class="action-grid">
+        <a href="/upload/" class="action-card" data-action="upload">
+            <div class="action-icon">
+                <i class="fas fa-cloud-upload-alt"></i>
+            </div>
+            <div class="action-label">上传错题</div>
+            <div class="action-desc">拍照或输入新题目</div>
+        </a>
+        
+        <a href="/practice/" class="action-card" data-action="practice">
+            <div class="action-icon success">
+                <i class="fas fa-dumbbell"></i>
+            </div>
+            <div class="action-label">智能训练</div>
+            <div class="action-desc">个性化推荐练习</div>
+        </a>
+        
+        <button class="action-card" onclick="viewAllMistakes()" data-action="view">
+            <div class="action-icon info">
+                <i class="fas fa-layer-group"></i>
+            </div>
+            <div class="action-label">错题宝库</div>
+            <div class="action-desc">查看全部错题</div>
+        </button>
+        
+        {% if user.user_type == 'admin' %}
+        <a href="{% url 'web:settings' %}" class="action-card" data-action="settings">
+            <div class="action-icon warning">
+                <i class="fas fa-cog"></i>
+            </div>
+            <div class="action-label">系统配置</div>
+            <div class="action-desc">管理后台设置</div>
+        </a>
+        {% endif %}
+    </div>
+</div>
+
+<!-- 习题详情模态框 - Glass Overlay -->
+<div class="modal modal-glass fade" id="exerciseDetailModal" tabindex="-1">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content glass-modal">
+            <div class="modal-header glass-header">
+                <h3 class="modal-title">
+                    <i class="fas fa-file-alt me-2"></i>习题深度解析
+                </h3>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body glass-body">
+                <div id="exerciseDetailContent">
+                    <div class="loading-detail">
+                        <div class="spinner-modern"></div>
+                        <p class="mt-3 text-muted">构建知识图谱中...</p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer glass-footer">
+                <button type="button" class="btn-modern btn-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-times me-2"></i>关闭
+                </button>
+                <button type="button" class="btn-modern btn-primary" id="practiceThisBtn">
+                    <i class="fas fa-play me-2"></i>立即练习
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+
+{% block base_style_css %}
+<!-- Dashboard页面不加载base style.css，避免样式冲突 -->
+{% endblock %}
+
+<style>
+:root {
+    --color-primary: #6366f1;
+    --color-primary-dark: #4f46e5;
+    --color-success: #10b981;
+    --color-warning: #f59e0b;
+    --color-danger: #ef4444;
+    --color-info: #06b6d4;
+    --bg-main: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+    --glass-bg: rgba(255, 255, 255, 0.25);
+    --glass-border: rgba(255, 255, 255, 0.4);
+    --shadow-soft: 0 8px 32px rgba(31, 38, 135, 0.15);
+    --shadow-hover: 0 12px 40px rgba(31, 38, 135, 0.25);
+    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+body {
+    background: var(--bg-main);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Microsoft YaHei', '微软雅黑', sans-serif;
+    color: #1e293b;
+    writing-mode: horizontal-tb;
+    text-orientation: mixed;
+    direction: ltr;
+}
+
+/* 确保所有文本都水平显示 */
+* {
+    writing-mode: horizontal-tb !important;
+    text-orientation: mixed !important;
+    direction: ltr !important;
+}
+
+/* 中文字体优化 */
+.chinese-text {
+    font-family: 'Microsoft YaHei', '微软雅黑', 'PingFang SC', 'Hiragino Sans GB', 'Source Han Sans SC', 'Noto Sans CJK SC', 'WenQuanYi Micro Hei', sans-serif;
+}
+
+/* 欢迎区域 - Animated Background */
+.hero-section {
+    position: relative;
+    overflow: hidden;
+    padding: 2rem 0;
+}
+
+.floating-shapes {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: -1;
+}
+
+.shape {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(40px);
+    opacity: 0.7;
+    animation: float 6s ease-in-out infinite;
+}
+
+.shape-1 {
+    width: 200px;
+    height: 200px;
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    top: -100px;
+    left: -50px;
+    animation-delay: 0s;
+}
+
+.shape-2 {
+    width: 150px;
+    height: 150px;
+    background: linear-gradient(135deg, #10b981, #06b6d4);
+    bottom: -75px;
+    right: 10%;
+    animation-delay: 2s;
+}
+
+.shape-3 {
+    width: 100px;
+    height: 100px;
+    background: linear-gradient(135deg, #f59e0b, #ef4444);
+    top: 50%;
+    right: -30px;
+    animation-delay: 4s;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    50% { transform: translateY(-20px) rotate(180deg); }
+}
+
+.hero-card {
+    padding: 2.5rem;
+    border-radius: 24px;
+    backdrop-filter: blur(12px);
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--shadow-soft);
+}
+
+.pulse-icon {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 1.5rem;
+    animation: pulse 2s infinite;
+}
+
+.pulse-icon i {
+    color: white;
+    font-size: 1.5rem;
+}
+
+@keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.7); }
+    70% { box-shadow: 0 0 0 20px rgba(99, 102, 241, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(99, 102, 241, 0); }
+}
+
+.typewriter {
+    overflow: hidden;
+    border-right: 2px solid var(--color-primary);
+    white-space: nowrap;
+    animation: typing 3.5s steps(40, end), blink-caret 0.75s step-end infinite;
+}
+
+@keyframes typing {
+    from { width: 0 }
+    to { width: 100% }
+}
+
+@keyframes blink-caret {
+    from, to { border-color: transparent }
+    50% { border-color: var(--color-primary) }
+}
+
+/* 现代头像 */
+.modern-avatar {
+    width: 70px;
+    height: 70px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.8rem;
+    font-weight: 700;
+    position: relative;
+    z-index: 2;
+}
+
+.avatar-wrapper {
+    position: relative;
+}
+
+.avatar-glow {
+    position: absolute;
+    top: -5px;
+    left: -5px;
+    width: 80px;
+    height: 80px;
+    background: radial-gradient(circle, rgba(99, 102, 241, 0.3) 0%, transparent 70%);
+    border-radius: 50%;
+    animation: glow 2s ease-in-out infinite alternate;
+}
+
+@keyframes glow {
+    from { transform: scale(1); opacity: 0.5; }
+    to { transform: scale(1.1); opacity: 0.8; }
+}
+
+.meta-info .badge-grade {
+    background: linear-gradient(135deg, #8b5cf6, #6366f1);
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-weight: 600;
+    color: white;
+}
+
+.join-date {
+    font-size: 0.875rem;
+    color: #64748b;
+    margin-top: 0.5rem;
+}
+
+/* 统计卡片 - Neumorphic */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+}
+
+.stat-card-wrapper {
+    perspective: 1000px;
+}
+
+.stat-card.neumorph {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: 20px;
+    padding: 2rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    transition: var(--transition);
+    cursor: pointer;
+    backdrop-filter: blur(10px);
+}
+
+.stat-card.neumorph:hover {
+    transform: translateY(-8px) rotateX(5deg);
+    box-shadow: var(--shadow-hover);
+}
+
+.stat-icon {
+    width: 60px;
+    height: 60px;
+    margin: 0 auto 1.5rem;
+    background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
+    border-radius: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 20px rgba(99, 102, 241, 0.3);
+}
+
+.stat-icon.error {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    box-shadow: 0 4px 20px rgba(239, 68, 68, 0.3);
+}
+
+.stat-icon.success {
+    background: linear-gradient(135deg, #10b981, #059669);
+    box-shadow: 0 4px 20px rgba(16, 185, 129, 0.3);
+}
+
+.stat-icon.info {
+    background: linear-gradient(135deg, #06b6d4, #0891b2);
+    box-shadow: 0 4px 20px rgba(6, 182, 212, 0.3);
+}
+
+.stat-icon i {
+    color: white;
+    font-size: 1.8rem;
+}
+
+.stat-value {
+    font-size: 2.5rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, #1e293b, #334155);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 0.5rem;
+}
+
+.stat-label {
+    font-size: 0.95rem;
+    color: #64748b;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.stat-progress {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 4px;
+    width: 0%;
+    background: linear-gradient(90deg, var(--color-primary), var(--color-primary-dark));
+    transition: width 1.5s ease-out;
+}
+
+.stat-progress.error {
+    background: linear-gradient(90deg, #ef4444, #dc2626);
+}
+
+.stat-progress.success {
+    background: linear-gradient(90deg, #10b981, #059669);
+}
+
+.stat-progress.info {
+    background: linear-gradient(90deg, #06b6d4, #0891b2);
+}
+
+/* 内容网格 */
+.content-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 2rem;
+    margin-bottom: 3rem;
+}
+
+@media (max-width: 992px) {
+    .content-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.glass-section {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: 20px;
+    padding: 1.5rem;
+    backdrop-filter: blur(10px);
+    box-shadow: var(--shadow-soft);
+    transition: var(--transition);
+}
+
+.glass-section:hover {
+    box-shadow: var(--shadow-hover);
+}
+
+.glass-section.lg {
+    grid-column: span 2;
+}
+
+@media (max-width: 992px) {
+    .glass-section.lg {
+        grid-column: span 1;
+    }
+}
+
+.section-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+
+.section-icon {
+    width: 48px;
+    height: 48px;
+    background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 1rem;
+    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+}
+
+.section-icon.warning {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3);
+}
+
+.section-icon.primary {
+    background: linear-gradient(135deg, #6366f1, #4f46e5);
+}
+
+.section-icon.success {
+    background: linear-gradient(135deg, #10b981, #059669);
+}
+
+.section-icon.info {
+    background: linear-gradient(135deg, #06b6d4, #0891b2);
+}
+
+.section-icon i {
+    color: white;
+    font-size: 1.3rem;
+}
+
+.section-title {
+    margin: 0;
+    font-weight: 700;
+    color: #1e293b;
+}
+
+.decorative-line {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.3), transparent);
+    margin-left: 1rem;
+}
+
+/* 骨架屏 */
+.skeleton-loader {
+    display: inline-block;
+    width: 80px;
+    height: 2.5rem;
+    background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+    border-radius: 8px;
+}
+
+@keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+}
+
+.skeleton-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+}
+
+.skeleton-item {
+    height: 80px;
+    background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+    border-radius: 12px;
+}
+
+.skeleton-list .skeleton-line {
+    height: 60px;
+    margin-bottom: 0.75rem;
+    background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+    border-radius: 12px;
+}
+
+.skeleton-grid-horizontal {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 0.8rem;
+}
+
+@media (max-width: 1400px) {
+    .skeleton-grid-horizontal {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+@media (max-width: 1200px) {
+    .skeleton-grid-horizontal {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 900px) {
+    .skeleton-grid-horizontal {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 600px) {
+    .skeleton-grid-horizontal {
+        grid-template-columns: 1fr;
+    }
+}
+
+.skeleton-item-horizontal {
+    height: 80px;
+    background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+    border-radius: 12px;
+}
+
+.skeleton-mistakes {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+.skeleton-card {
+    height: 200px;
+    background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+    border-radius: 16px;
+}
+
+/* 加载状态 */
+.loading-modern {
+    min-height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.spinner-modern {
+    width: 50px;
+    height: 50px;
+    border: 4px solid rgba(99, 102, 241, 0.2);
+    border-top-color: var(--color-primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* 学科统计内容 */
+.subject-item {
+    padding: 1.25rem;
+    background: rgba(255, 255, 255, 0.6);
+    border-radius: 14px;
+    margin-bottom: 1rem;
+    transition: var(--transition);
+    border: 1px solid rgba(0,0,0,0.05);
+}
+
+.subject-item:hover {
+    background: rgba(255, 255, 255, 0.8);
+    transform: translateX(5px);
+}
+
+.subject-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+}
+
+.subject-name {
+    font-weight: 600;
+    color: #1e293b;
+    font-size: 1.1rem;
+}
+
+.accuracy-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.875rem;
+    font-weight: 700;
+}
+
+.progress-custom {
+    height: 10px;
+    background: #e2e8f0;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 0.5rem;
+}
+
+.progress-fill {
+    height: 100%;
+    border-radius: 10px;
+    transition: width 1s ease-out;
+}
+
+.subject-meta {
+    font-size: 0.875rem;
+    color: #64748b;
+    display: flex;
+    gap: 1rem;
+}
+
+/* 薄弱知识点 */
+.knowledge-item {
+    padding: 1.25rem;
+    background: rgba(255, 255, 255, 0.6);
+    border-radius: 14px;
+    margin-bottom: 0.75rem;
+    transition: var(--transition);
+    border: 1px solid rgba(0,0,0,0.05);
+}
+
+.knowledge-item:hover {
+    background: rgba(255, 255, 255, 0.8);
+    transform: translateY(-2px);
+}
+
+.knowledge-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.knowledge-info {
+    flex: 1;
+}
+
+.knowledge-info h6 {
+    margin: 0 0 0.25rem 0;
+    font-weight: 600;
+    color: #1e293b;
+}
+
+.knowledge-subject {
+    font-size: 0.875rem;
+    color: #64748b;
+}
+
+.knowledge-stats {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.mastery-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.875rem;
+    font-weight: 700;
+}
+
+.attempt-count {
+    font-size: 0.75rem;
+    color: #94a3b8;
+    white-space: nowrap;
+}
+
+/* 横排布局样式 - 每行5项 */
+.knowledge-grid-horizontal {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 0.8rem;
+}
+
+.mistakes-grid-horizontal {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 1rem;
+}
+
+/* 自适应布局 - 自动换行 */
+.mistakes-grid-auto {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1rem;
+    width: 100%;
+}
+
+/* 强制精准提升目标区域使用自适应布局 */
+#weakKnowledgePoints .mistakes-grid-auto {
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)) !important;
+}
+
+@media (min-width: 1400px) {
+    #weakKnowledgePoints .mistakes-grid-auto {
+        grid-template-columns: repeat(5, 1fr) !important;
+    }
+}
+
+@media (min-width: 1200px) and (max-width: 1399px) {
+    #weakKnowledgePoints .mistakes-grid-auto {
+        grid-template-columns: repeat(4, 1fr) !important;
+    }
+}
+
+@media (min-width: 900px) and (max-width: 1199px) {
+    #weakKnowledgePoints .mistakes-grid-auto {
+        grid-template-columns: repeat(3, 1fr) !important;
+    }
+}
+
+@media (min-width: 600px) and (max-width: 899px) {
+    #weakKnowledgePoints .mistakes-grid-auto {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+}
+
+@media (max-width: 599px) {
+    #weakKnowledgePoints .mistakes-grid-auto {
+        grid-template-columns: 1fr !important;
+    }
+}
+
+@media (max-width: 1400px) {
+    .knowledge-grid-horizontal,
+    .mistakes-grid-horizontal {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+@media (max-width: 1200px) {
+    .knowledge-grid-horizontal,
+    .mistakes-grid-horizontal {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 900px) {
+    .knowledge-grid-horizontal,
+    .mistakes-grid-horizontal {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 600px) {
+    .knowledge-grid-horizontal,
+    .mistakes-grid-horizontal {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* 错题卡片 */
+.mistakes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 1.5rem;
+}
+
+.mistake-card {
+    background: rgba(255, 255, 255, 0.7);
+    border: 1px solid rgba(0,0,0,0.05);
+    border-radius: 16px;
+    overflow: hidden;
+    transition: var(--transition);
+    cursor: pointer;
+}
+
+.mistake-card:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-hover);
+}
+
+.card-image {
+    width: 100%;
+    height: 150px;
+    background: linear-gradient(135deg, #e0f2fe, #dbeafe);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    color: #94a3b8;
+}
+
+.card-content {
+    padding: 1.25rem;
+}
+
+.card-title {
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+    color: #1e293b;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.card-badges {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.badge-modern {
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    background: rgba(99, 102, 241, 0.1);
+    color: var(--color-primary);
+}
+
+.badge-modern.error {
+    background: rgba(239, 68, 68, 0.1);
+    color: var(--color-danger);
+}
+
+.badge-modern.success {
+    background: rgba(16, 185, 129, 0.1);
+    color: var(--color-success);
+}
+
+.card-time {
+    font-size: 0.875rem;
+    color: #64748b;
+}
+
+.card-action {
+    padding: 0 1.25rem 1.25rem;
+}
+
+.btn-modern {
+    padding: 0.75rem 1.5rem;
+    border-radius: 12px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    transition: var(--transition);
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    font-size: 0.95rem;
+}
+
+.btn-modern.btn-primary {
+    background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
+    color: white;
+    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+}
+
+.btn-modern.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(99, 102, 241, 0.4);
+}
+
+.btn-modern.btn-secondary {
+    background: rgba(226, 232, 240, 0.8);
+    color: #475569;
+}
+
+.btn-modern.btn-secondary:hover {
+    background: rgba(203, 213, 225, 0.8);
+    transform: translateY(-2px);
+}
+
+/* 快速操作 */
+.action-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+}
+
+.action-card {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: 20px;
+    padding: 2rem 1rem;
+    text-align: center;
+    transition: var(--transition);
+    cursor: pointer;
+    text-decoration: none;
+    color: inherit;
+    backdrop-filter: blur(10px);
+}
+
+.action-card:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-hover);
+}
+
+.action-icon {
+    width: 70px;
+    height: 70px;
+    margin: 0 auto 1.25rem;
+    background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 20px rgba(99, 102, 241, 0.3);
+}
+
+.action-icon.success {
+    background: linear-gradient(135deg, #10b981, #059669);
+    box-shadow: 0 4px 20px rgba(16, 185, 129, 0.3);
+}
+
+.action-icon.info {
+    background: linear-gradient(135deg, #06b6d4, #0891b2);
+    box-shadow: 0 4px 20px rgba(6, 182, 212, 0.3);
+}
+
+.action-icon.warning {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    box-shadow: 0 4px 20px rgba(245, 158, 11, 0.3);
+}
+
+.action-icon i {
+    color: white;
+    font-size: 2rem;
+}
+
+.action-label {
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: #1e293b;
+    margin-bottom: 0.5rem;
+}
+
+.action-desc {
+    font-size: 0.875rem;
+    color: #64748b;
+}
+
+/* 模态框 - Glass */
+.modal-glass .modal-content {
+    border: none;
+    border-radius: 24px;
+    overflow: hidden;
+}
+
+.glass-modal {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(20px);
+    box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+}
+
+.glass-header {
+    background: rgba(255, 255, 255, 0.3);
+    border-bottom: 1px solid var(--glass-border);
+    padding: 1.5rem 2rem;
+}
+
+.glass-body {
+    padding: 2rem;
+}
+
+.glass-footer {
+    background: rgba(255, 255, 255, 0.3);
+    border-top: 1px solid var(--glass-border);
+    padding: 1.5rem 2rem;
+}
+
+/* 模态框内容模态框内容 */
+.detail-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 2rem;
+}
+
+@media (max-width: 768px) {
+    .detail-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.exercise-content {
+    background: rgba(255, 255, 255, 0.6);
+    padding: 1.5rem;
+    border-radius: 16px;
+    border: 1px solid rgba(0,0,0,0.05);
+}
+
+.exercise-images {
+    display: grid;
+    gap: 1.5rem;
+}
+
+.image-card {
+    background: rgba(255, 255, 255, 0.6);
+    padding: 1rem;
+    border-radius: 14px;
+    border: 1px solid rgba(0,0,0,0.05);
+}
+
+.image-card h6 {
+    margin-bottom: 1rem;
+    color: #1e293b;
+}
+
+.image-card img {
+    width: 100%;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.sidebar-card {
+    background: rgba(255, 255, 255, 0.6);
+    padding: 1.5rem;
+    border-radius: 16px;
+    border: 1px solid rgba(0,0,0,0.05);
+}
+
+.sidebar-card h6 {
+    margin-bottom: 1rem;
+    color: #1e293b;
+    font-weight: 600;
+}
+
+.info-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+
+.info-row:last-child {
+    border-bottom: none;
+}
+
+.knowledge-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.tag {
+    padding: 0.25rem 0.75rem;
+    background: rgba(99, 102, 241, 0.1);
+    color: var(--color-primary);
+    border-radius: 20px;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+/* 响应式 */
+@media (max-width: 768px) {
+    .hero-card {
+        padding: 1.5rem;
+    }
+    
+    .typewriter {
+        animation: none;
+        border: none;
+    }
+    
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+    }
+    
+    .action-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // 初始化加载
+    loadDashboardData();
+    
+    // 页面加载动画
+    initializeAnimations();
+});
+
+// 动画初始化
+function initializeAnimations() {
+    const cards = document.querySelectorAll('.fade-in');
+    cards.forEach((card, index) => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(30px)';
+        setTimeout(() => {
+            card.style.transition = 'all 0.6s cubic-bezier(0.4, 0, 0.2, 1)';
+            card.style.opacity = '1';
+            card.style.transform = 'translateY(0)';
+        }, index * 150);
+    });
+}
+
+// 加载仪表板数据
+async function loadDashboardData() {
+    try {
+        const data = await apiRequest('/exercises/dashboard/stats/');
+        
+        if (data) {
+            // 动画更新统计数据
+            animateStatsCards(data);
+            updateSubjectStats(data.subject_stats);
+            updateWeakKnowledgePoints(data.weak_knowledge_points);
+            updateRecentMistakes(data.recent_mistakes);
+        }
+    } catch (error) {
+        console.error('加载数据失败:', error);
+        showErrorMessage();
+    }
+}
+
+// 动画更新统计卡片
+function animateStatsCards(data) {
+    const stats = [
+        { id: 'totalExercises', value: data.total_exercises || 0, max: 1000 },
+        { id: 'mistakeCount', value: data.mistake_count || 0, max: 500 },
+        { id: 'practiceCount', value: data.practice_count || 0, max: 1000 },
+        { id: 'accuracyRate', value: data.accuracy_rate || 0, max: 100, isPercentage: true }
+    ];
+    
+    stats.forEach(stat => {
+        const element = document.getElementById(stat.id);
+        const finalValue = stat.isPercentage ? `${stat.value}%` : formatNumber(stat.value);
+        
+        // 数字滚动动画
+        animateValue(element, 0, stat.value, 1500, stat.isPercentage);
+        
+        // 进度条动画
+        const progressBar = element.closest('.stat-card').querySelector('.stat-progress');
+        const progressPercent = Math.min((stat.value / stat.max) * 100, 100);
+        setTimeout(() => {
+            progressBar.style.width = `${progressPercent}%`;
+        }, 300);
+    });
+}
+
+// 数字滚动动画
+function animateValue(element, start, end, duration, isPercentage = false) {
+    const range = end - start;
+    const startTime = performance.now();
+    
+    function update(currentTime) {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        const current = Math.floor(start + range * progress);
+        
+        element.textContent = isPercentage ? `${current}%` : formatNumber(current);
+        
+        if (progress < 1) {
+            requestAnimationFrame(update);
+        }
+    }
+    
+    requestAnimationFrame(update);
+}
+
+// 更新学科统计
+function updateSubjectStats(subjectStats) {
+    const container = document.getElementById('subjectStats');
+    
+    if (!subjectStats || subjectStats.length === 0) {
+        container.innerHTML = `
+            <div class="empty-state">
+                <i class="fas fa-chart-bar fa-3x mb-3"></i>
+                <p>暂无学科统计数据</p>
+                <a href="/upload/" class="btn-modern btn-primary mt-3">开始第一题</a>
+            </div>
+        `;
+        return;
+    }
+    
+    const html = subjectStats.map(subject => {
+        const accuracy = subject.accuracy_rate || 0;
+        const badgeClass = accuracy >= 80 ? 'success' : accuracy >= 60 ? 'warning' : 'danger';
+        const badgeColor = accuracy >= 80 ? '#10b981' : accuracy >= 60 ? '#f59e0b' : '#ef4444';
+        
+        return `
+            <div class="subject-item">
+                <div class="subject-header">
+                    <div class="subject-name">${subject.subject_name}</div>
+                    <div class="accuracy-badge" style="background: ${badgeColor}10; color: ${badgeColor};">
+                        ${formatPercentage(accuracy)}
+                    </div>
+                </div>
+                <div class="progress-custom">
+                    <div class="progress-fill" style="background: ${badgeColor}; width: ${accuracy}%"></div>
+                </div>
+                <div class="subject-meta">
+                    <span><i class="fas fa-database me-1"></i>总题数: ${subject.total_exercises}</span>
+                    <span><i class="fas fa-times-circle me-1"></i>错题: ${subject.mistake_count}</span>
+                </div>
+            </div>
+        `;
+    }).join('');
+    
+    container.innerHTML = `<div class="row">${html}</div>`;
+    
+    // 动画进度条
+    setTimeout(() => {
+        document.querySelectorAll('.progress-fill').forEach(bar => {
+            bar.style.width = bar.style.width;
+        });
+    }, 100);
+}
+
+// 更新薄弱知识点
+function updateWeakKnowledgePoints(weakPoints) {
+    const container = document.getElementById('weakKnowledgePoints');
+    
+    if (!weakPoints || weakPoints.length === 0) {
+        container.innerHTML = `
+            <div class="empty-state text-center py-5">
+                <i class="fas fa-trophy fa-3x mb-3 text-success"></i>
+                <h5 class="chinese-text">太棒了！</h5>
+                <p class="chinese-text">你目前没有明显的薄弱知识点</p>
+                <div class="confetti">🎉</div>
+            </div>
+        `;
+        return;
+    }
+    
+    const html = weakPoints.map(point => {
+        const mastery = point.mastery_level || 0;
+        const badgeClass = mastery < 40 ? 'error' : mastery < 60 ? 'warning' : 'info';
+        const statusText = mastery < 40 ? '需加强' : mastery < 60 ? '待提升' : '良好';
+        
+        return `
+            <div class="mistake-card" onclick="viewKnowledgePoint('${point.knowledge_point}', '${point.subject}')">
+                <div class="card-image">
+                    <i class="fas fa-brain"></i>
+                </div>
+                <div class="card-content">
+                    <h6 class="card-title chinese-text">${point.knowledge_point}</h6>
+                    <div class="card-badges">
+                        <span class="badge-modern">${point.subject}</span>
+                        <span class="badge-modern ${badgeClass}">${statusText}</span>
+                    </div>
+                    <div class="card-time">
+                        <i class="fas fa-chart-line me-1"></i>${formatPercentage(mastery)} 掌握度
+                    </div>
+                </div>
+            </div>
+        `;
+    }).join('');
+    
+    container.innerHTML = `<div class="mistakes-grid-auto">${html}</div>`;
+}
+
+// 更新最近错题
+function updateRecentMistakes(mistakes) {
+    const container = document.getElementById('recentMistakes');
+    
+    if (!mistakes || mistakes.length === 0) {
+        container.innerHTML = `
+            <div class="empty-state text-center py-5">
+                <i class="fas fa-check-circle fa-3x mb-3 text-success"></i>
+                <h5>暂无错题</h5>
+                <p>开始上传你的第一道错题吧！</p>
+                <a href="/upload/" class="btn-modern btn-primary mt-3">
+                    <i class="fas fa-upload me-2"></i>上传错题
+                </a>
+            </div>
+        `;
+        return;
+    }
+    
+    const html = mistakes.map(mistake => {
+        const statusBadge = mistake.status === 'wrong' ? 'error' : 
+                           mistake.status === 'correct' ? 'success' : 'warning';
+        const statusText = mistake.status === 'wrong' ? '待攻克' : 
+                          mistake.status === 'correct' ? '已掌握' : '未尝试';
+        
+        return `
+            <div class="mistake-card" onclick="viewExercise(${mistake.id})">
+                <div class="card-image">
+                    <i class="fas fa-file-alt"></i>
+                </div>
+                <div class="card-content">
+                    <h6 class="card-title">${mistake.exercise_title}</h6>
+                    <div class="card-badges">
+                        <span class="badge-modern">${mistake.subject}</span>
+                        <span class="badge-modern ${statusBadge}">${statusText}</span>
+                    </div>
+                    <div class="card-time">
+                        <i class="fas fa-clock me-1"></i>${formatDate(mistake.upload_time)}
+                    </div>
+                </div>
+            </div>
+        `;
+    }).join('');
+    
+    container.innerHTML = `<div class="mistakes-grid">${html}</div>`;
+}
+
+// 查看习题详情
+async function viewExercise(mistakeId) {
+    const modal = new bootstrap.Modal(document.getElementById('exerciseDetailModal'));
+    modal.show();
+    
+    try {
+        // 首先获取学生习题记录
+        const studentExercise = await apiRequest(`/exercises/student-exercises/${mistakeId}/`);
+        
+        if (studentExercise && studentExercise.exercise) {
+            // 然后获取习题详情
+            const exercise = await apiRequest(`/exercises/${studentExercise.exercise}/`);
+            displayExerciseDetail(exercise, studentExercise);
+        } else {
+            throw new Error('学生习题记录数据不完整');
+        }
+    } catch (error) {
+        console.error('加载详情失败:', error);
+        document.getElementById('exerciseDetailContent').innerHTML = `
+            <div class="text-center py-5 text-danger">
+                <i class="fas fa-exclamation-triangle fa-3x mb-3"></i>
+                <h5>加载失败</h5>
+                <p class="text-muted">${error.message || '请稍后重试'}</p>
+                <button class="btn-modern btn-primary mt-3" onclick="viewExercise(${mistakeId})">
+                    <i class="fas fa-redo me-2"></i>重新加载
+                </button>
+            </div>
+        `;
+    }
+}
+
+// 显示习题详情
+function displayExerciseDetail(exercise, studentExercise) {
+    // 获取模态框实例
+    const modalElement = document.getElementById('exerciseDetailModal');
+    const modal = bootstrap.Modal.getInstance(modalElement) || new bootstrap.Modal(modalElement);
+    
+    const statusBadge = {
+        'not_attempted': 'secondary',
+        'correct': 'success',
+        'wrong': 'danger'
+    }[studentExercise.status] || 'secondary';
+    
+    const statusText = {
+        'not_attempted': '未尝试',
+        'correct': '正确',
+        'wrong': '错题'
+    }[studentExercise.status] || '未知';
+    
+    const difficultyBadge = {
+        'easy': 'success',
+        'medium': 'warning',
+        'hard': 'danger'
+    }[exercise.difficulty] || 'secondary';
+    
+    const difficultyText = {
+        'easy': '简单',
+        'medium': '中等',
+        'hard': '困难'
+    }[exercise.difficulty] || '未知';
+    
+    const html = `
+        <div class="detail-grid">
+            <div class="exercise-content">
+                <div class="mb-4">
+                    <h4 class="mb-3">${exercise.title || '未命名题目'}</h4>
+                    <div class="d-flex gap-2 mb-3 flex-wrap">
+                        <span class="badge-modern">${exercise.subject_name || '未知学科'}</span>
+                        <span class="badge-modern ${difficultyBadge}">${difficultyText}</span>
+                        <span class="badge-modern ${statusBadge}">${statusText}</span>
+                    </div>
+                </div>
+                
+                <div class="exercise-images">
+                    ${exercise.question_text ? `
+                        <div class="image-card">
+                            <h6><i class="fas fa-question-circle me-2 text-primary"></i>题目内容</h6>
+                            <div class="bg-light p-3 rounded">
+                                ${exercise.question_text}
+                            </div>
+                        </div>
+                    ` : ''}
+                    
+                    ${exercise.question_image ? `
+                        <div class="image-card">
+                            <h6><i class="fas fa-image me-2 text-primary"></i>题目图片</h6>
+                            <img src="${exercise.question_image}" alt="题目图片" class="img-fluid">
+                        </div>
+                    ` : ''}
+                    
+                    ${studentExercise.student_answer_image ? `
+                        <div class="image-card">
+                            <h6><i class="fas fa-pen me-2 text-info"></i>你的答案</h6>
+                            <img src="${studentExercise.student_answer_image}" alt="学生答案" class="img-fluid">
+                            ${studentExercise.student_answer_text ? `
+                                <div class="mt-2 p-2 bg-info bg-opacity-10 rounded">
+                                    <small>${studentExercise.student_answer_text}</small>
+                                </div>
+                            ` : ''}
+                        </div>
+                    ` : ''}
+                </div>
+            </div>
+            
+            <div class="sidebar-card">
+                <h6 class="mb-3"><i class="fas fa-info-circle me-2"></i>习题信息</h6>
+                <div class="info-row">
+                    <span>年级</span>
+                    <span class="fw-600">${exercise.grade_level || '未知'}</span>
+                </div>
+                <div class="info-row">
+                    <span>上传时间</span>
+                    <span>${formatDate(studentExercise.upload_time)}</span>
+                </div>
+                <div class="info-row">
+                    <span>当前状态</span>
+                    <span class="badge-modern ${statusBadge}">${statusText}</span>
+                </div>
+                
+                ${exercise.knowledge_points && exercise.knowledge_points.length ? `
+                    <div class="mt-3">
+                        <h6 class="mb-2"><i class="fas fa-tags me-2"></i>知识点</h6>
+                        <div class="knowledge-tags">
+                            ${exercise.knowledge_points.map(kp => `<span class="tag">${kp.name || kp}</span>`).join('')}
+                        </div>
+                    </div>
+                ` : ''}
+            </div>
+        </div>
+    `;
+    
+    document.getElementById('exerciseDetailContent').innerHTML = html;
+    
+    // 设置练习按钮
+    const practiceBtn = document.getElementById('practiceThisBtn');
+    if (practiceBtn) {
+        practiceBtn.onclick = () => {
+            try {
+                modal.hide();
+                // 确保模态框完全关闭后再跳转
+                setTimeout(() => {
+                    window.location.href = `/answer/${studentExercise.id}/`;
+                }, 300);
+            } catch (error) {
+                console.error('跳转练习页面失败:', error);
+                // 如果模态框关闭失败，直接跳转
+                window.location.href = `/answer/${studentExercise.id}/`;
+            }
+        };
+    }
+}
+
+// 查看知识点详情
+function viewKnowledgePoint(knowledgePoint, subject) {
+    // 添加点击动画
+    const card = event.currentTarget;
+    card.style.transform = 'scale(0.95)';
+    setTimeout(() => {
+        card.style.transform = '';
+        showMessage(`正在查看知识点: ${knowledgePoint} (${subject})`, 'info');
+        // 实际项目中这里可以跳转到知识点详情页或开始相关练习
+        // window.location.href = `/practice/?knowledge=${encodeURIComponent(knowledgePoint)}&subject=${encodeURIComponent(subject)}`;
+    }, 150);
+}
+
+// 查看所有错题
+function viewAllMistakes() {
+    // 添加点击动画
+    const btn = event.currentTarget;
+    btn.style.transform = 'scale(0.95)';
+    setTimeout(() => {
+        btn.style.transform = '';
+        window.location.href = '/mistakes/';
+    }, 150);
+}
+
+// 格式化数字
+function formatNumber(num) {
+    return num.toLocaleString('zh-CN');
+}
+
+// 格式化百分比
+function formatPercentage(value) {
+    return `${Math.round(value)}%`;
+}
+
+// 格式化日期
+function formatDate(dateString) {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffTime = Math.abs(now - date);
+    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+    
+    if (diffDays === 0) return '今天';
+    if (diffDays === 1) return '昨天';
+    if (diffDays < 7) return `${diffDays}天前`;
+    if (diffDays < 30) return `${Math.floor(diffDays / 7)}周前`;
+    
+    return date.toLocaleDateString('zh-CN', { year: 'numeric', month: 'short', day: 'numeric' });
+}
+
+// 错误提示
+function showErrorMessage() {
+    const elements = ['subjectStats', 'weakKnowledgePoints', 'recentMistakes'];
+    elements.forEach(id => {
+        const container = document.getElementById(id);
+        container.innerHTML = `
+            <div class="text-center py-5">
+                <i class="fas fa-exclamation-triangle fa-3x mb-3 text-danger"></i>
+                <h5>数据加载失败</h5>
+                <p class="text-muted mb-4">请检查网络连接后重试</p>
+                <button class="btn-modern btn-primary" onclick="loadDashboardData()">
+                    <i class="fas fa-redo me-2"></i>重新加载
+                </button>
+            </div>
+        `;
+    });
+}
+
+// 消息提示
+function showMessage(message, type = 'info') {
+    const toast = document.createElement('div');
+    toast.className = `toast-modern toast-${type}`;
+    toast.innerHTML = `
+        <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'} me-2"></i>
+        ${message}
+    `;
+    document.body.appendChild(toast);
+    
+    setTimeout(() => toast.classList.add('show'), 100);
+    setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => document.body.removeChild(toast), 300);
+    }, 3000);
+}
+</script>
+{% endblock %}

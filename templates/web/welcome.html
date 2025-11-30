@@ -1,0 +1,710 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}欢迎 - 学生学习平台{% endblock %}
+
+{% block content %}
+<div class="hero-section">
+    <div class="hero-particles"></div>
+    <div class="container">
+        <div class="row align-items-center min-vh-100">
+            <div class="col-lg-6">
+                <div class="hero-content hero-content-animation">
+                    <div class="hero-badge mb-4">
+                        <span class="badge bg-light text-dark px-3 py-2">
+                            <i class="fas fa-star text-warning me-2"></i>AI驱动的智能学习平台
+                        </span>
+                    </div>
+                    <h1 class="hero-title mb-4">
+                        <span class="text-white">让学习更</span>
+                        <span class="text-warning">智能</span>
+                        <span class="text-white">高效</span>
+                    </h1>
+                    <p class="hero-subtitle text-white-90 mb-4">
+                        基于先进AI技术的智能错题分析与个性化练习系统
+                    </p>
+                    <p class="hero-description text-white-70 mb-5">
+                        采用深度学习与视觉识别技术，智能分析题目类型与知识点，<br>
+                        为每位学生量身定制学习路径，让学习效果显著提升
+                    </p>
+                    <div class="hero-actions d-flex gap-3 flex-wrap">
+                        <a href="{% url 'web:login' %}" class="btn btn-hero-primary btn-lg">
+                            <i class="fas fa-rocket me-2"></i>开启学习之旅
+                            <i class="fas fa-arrow-right ms-2"></i>
+                        </a>
+                        <a href="{% url 'web:register' %}" class="btn btn-hero-outline btn-lg">
+                            <i class="fas fa-user-plus me-2"></i>免费注册
+                        </a>
+                    </div>
+                    <div class="hero-stats mt-5">
+                        <div class="row g-4">
+                            <div class="col-4">
+                                <div class="stat-item text-center">
+                                    <div class="stat-number text-white">1000+</div>
+                                    <div class="stat-label-small text-white-70">AI识别题目</div>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="stat-item text-center">
+                                    <div class="stat-number text-white">95%</div>
+                                    <div class="stat-label-small text-white-70">识别准确率</div>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="stat-item text-center">
+                                    <div class="stat-number text-white">500+</div>
+                                    <div class="stat-label-small text-white-70">活跃学生</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="hero-visual hero-visual-animation">
+                    <div class="hero-card-container">
+                        <div class="hero-card hero-card-main">
+                            <div class="hero-icon-wrapper">
+                                <i class="fas fa-brain hero-icon-main"></i>
+                                <div class="icon-pulse"></div>
+                            </div>
+                            <h3 class="hero-card-title">AI智能识别</h3>
+                            <p class="hero-card-text">深度学习算法<br>精准理解题目内容</p>
+                        </div>
+                        <div class="hero-card hero-card-secondary">
+                            <div class="hero-icon-wrapper">
+                                <i class="fas fa-chart-line hero-icon-secondary"></i>
+                            </div>
+                            <h3 class="hero-card-title">学习分析</h3>
+                            <p class="hero-card-text">智能推荐练习<br>跟踪学习进度</p>
+                        </div>
+                        <div class="hero-card hero-card-tertiary">
+                            <div class="hero-icon-wrapper">
+                                <i class="fas fa-trophy hero-icon-tertiary"></i>
+                            </div>
+                            <h3 class="hero-card-title">成绩提升</h3>
+                            <p class="hero-card-text">个性化学习路径<br>显著提高成绩</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 功能特色 -->
+<div class="features-section py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12 text-center mb-5">
+                <h2 class="display-6 fw-bold">核心功能</h2>
+                <p class="lead text-muted">强大的AI技术，让学习更高效</p>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="feature-card text-center p-4 feature-card-animation">
+                    <div class="feature-icon bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                        <i class="fas fa-brain fa-2x"></i>
+                    </div>
+                    <h5>智能错题识别</h5>
+                    <p class="text-muted">
+                        支持图片和PDF上传，AI自动识别题目内容、学科、知识点，
+                        生成详细解题步骤和标准答案。
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="feature-card text-center p-4 feature-card-animation">
+                    <div class="feature-icon bg-success text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                        <i class="fas fa-dumbbell fa-2x"></i>
+                    </div>
+                    <h5>个性化练习推荐</h5>
+                    <p class="text-muted">
+                        基于错题率和知识点掌握程度，智能推荐最适合的练习题目，
+                        提高学习效率。
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="feature-card text-center p-4 feature-card-animation">
+                    <div class="feature-icon bg-info text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                        <i class="fas fa-chart-line fa-2x"></i>
+                    </div>
+                    <h5>学习数据分析</h5>
+                    <p class="text-muted">
+                        详细的学习统计，薄弱知识点分析，学习进度跟踪，
+                        帮助学生和家长全面了解学习状况。
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 使用流程 -->
+<div class="workflow-section py-5 bg-light">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12 text-center mb-5">
+                <h2 class="display-6 fw-bold">使用流程</h2>
+                <p class="lead text-muted">简单三步，开启智能学习之旅</p>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-4 text-center mb-4">
+                <div class="workflow-step">
+                    <div class="step-number">1</div>
+                    <h5>上传错题</h5>
+                    <p>拍照或上传PDF，AI自动识别和分析题目</p>
+                </div>
+            </div>
+
+            <div class="col-md-4 text-center mb-4">
+                <div class="workflow-step">
+                    <div class="step-number">2</div>
+                    <h5>强化练习</h5>
+                    <p>基于薄弱环节，AI推荐个性化练习题目</p>
+                </div>
+            </div>
+
+            <div class="col-md-4 text-center mb-4">
+                <div class="workflow-step">
+                    <div class="step-number">3</div>
+                    <h5>跟踪进步</h5>
+                    <p>查看学习数据，掌握程度，持续提升</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 统计数据 -->
+<div class="stats-section py-5">
+    <div class="container">
+        <div class="row text-center">
+            <div class="col-md-3 col-sm-6 mb-4">
+                <div class="stat-card">
+                    <div class="stat-number" style="color: #007bff;">
+                        <i class="fas fa-brain fa-3x mb-3"></i>
+                        1000+
+                    </div>
+                    <div class="stat-label">AI识别题目</div>
+                </div>
+            </div>
+
+            <div class="col-md-3 col-sm-6 mb-4">
+                <div class="stat-card">
+                    <div class="stat-number" style="color: #28a745;">
+                        <i class="fas fa-chart-line fa-3x mb-3"></i>
+                        95%
+                    </div>
+                    <div class="stat-label">识别准确率</div>
+                </div>
+            </div>
+
+            <div class="col-md-3 col-sm-6 mb-4">
+                <div class="stat-card">
+                    <div class="stat-number" style="color: #ffc107;">
+                        <i class="fas fa-users fa-3x mb-3"></i>
+                        500+
+                    </div>
+                    <div class="stat-label">活跃学生</div>
+                </div>
+            </div>
+
+            <div class="col-md-3 col-sm-6 mb-4">
+                <div class="stat-card">
+                    <div class="stat-number" style="color: #17a2b8;">
+                        <i class="fas fa-trophy fa-3x mb-3"></i>
+                        85%
+                    </div>
+                    <div class="stat-label">学习效果</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- CTA区域 -->
+<div class="cta-section py-5">
+    <div class="container text-center">
+        <h2 class="display-6 fw-bold mb-4">开启智能学习之旅</h2>
+        <p class="lead mb-4">让AI技术助力你的学习，快速提升成绩</p>
+        <div class="d-flex gap-3 justify-content-center flex-wrap">
+            <a href="{% url 'web:register' %}" class="btn btn-primary btn-lg">
+                <i class="fas fa-user-plus me-2"></i>立即注册
+            </a>
+            <a href="/api/" class="btn btn-outline-light btn-lg">
+                <i class="fas fa-code me-2"></i>查看API
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+/* Hero Section - Modern Design */
+.hero-section {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    position: relative;
+    overflow: hidden;
+}
+
+.hero-particles {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image:
+        radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 40% 40%, rgba(120, 119, 198, 0.2) 0%, transparent 50%);
+    animation: particleFloat 20s ease-in-out infinite;
+}
+
+@keyframes particleFloat {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    33% { transform: translateY(-20px) rotate(1deg); }
+    66% { transform: translateY(-10px) rotate(-1deg); }
+}
+
+.hero-badge {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeInUp 0.8s ease-out 0.2s forwards;
+}
+
+.hero-title {
+    font-size: 3.5rem;
+    font-weight: 800;
+    line-height: 1.2;
+    margin-bottom: 1.5rem;
+    opacity: 0;
+    transform: translateY(30px);
+    animation: fadeInUp 0.8s ease-out 0.4s forwards;
+}
+
+.hero-subtitle {
+    font-size: 1.5rem;
+    font-weight: 300;
+    margin-bottom: 1.5rem;
+    opacity: 0;
+    transform: translateY(30px);
+    animation: fadeInUp 0.8s ease-out 0.6s forwards;
+}
+
+.hero-description {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    opacity: 0;
+    transform: translateY(30px);
+    animation: fadeInUp 0.8s ease-out 0.8s forwards;
+}
+
+.hero-actions {
+    opacity: 0;
+    transform: translateY(30px);
+    animation: fadeInUp 0.8s ease-out 1s forwards;
+}
+
+.hero-stats {
+    opacity: 0;
+    transform: translateY(30px);
+    animation: fadeInUp 0.8s ease-out 1.2s forwards;
+}
+
+.btn-hero-primary {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    border: none;
+    color: white;
+    padding: 1rem 2rem;
+    font-weight: 600;
+    border-radius: 50px;
+    transition: all 0.3s ease;
+    box-shadow: 0 10px 30px rgba(40, 167, 69, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-hero-primary::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.5s ease;
+}
+
+.btn-hero-primary:hover::before {
+    left: 100%;
+}
+
+.btn-hero-primary:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 40px rgba(40, 167, 69, 0.4);
+}
+
+.btn-hero-outline {
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid rgba(255, 255, 255, 0.8);
+    color: white;
+    padding: 1rem 2rem;
+    font-weight: 600;
+    border-radius: 50px;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+}
+
+.btn-hero-outline:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: white;
+    transform: translateY(-3px);
+    box-shadow: 0 15px 40px rgba(255, 255, 255, 0.2);
+}
+
+.hero-visual {
+    position: relative;
+    height: 600px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.hero-card-container {
+    position: relative;
+    width: 100%;
+    max-width: 400px;
+    height: 500px;
+}
+
+.hero-card {
+    position: absolute;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    border-radius: 25px;
+    padding: 2.5rem;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+    text-align: center;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.hero-card:hover {
+    transform: translateY(-10px) scale(1.02);
+    box-shadow: 0 35px 70px rgba(0, 0, 0, 0.3);
+}
+
+.hero-card-main {
+    z-index: 3;
+    width: 280px;
+    height: 320px;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(240, 240, 255, 0.95) 100%);
+}
+
+.hero-card-secondary {
+    z-index: 2;
+    width: 260px;
+    height: 300px;
+    left: -10%;
+    top: 20%;
+    transform: rotate(-8deg);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(230, 230, 250, 0.9) 100%);
+}
+
+.hero-card-tertiary {
+    z-index: 1;
+    width: 260px;
+    height: 300px;
+    right: -10%;
+    bottom: 20%;
+    transform: rotate(8deg);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(220, 220, 240, 0.9) 100%);
+}
+
+.hero-icon-wrapper {
+    position: relative;
+    width: 100px;
+    height: 100px;
+    margin: 0 auto 1.5rem;
+}
+
+.hero-icon-main {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 3rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.hero-icon-secondary {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 3rem;
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.hero-icon-tertiary {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 3rem;
+    background: linear-gradient(135deg, #ffc107 0%, #ff6b6b 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.icon-pulse {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    opacity: 0.1;
+    animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0% { transform: translate(-50%, -50%) scale(0.8); opacity: 0.3; }
+    50% { transform: translate(-50%, -50%) scale(1.2); opacity: 0.1; }
+    100% { transform: translate(-50%, -50%) scale(0.8); opacity: 0.3; }
+}
+
+.hero-card-title {
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: #333;
+}
+
+.hero-card-text {
+    font-size: 0.95rem;
+    color: #666;
+    line-height: 1.6;
+}
+
+.stat-item {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeInUp 0.6s ease-out forwards;
+}
+
+.stat-item:nth-child(1) { animation-delay: 1.4s; }
+.stat-item:nth-child(2) { animation-delay: 1.6s; }
+.stat-item:nth-child(3) { animation-delay: 1.8s; }
+
+.stat-number {
+    font-size: 2rem;
+    font-weight: 800;
+    line-height: 1;
+}
+
+.stat-label-small {
+    font-size: 0.85rem;
+    font-weight: 500;
+    margin-top: 0.5rem;
+}
+
+@keyframes fadeInUp {
+    0% {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Text opacity classes */
+.text-white-90 { opacity: 0.9; }
+.text-white-70 { opacity: 0.7; }
+
+/* Features Section */
+.feature-card {
+    background: white;
+    border-radius: 15px;
+    padding: 2rem;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+    transition: all 0.3s ease;
+    height: 100%;
+}
+
+.feature-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+}
+
+.feature-icon {
+    margin: 0 auto;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+}
+
+.feature-card:hover .feature-icon {
+    transform: scale(1.1);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+}
+
+/* Workflow Section */
+.workflow-step {
+    position: relative;
+    padding: 2rem;
+}
+
+.step-number {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin: 0 auto 1rem;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+/* Stats Section */
+.stat-card {
+    background: white;
+    border-radius: 15px;
+    padding: 2rem;
+    text-align: center;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+    transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+}
+
+.stat-number {
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+}
+
+.stat-label {
+    color: #6c757d;
+    font-weight: 500;
+}
+
+/* CTA Section */
+.cta-section {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.cta-section .btn-outline-light {
+    border-color: white;
+    color: white;
+}
+
+.cta-section .btn-outline-light:hover {
+    background-color: white;
+    color: #667eea;
+}
+
+/* Unique Animations for Welcome Page */
+.hero-content-animation {
+    opacity: 0;
+    transform: translateY(30px);
+    animation: fadeInUp 0.8s ease-out 0.3s forwards;
+    animation-fill-mode: forwards;
+}
+
+.hero-visual-animation {
+    opacity: 0;
+    transform: translateY(30px);
+    animation: fadeInUp 0.8s ease-out 0.5s forwards;
+    animation-fill-mode: forwards;
+}
+
+.feature-card-animation {
+    opacity: 0;
+    transform: translateY(30px);
+    animation: fadeInUp 0.8s ease-out forwards;
+    animation-fill-mode: forwards;
+}
+
+.feature-card-animation:nth-child(1) { animation-delay: 0.7s; }
+.feature-card-animation:nth-child(2) { animation-delay: 0.9s; }
+.feature-card-animation:nth-child(3) { animation-delay: 1.1s; }
+
+/* Responsive */
+@media (max-width: 768px) {
+    .display-4 {
+        font-size: 2.5rem;
+    }
+
+    .hero-section {
+        min-height: auto;
+        padding: 4rem 0;
+    }
+
+    .hero-content {
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+
+    .feature-card {
+        margin-bottom: 1.5rem;
+    }
+
+    .stat-card {
+        margin-bottom: 1.5rem;
+    }
+}
+</style>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Ensure elements stay visible after animations complete
+    const animatedElements = document.querySelectorAll('.hero-content-animation, .hero-visual-animation, .feature-card-animation');
+
+    animatedElements.forEach((element, index) => {
+        // Fallback: ensure elements are visible after animation duration
+        setTimeout(() => {
+            element.style.opacity = '1';
+            element.style.transform = 'translateY(0)';
+        }, 2000); // 2 seconds should be enough for all animations to complete
+    });
+
+    console.log('Welcome page loaded - animations handled by CSS with JS fallback');
+});
+</script>
+{% endblock %}

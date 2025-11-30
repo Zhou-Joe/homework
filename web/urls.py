@@ -1,0 +1,29 @@
+from django.urls import path
+from . import views
+
+app_name = 'web'
+
+urlpatterns = [
+    # 认证相关
+    path('login/', views.login_view, name='login'),
+    path('register/', views.register_view, name='register'),
+    path('logout/', views.logout_view, name='logout'),
+
+    # 主要页面
+    path('dashboard/', views.dashboard_view, name='dashboard'),
+    path('profile/', views.profile_view, name='profile'),
+    path('upload/', views.exercise_upload_view, name='exercise_upload'),
+    path('practice/', views.practice_view, name='practice_home'),
+    path('answer/<int:student_exercise_id>/', views.answer_exercise_view, name='answer_exercise'),
+    path('settings/', views.settings_view, name='settings'),
+    path('mistakes/', views.mistake_library_view, name='mistake_library'),
+
+    # 测试页面
+    path('test-math/', views.test_math_view, name='test_math'),
+
+    # 练习结果页面
+    path('practice-result/', views.practice_result_view, name='practice_result'),
+
+    # API根页面
+    path('', views.api_root_view, name='api_root'),
+]
