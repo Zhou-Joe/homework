@@ -1169,11 +1169,139 @@ def complete_practice_session(request, session_id):
         })
     except PracticeSession.DoesNotExist:
         return Response(
-            {'error': '练习会话不存在'}, 
+            {'error': '练习会话不存在'},
             status=status.HTTP_404_NOT_FOUND
         )
     except Exception as e:
         return Response(
-            {'error': f'完成练习会话失败: {str(e)}'}, 
+            {'error': f'完成练习会话失败: {str(e)}'},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def practice_stats(request):
+    """获取用户练习统计数据"""
+    try:
+        user = request.user
+
+        # 获取练习会话统计
+        sessions = PracticeSession.objects.filter(student=user)
+        total_sessions = sessions.count()
+
+        # 获取总题目数、正确答案数、总分数
+        total_questions = 0
+        correct_answers = 0
+        total_score = 0
+
+        for session in sessions:
+            total_questions += session.total_questions
+            correct_answers += session.correct_answers
+            total_score += session.score
+
+        # 计算准确率
+        accuracy_rate = (correct_answers / total_questions * 100) if total_questions > 0 else 0
+
+        # 计算平均响应时间（分钟）
+        avg_response_time = 0
+        if sessions.exists():
+            durations = [
+                (session.end_time - session.start_time).total_seconds() / 60
+                for session in sessions
+                if session.end_time and session.start_time
+            ]
+            avg_response_time = sum(durations) / len(durations) if durations else 0
+
+        return Response({
+            'total_exercises': total_questions,
+            'correct_answers': correct_answers,
+            'accuracy_rate': round(accuracy_rate, 2),
+            'total_score': total_score,
+            'total_practice_sessions': total_sessions,
+            'avg_response_time': round(avg_response_time, 2)
+        })
+
+    except Exception as e:
+        return Response(
+            {'error': f'获取统计数据失败: {str(e)}'},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def subject_stats(request):
+    """获取学科统计数据"""
+    try:
+        user = request.user
+
+        # 获取用户练习的所有学科统计
+        from exercises.models import Subject
+        from django.db.models import Count, Q
+
+        # 获取所有学科
+        subjects = Subject.objects.all()
+
+        subject_stats = []
+        for subject in subjects:
+            # 获取该学科相关的练习记录
+            practice_records = PracticeRecord.objects.filter(
+                session__student=user,
+                exercise__subject=subject
+            )
+
+            # 统计该学科的数据
+            total_questions = practice_records.count()
+            correct_answers = practice_records.filter(status='correct').count()
+            accuracy_rate = (correct_answers / total_questions * 100) if total_questions > 0 else 0
+
+            # 只显示有数据的学科
+            if total_questions > 0:
+                subject_stats.append({
+                    'id': subject.id,
+                    'subject_name': subject.name,  # 与前端字段名保持一致
+                    'total_questions': total_questions,
+                    'correct_answers': correct_answers,
+                    'accuracy_rate': round(accuracy_rate, 2)
+                })
+
+        return Response(subject_stats)
+
+    except Exception as e:
+        return Response(
+            {'error': f'获取学科统计失败: {str(e)}'},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def weak_knowledge_points(request):
+    """获取薄弱知识点"""
+    try:
+        user = request.user
+
+        # 获取用户的知识点掌握情况，掌握程度小于60的算薄弱
+        mastery_data = KnowledgePointMastery.objects.filter(
+            student=user,
+            mastery_level__lt=60.0
+        ).select_related('knowledge_point')
+
+        weak_points = []
+        for mastery in mastery_data:
+            weak_points.append({
+                'id': mastery.knowledge_point.id,
+                'name': mastery.knowledge_point.name,
+                'mastery_level': round(mastery.mastery_level, 2),
+                'accuracy_rate': round(mastery.accuracy_rate, 2),
+                'subject_name': mastery.knowledge_point.subject.name  # 添加学科名称
+            })
+
+        return Response(weak_points)
+
+    except Exception as e:
+        return Response(
+            {'error': f'获取薄弱知识点失败: {str(e)}'},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR
         )

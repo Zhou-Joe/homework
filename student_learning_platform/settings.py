@@ -16,10 +16,6 @@ from datetime import timedelta
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
-
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-jhlmm9832t0av_84ksk-9+d%1@ov#5-qt_(y-9o*yj7oyx9$0w'
 
@@ -28,9 +24,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['localhost', '127.0.0.1', '172.25.50.161', '0.0.0.0']
 
-
 # Application definition
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -79,13 +73,9 @@ TEMPLATES = [
     },
 ]
 
-
 WSGI_APPLICATION = 'student_learning_platform.wsgi.application'
 
-
 # Database
-# https://docs.djangoproject.com/en/4.2/ref/settings/#databases
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -93,49 +83,49 @@ DATABASES = {
     }
 }
 
-
 # Password validation
-# https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
-
-AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
-]
-
+AUTH_PASSWORD_VALIDATORS = []
 
 # Internationalization
-# https://docs.djangoproject.com/en/4.2/topics/i18n/
-
-LANGUAGE_CODE = 'en-us'
-
-TIME_ZONE = 'UTC'
-
+LANGUAGE_CODE = 'zh-hans'
+TIME_ZONE = 'Asia/Shanghai'
 USE_I18N = True
-
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/4.2/howto/static-files/
-
 STATIC_URL = 'static/'
+STATICFILES_DIRS = [
+    BASE_DIR / 'static',
+]
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 # Default primary key field type
-# https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
-
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# Django REST Framework 配置
+# Custom user model
+AUTH_USER_MODEL = 'accounts.User'
+
+# Login URLs
+LOGIN_URL = '/login/'
+LOGIN_REDIRECT_URL = '/dashboard/'
+LOGOUT_REDIRECT_URL = '/login/'
+
+# File upload configuration
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+
+# VL LLM API Configuration
+VLLM_API_CONFIG = {
+    'default_url': 'https://api.siliconflow.cn/v1/chat/completions',
+    'default_api_key': 'sk-hglnfzrlezgqtiionjdduvqrfmwfpjnkdksfizvnpseqvlwu',
+    'default_model': 'Qwen/Qwen3-VL-32B-Instruct',
+}
+
+# WeChat Mini Program Configuration
+WECHAT_APPID = 'wx1a2b3c4d5e6f7g8h9i0j7k'  # 替换为你的真实小程序AppID
+WECHAT_SECRET = 'a1b2c3d4e5f6g7h8i0j7k'  # 替换为你的真实AppSecret
+
+# Django REST Framework Configuration
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework_simplejwt.authentication.JWTAuthentication',
@@ -148,7 +138,17 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 20,
 }
 
-# CORS 配置
+# JWT Configuration
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=7),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=30),
+    'ROTATE_REFRESH_TOKENS': True,
+    'BLACKLIST_AFTER_ROTATION': True,
+    'ALGORITHM': 'HS256',
+    'SIGNING_KEY': 'your-secret-key-here',  # 生产环境应该使用环境变量
+}
+
+# CORS Configuration
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
@@ -162,416 +162,58 @@ CORS_ALLOW_ALL_ORIGINS = True  # 开发环境临时使用
 CORS_ALLOW_HEADERS = ['*']  # 允许所有请求头
 CORS_EXPOSE_HEADERS = ['*']  # 暴露所有响应头
 
-# 确保媒体文件不会被认证拦截
+# Ensure media files are not intercepted by authentication
 CORS_URLS_REGEX = r'^/.*$'
 
-SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(days=7),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=30),
-    'ROTATE_REFRESH_TOKENS': True,
-    'BLACKLIST_AFTER_ROTATION': True,
-    'ALGORITHM': 'HS256',
-    'SIGNING_KEY': 'your-secret-key-here',  # 生产环境应该使用环境变量
-}
-
-# 文件上传配置
-MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
-
-# VL LLM API 配置
-VLLM_API_CONFIG = {
-    'default_url': 'https://api.siliconflow.cn/v1/chat/completions',
-    'default_api_key': 'sk-hglnfzrlezgqtiionjdduvqrfmwfpjnkdksfizvnpseqvlwu',
-    'default_model': 'Qwen/Qwen3-VL-32B-Instruct',
-}
-
-# 中文配置
-LANGUAGE_CODE = 'zh-hans'
-TIME_ZONE = 'Asia/Shanghai'
-
-# 禁用密码验证以降低密码要求（根据需求）
-AUTH_PASSWORD_VALIDATORS = []
-
-# 自定义用户模型
-AUTH_USER_MODEL = 'accounts.User'
-
-# 登录URL配置
-LOGIN_URL = '/login/'
-LOGIN_REDIRECT_URL = '/dashboard/'
-LOGOUT_REDIRECT_URL = '/login/'
-
-# 静态文件配置
-STATIC_URL = '/static/'
-STATICFILES_DIRS = [
-    BASE_DIR / 'static',
-]
-STATIC_ROOT = BASE_DIR / 'staticfiles'
-
-# 开发环境下提供静态文件服务
-# 注意：这个配置在urls.py中处理
-
-# 调试模式
-DEBUG = True
-  # 匹配所有URL
-
-# JWT 配置
-from datetime import timedelta
-
-SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(days=7),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=30),
-    'ROTATE_REFRESH_TOKENS': True,
-    'BLACKLIST_AFTER_ROTATION': True,
-    'ALGORITHM': 'HS256',
-    'SIGNING_KEY': 'your-secret-key-here',  # 生产环境应该使用环境变量
-}
-
-# 文件上传配置
-MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
-
-# VL LLM API 配置
-VLLM_API_CONFIG = {
-    'default_url': 'https://api.siliconflow.cn/v1/chat/completions',
-    'default_api_key': 'sk-hglnfzrlezgqtiionjdduvqrfmwfpjnkdksfizvnpseqvlwu',
-    'default_model': 'Qwen/Qwen3-VL-32B-Instruct',
-}
-
-# 中文配置
-LANGUAGE_CODE = 'zh-hans'
-TIME_ZONE = 'Asia/Shanghai'
-
-# 禁用密码验证以降低密码要求（根据需求）
-AUTH_PASSWORD_VALIDATORS = []
-
-# 自定义用户模型
-AUTH_USER_MODEL = 'accounts.User'
-
-# 登录URL配置
-LOGIN_URL = '/login/'
-LOGIN_REDIRECT_URL = '/dashboard/'
-LOGOUT_REDIRECT_URL = '/login/'
-
-# 静态文件配置
-STATIC_URL = '/static/'
-STATICFILES_DIRS = [
-    BASE_DIR / 'static',
-]
-STATIC_ROOT = BASE_DIR / 'staticfiles'
-
-# 开发环境下提供静态文件服务
-# 注意：这个配置在urls.py中处理
-
-# 调试模式
+# Debug mode
 DEBUG = True
 
-
-# JWT 配置
-from datetime import timedelta
-
-SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(days=7),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=30),
-    'ROTATE_REFRESH_TOKENS': True,
-    'BLACKLIST_AFTER_ROTATION': True,
-    'ALGORITHM': 'HS256',
-    'SIGNING_KEY': 'your-secret-key-here',  # 生产环境应该使用环境变量
+# Logging configuration
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
+            'style': '{',
+        },
+        'simple': {
+            'format': '{levelname} {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose',
+            'level': 'DEBUG',
+        },
+        'file': {
+            'class': 'logging.FileHandler',
+            'filename': 'debug.log',
+            'formatter': 'verbose',
+            'level': 'DEBUG',
+        },
+    },
+    'root': {
+        'handlers': ['console', 'file'],
+        'level': 'DEBUG',
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console', 'file'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+        'django.request': {
+            'handlers': ['console', 'file'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+        'django.db.backends': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+    },
 }
-
-# 文件上传配置
-MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
-
-# VL LLM API 配置
-VLLM_API_CONFIG = {
-    'default_url': 'https://api.siliconflow.cn/v1/chat/completions',
-    'default_api_key': 'sk-hglnfzrlezgqtiionjdduvqrfmwfpjnkdksfizvnpseqvlwu',
-    'default_model': 'Qwen/Qwen3-VL-32B-Instruct',
-}
-
-# 中文配置
-LANGUAGE_CODE = 'zh-hans'
-TIME_ZONE = 'Asia/Shanghai'
-
-# 禁用密码验证以降低密码要求（根据需求）
-AUTH_PASSWORD_VALIDATORS = []
-
-# 自定义用户模型
-AUTH_USER_MODEL = 'accounts.User'
-
-# 登录URL配置
-LOGIN_URL = '/login/'
-LOGIN_REDIRECT_URL = '/dashboard/'
-LOGOUT_REDIRECT_URL = '/login/'
-
-# 静态文件配置
-STATIC_URL = '/static/'
-STATICFILES_DIRS = [
-    BASE_DIR / 'static',
-]
-STATIC_ROOT = BASE_DIR / 'staticfiles'
-
-# 开发环境下提供静态文件服务
-# 注意：这个配置在urls.py中处理
-
-# 调试模式
-DEBUG = True
-  # 匹配所有URL
-
-# JWT 配置
-from datetime import timedelta
-
-SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(days=7),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=30),
-    'ROTATE_REFRESH_TOKENS': True,
-    'BLACKLIST_AFTER_ROTATION': True,
-    'ALGORITHM': 'HS256',
-    'SIGNING_KEY': 'your-secret-key-here',  # 生产环境应该使用环境变量
-}
-
-# 文件上传配置
-MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
-
-# VL LLM API 配置
-VLLM_API_CONFIG = {
-    'default_url': 'https://api.siliconflow.cn/v1/chat/completions',
-    'default_api_key': 'sk-hglnfzrlezgqtiionjdduvqrfmwfpjnkdksfizvnpseqvlwu',
-    'default_model': 'Qwen/Qwen3-VL-32B-Instruct',
-}
-
-# 中文配置
-LANGUAGE_CODE = 'zh-hans'
-TIME_ZONE = 'Asia/Shanghai'
-
-# 禁用密码验证以降低密码要求（根据需求）
-AUTH_PASSWORD_VALIDATORS = []
-
-# 自定义用户模型
-AUTH_USER_MODEL = 'accounts.User'
-
-# 登录URL配置
-LOGIN_URL = '/login/'
-LOGIN_REDIRECT_URL = '/dashboard/'
-LOGOUT_REDIRECT_URL = '/login/'
-
-# 静态文件配置
-STATIC_URL = '/static/'
-STATICFILES_DIRS = [
-    BASE_DIR / 'static',
-]
-STATIC_ROOT = BASE_DIR / 'staticfiles'
-
-# 开发环境下提供静态文件服务
-# 注意：这个配置在urls.py中处理
-
-# 调试模式
-DEBUG = True
-
-
-from datetime import timedelta
-
-SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(days=7),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=30),
-    'ROTATE_REFRESH_TOKENS': True,
-    'BLACKLIST_AFTER_ROTATION': True,
-    'ALGORITHM': 'HS256',
-    'SIGNING_KEY': 'your-secret-key-here',  # 生产环境应该使用环境变量
-}
-
-# 文件上传配置
-MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
-
-# VL LLM API 配置
-VLLM_API_CONFIG = {
-    'default_url': 'https://api.siliconflow.cn/v1/chat/completions',
-    'default_api_key': 'sk-hglnfzrlezgqtiionjdduvqrfmwfpjnkdksfizvnpseqvlwu',
-    'default_model': 'Qwen/Qwen3-VL-32B-Instruct',
-}
-
-# 中文配置
-LANGUAGE_CODE = 'zh-hans'
-TIME_ZONE = 'Asia/Shanghai'
-
-# 禁用密码验证以降低密码要求（根据需求）
-AUTH_PASSWORD_VALIDATORS = []
-
-# 自定义用户模型
-AUTH_USER_MODEL = 'accounts.User'
-
-# 登录URL配置
-LOGIN_URL = '/login/'
-LOGIN_REDIRECT_URL = '/dashboard/'
-LOGOUT_REDIRECT_URL = '/login/'
-
-# 静态文件配置
-STATIC_URL = '/static/'
-STATICFILES_DIRS = [
-    BASE_DIR / 'static',
-]
-STATIC_ROOT = BASE_DIR / 'staticfiles'
-
-# 开发环境下提供静态文件服务
-# 注意：这个配置在urls.py中处理
-
-# 调试模式
-DEBUG = True
-  # 匹配所有URL
-
-# JWT 配置
-from datetime import timedelta
-
-SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(days=7),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=30),
-    'ROTATE_REFRESH_TOKENS': True,
-    'BLACKLIST_AFTER_ROTATION': True,
-    'ALGORITHM': 'HS256',
-    'SIGNING_KEY': 'your-secret-key-here',  # 生产环境应该使用环境变量
-}
-
-# 文件上传配置
-MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
-
-# VL LLM API 配置
-VLLM_API_CONFIG = {
-    'default_url': 'https://api.siliconflow.cn/v1/chat/completions',
-    'default_api_key': 'sk-hglnfzrlezgqtiionjdduvqrfmwfpjnkdksfizvnpseqvlwu',
-    'default_model': 'Qwen/Qwen3-VL-32B-Instruct',
-}
-
-# 中文配置
-LANGUAGE_CODE = 'zh-hans'
-TIME_ZONE = 'Asia/Shanghai'
-
-# 禁用密码验证以降低密码要求（根据需求）
-AUTH_PASSWORD_VALIDATORS = []
-
-# 自定义用户模型
-AUTH_USER_MODEL = 'accounts.User'
-
-# 登录URL配置
-LOGIN_URL = '/login/'
-LOGIN_REDIRECT_URL = '/dashboard/'
-LOGOUT_REDIRECT_URL = '/login/'
-
-# 静态文件配置
-STATIC_URL = '/static/'
-STATICFILES_DIRS = [
-    BASE_DIR / 'static',
-]
-STATIC_ROOT = BASE_DIR / 'staticfiles'
-
-# 开发环境下提供静态文件服务
-# 注意：这个配置在urls.py中处理
-
-# 调试模式
-DEBUG = True
-
-
-# JWT 配置
-from datetime import timedelta
-
-SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(days=7),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=30),
-    'ROTATE_REFRESH_TOKENS': True,
-    'BLACKLIST_AFTER_ROTATION': True,
-    'ALGORITHM': 'HS256',
-    'SIGNING_KEY': 'your-secret-key-here',  # 生产环境应该使用环境变量
-}
-
-# 文件上传配置
-MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
-
-# VL LLM API 配置
-VLLM_API_CONFIG = {
-    'default_url': 'https://api.siliconflow.cn/v1/chat/completions',
-    'default_api_key': 'sk-hglnfzrlezgqtiionjdduvqrfmwfpjnkdksfizvnpseqvlwu',
-    'default_model': 'Qwen/Qwen3-VL-32B-Instruct',
-}
-
-# 中文配置
-LANGUAGE_CODE = 'zh-hans'
-TIME_ZONE = 'Asia/Shanghai'
-
-# 禁用密码验证以降低密码要求（根据需求）
-AUTH_PASSWORD_VALIDATORS = []
-
-# 自定义用户模型
-AUTH_USER_MODEL = 'accounts.User'
-
-# 登录URL配置
-LOGIN_URL = '/login/'
-LOGIN_REDIRECT_URL = '/dashboard/'
-LOGOUT_REDIRECT_URL = '/login/'
-
-# 静态文件配置
-STATIC_URL = '/static/'
-STATICFILES_DIRS = [
-    BASE_DIR / 'static',
-]
-STATIC_ROOT = BASE_DIR / 'staticfiles'
-
-# 开发环境下提供静态文件服务
-# 注意：这个配置在urls.py中处理
-
-# 调试模式
-DEBUG = True
-  # 匹配所有URL
-
-# JWT 配置
-from datetime import timedelta
-
-SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(days=7),
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=30),
-    'ROTATE_REFRESH_TOKENS': True,
-    'BLACKLIST_AFTER_ROTATION': True,
-    'ALGORITHM': 'HS256',
-    'SIGNING_KEY': 'your-secret-key-here',  # 生产环境应该使用环境变量
-}
-
-# 文件上传配置
-MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
-
-# VL LLM API 配置
-VLLM_API_CONFIG = {
-    'default_url': 'https://api.siliconflow.cn/v1/chat/completions',
-    'default_api_key': 'sk-hglnfzrlezgqtiionjdduvqrfmwfpjnkdksfizvnpseqvlwu',
-    'default_model': 'Qwen/Qwen3-VL-32B-Instruct',
-}
-
-# 中文配置
-LANGUAGE_CODE = 'zh-hans'
-TIME_ZONE = 'Asia/Shanghai'
-
-# 禁用密码验证以降低密码要求（根据需求）
-AUTH_PASSWORD_VALIDATORS = []
-
-# 自定义用户模型
-AUTH_USER_MODEL = 'accounts.User'
-
-# 登录URL配置
-LOGIN_URL = '/login/'
-LOGIN_REDIRECT_URL = '/dashboard/'
-LOGOUT_REDIRECT_URL = '/login/'
-
-# 静态文件配置
-STATIC_URL = '/static/'
-STATICFILES_DIRS = [
-    BASE_DIR / 'static',
-]
-STATIC_ROOT = BASE_DIR / 'staticfiles'
-
-# 开发环境下提供静态文件服务
-# 注意：这个配置在urls.py中处理
-
-# 调试模式
-DEBUG = True

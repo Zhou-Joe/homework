@@ -116,3 +116,63 @@ class UserUpdateSerializer(serializers.ModelSerializer):
             return value
             
         raise serializers.ValidationError("年级无效")
+
+
+class WechatLoginSerializer(serializers.Serializer):
+    """微信登录序列化器"""
+    code = serializers.CharField(max_length=100, write_only=True)
+    user_info = serializers.DictField(write_only=True, required=False)
+
+    def validate(self, attrs):
+        code = attrs.get('code')
+        if not code:
+            raise serializers.ValidationError('微信授权码不能为空')
+        return attrs
+
+
+class WechatUserSerializer(serializers.ModelSerializer):
+    """微信用户信息序列化器"""
+    class Meta:
+        model = User
+        fields = ('id', 'username', 'wechat_nickname', 'wechat_avatar', 'wechat_unionid', 'login_way', 'user_type', 'created_at')
+        read_only_fields = ('id', 'username', 'login_way', 'user_type', 'created_at')
+
+
+class WechatBindSerializer(serializers.Serializer):
+    """微信绑定序列化器"""
+    code = serializers.CharField(max_length=100, write_only=True)
+    password = serializers.CharField(write_only=True, required=False)
+
+    def validate(self, attrs):
+        code = attrs.get('code')
+        if not code:
+            raise serializers.ValidationError('微信授权码不能为空')
+        return attrs
+
+
+class UnifiedLoginSerializer(serializers.Serializer):
+    """统一登录序列化器 - 支持密码登录和微信登录"""
+    login_type = serializers.ChoiceField(choices=['password', 'wechat'], required=True)
+
+    # 密码登录字段
+    username = serializers.CharField(required=False)
+    password = serializers.CharField(required=False)
+
+    # 微信登录字段
+    code = serializers.CharField(required=False)
+    user_info = serializers.DictField(required=False)
+
+    def validate(self, attrs):
+        login_type = attrs.get('login_type')
+
+        if login_type == 'password':
+            username = attrs.get('username')
+            password = attrs.get('password')
+            if not username or not password:
+                raise serializers.ValidationError('密码登录需要用户名和密码')
+        elif login_type == 'wechat':
+            code = attrs.get('code')
+            if not code:
+                raise serializers.ValidationError('微信登录需要授权码')
+
+        return attrs

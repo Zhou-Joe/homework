@@ -1,0 +1,180 @@
+/* 强制明亮主题样式 */
+[data-theme="bright"] {
+    /* Background Colors */
+    --bg-main: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%) !important;
+    --bg-card: rgba(255, 255, 255, 0.7) !important;
+    --bg-card-hover: rgba(255, 255, 255, 0.9) !important;
+    --bg-alert: rgba(255, 255, 255, 0.8) !important;
+    --bg-alert-light: rgba(241, 245, 249, 0.8) !important;
+    --bg-upload: rgba(255, 255, 255, 0.6) !important;
+    --upload-hover-bg: rgba(255, 255, 255, 0.8) !important;
+
+    /* Text Colors */
+    --text-primary: #1e293b !important;
+    --text-secondary: #334155 !important;
+    --text-muted: #64748b !important;
+    --text-dark: #1e293b !important;
+    --text-gray: #64748b !important;
+
+    /* Border Colors */
+    --border-color: rgba(0, 0, 0, 0.1) !important;
+    --border-light: rgba(0, 0, 0, 0.05) !important;
+
+    /* Glass Effect */
+    --glass-bg: rgba(255, 255, 255, 0.7) !important;
+    --glass-border: rgba(255, 255, 255, 0.4) !important;
+    --glass-shadow: 0 8px 32px rgba(31, 38, 135, 0.15) !important;
+
+    /* Other */
+    --shadow-soft: 0 8px 32px rgba(31, 38, 135, 0.15) !important;
+    --shadow-hover: 0 12px 40px rgba(31, 38, 135, 0.25) !important;
+
+    /* Component Specific */
+    --upload-border: var(--color-info) !important;
+    --upload-bg: var(--bg-upload) !important;
+    --upload-hover-bg: var(--bg-upload-hover) !important;
+    --nav-bg: var(--bg-alert) !important;
+    --nav-text: var(--text-primary) !important;
+    --nav-hover: var(--bg-card-hover) !important;
+}
+
+[data-theme="bright"] body {
+    background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%) !important;
+    color: #1e293b !important;
+}
+
+[data-theme="bright"] .card {
+    background: rgba(255, 255, 255, 0.7) !important;
+    color: #1e293b !important;
+    border: 1px solid rgba(0, 0, 0, 0.1) !important;
+}
+
+[data-theme="bright"] .navbar {
+    background: rgba(255, 255, 255, 0.8) !important;
+}
+
+[data-theme="bright"] .glass-card {
+    background: rgba(255, 255, 255, 0.7) !important;
+}
+
+[data-theme="bright"] .upload-area {
+    background: rgba(255, 255, 255, 0.6) !important;
+    border-color: #06b6d4 !important;
+}
+
+[data-theme="bright"] .alert {
+    background: rgba(255, 255, 255, 0.8) !important;
+    color: #1e293b !important;
+}
+
+/* 强制应用明亮主题的直接样式 */
+[data-theme="bright"] body {
+    background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%) !important;
+    color: #1e293b !important;
+}
+
+[data-theme="bright"] .card {
+    background: rgba(255, 255, 255, 0.7) !important;
+    color: #1e293b !important;
+    border: 1px solid rgba(0, 0, 0, 0.1) !important;
+}
+
+[data-theme="bright"] .navbar {
+    background: rgba(255, 255, 255, 0.8) !important;
+}
+
+[data-theme="bright"] .glass-card {
+    background: rgba(255, 255, 255, 0.7) !important;
+}
+
+/* Dashboard和Mistakes页面特定样式 */
+[data-theme="bright"] .hero-section {
+    background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%) !important;
+}
+
+[data-theme="bright"] .glass-section {
+    background: rgba(255, 255, 255, 0.7) !important;
+    border: 1px solid rgba(255, 255, 255, 0.4) !important;
+    color: #1e293b !important;
+}
+
+[data-theme="bright"] .stat-card.neumorph {
+    background: rgba(255, 255, 255, 0.7) !important;
+    border: 1px solid rgba(0, 0, 0, 0.1) !important;
+    color: #1e293b !important;
+}
+
+[data-theme="bright"] .section-title {
+    color: #1e293b !important;
+}
+
+[data-theme="bright"] .stat-value {
+    color: #1e293b !important;
+}
+
+[data-theme="bright"] .stat-label {
+    color: #334155 !important;
+}
+
+[data-theme="bright"] .text-muted {
+    color: #64748b !important;
+}
+
+[data-theme="bright"] .badge-modern {
+    background: rgba(255, 255, 255, 0.8) !important;
+    color: #1e293b !important;
+    border: 1px solid rgba(0, 0, 0, 0.1) !important;
+}
+
+[data-theme="bright"] .btn-modern {
+    background: rgba(255, 255, 255, 0.8) !important;
+    color: #1e293b !important;
+    border: 1px solid rgba(0, 0, 0, 0.1) !important;
+}
+
+[data-theme="bright"] .btn-modern.btn-primary {
+    background: var(--color-primary) !important;
+    color: white !important;
+}
+
+[data-theme="bright"] .modal-content.glass-modal {
+    background: rgba(255, 255, 255, 0.8) !important;
+    color: #1e293b !important;
+}
+
+[data-theme="bright"] .action-card {
+    background: rgba(255, 255, 255, 0.7) !important;
+    color: #1e293b !important;
+    border: 1px solid rgba(0, 0, 0, 0.1) !important;
+}
+
+[data-theme="bright"] .subject-filter-btn {
+    background: rgba(255, 255, 255, 0.7) !important;
+    color: #1e293b !important;
+    border: 1px solid rgba(0, 0, 0, 0.1) !important;
+}
+
+[data-theme="bright"] .subject-filter-btn.active {
+    background: var(--color-primary) !important;
+    color: white !important;
+}
+
+[data-theme="bright"] .mistake-card {
+    background: rgba(255, 255, 255, 0.7) !important;
+    color: #1e293b !important;
+    border: 1px solid rgba(0, 0, 0, 0.1) !important;
+}
+
+[data-theme="bright"] .floating-shapes .shape {
+    background: rgba(255, 255, 255, 0.5) !important;
+}
+
+[data-theme="bright"] .user-avatar.modern-avatar {
+    background: linear-gradient(135deg, #667eea, #764ba2) !important;
+    color: white !important;
+}
+
+[data-theme="bright"] .pulse-icon {
+    background: linear-gradient(135deg, #667eea, #764ba2) !important;
+    color: white !important;
+}

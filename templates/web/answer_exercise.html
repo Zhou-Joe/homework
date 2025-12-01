@@ -319,9 +319,17 @@ function initializeUploadArea() {
 // 处理上传区域点击事件
 function handleUploadAreaClick(e) {
     // 排除按钮和按钮内的元素
-    if (!e.target.closest('button')) {
+    if (!e.target.closest('button') && !e.target.closest('input[type="file"]')) {
+        e.preventDefault();
+        e.stopPropagation();
+
         console.log('Upload area clicked (not button)');
-        document.getElementById('answerImage').click();
+
+        // 防止重复触发
+        const fileInput = document.getElementById('answerImage');
+        if (fileInput && document.activeElement !== fileInput) {
+            fileInput.click();
+        }
     }
 }
 

@@ -1384,12 +1384,12 @@ function updateSubjectStats(subjectStats) {
             <div class="subject-item">
                 <div class="subject-header">
                     <div class="subject-name">${subject.subject_name}</div>
-                    <div class="accuracy-badge" style="background: ${badgeColor}10; color: ${badgeColor};">
+                    <div class="accuracy-badge badge-${badgeClass}">
                         ${formatPercentage(accuracy)}
                     </div>
                 </div>
                 <div class="progress-custom">
-                    <div class="progress-fill" style="background: ${badgeColor}; width: ${accuracy}%"></div>
+                    <div class="progress-fill progress-${badgeClass}" style="width: ${accuracy}%"></div>
                 </div>
                 <div class="subject-meta">
                     <span><i class="fas fa-database me-1"></i>总题数: ${subject.total_exercises}</span>

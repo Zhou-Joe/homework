@@ -35,33 +35,86 @@ function initPage() {
 function initTheme() {
     // 从localStorage获取保存的主题
     const savedTheme = localStorage.getItem('theme') || 'dark';
-    setTheme(savedTheme);
-    
+    console.log('Initializing theme, saved theme:', savedTheme);
+
     // 绑定主题切换按钮事件
     const themeToggle = document.getElementById('themeToggle');
     if (themeToggle) {
         themeToggle.addEventListener('click', toggleTheme);
+        console.log('Theme toggle button found and bound');
+    } else {
+        console.log('Theme toggle button not found');
     }
+
+    // 绑定测试按钮事件 (用于调试)
+    const themeTestButton = document.getElementById('themeTestButton');
+    if (themeTestButton) {
+        // 移除可能存在的旧事件监听器
+        themeTestButton.removeEventListener('click', themeTestButton._themeHandler);
+        
+        // 创建新的事件处理器
+        themeTestButton._themeHandler = function() {
+            console.log('=== 测试主题切换按钮被点击 ===');
+            console.log('当前主题:', document.documentElement.getAttribute('data-theme') || 'dark');
+            toggleTheme(); // 使用相同的主题切换逻辑
+        };
+        
+        themeTestButton.addEventListener('click', themeTestButton._themeHandler);
+        console.log('测试按钮找到并绑定事件');
+    } else {
+        console.log('测试按钮未找到');
+    }
+
+    setTheme(savedTheme);
 }
 
 // 切换主题
 function toggleTheme() {
     const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
     const newTheme = currentTheme === 'dark' ? 'bright' : 'dark';
-    
+
+    console.log('Toggle theme: current =', currentTheme, 'new =', newTheme);
+
     setTheme(newTheme);
     localStorage.setItem('theme', newTheme);
+    
+    // 更新按钮图标
+    updateThemeToggleButton(newTheme);
+    
+    console.log('主题切换完成，保存为:', newTheme);
 }
 
 // 设置主题
 function setTheme(theme) {
+    console.log('Setting theme to:', theme);
+    const navbar = document.getElementById('mainNavbar');
+
     if (theme === 'bright') {
         document.documentElement.setAttribute('data-theme', 'bright');
         updateThemeToggleButton('bright');
+
+        // 在明亮主题下使用navbar-light
+        if (navbar) {
+            navbar.classList.remove('navbar-dark');
+            navbar.classList.add('navbar-light');
+            console.log('Switched to navbar-light');
+        }
     } else {
         document.documentElement.removeAttribute('data-theme');
         updateThemeToggleButton('dark');
+
+        // 在深色主题下使用navbar-dark
+        if (navbar) {
+            navbar.classList.remove('navbar-light');
+            navbar.classList.add('navbar-dark');
+            console.log('Switched to navbar-dark');
+        }
     }
+    
+    // 强制重新应用CSS变量
+    document.body.style.display = 'none';
+    document.body.offsetHeight; // 触发重排
+    document.body.style.display = '';
 }
 
 // 更新主题切换按钮

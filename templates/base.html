@@ -12,6 +12,7 @@
     
     {% block base_style_css %}
     <link href="{% static 'css/style.css' %}" rel="stylesheet">
+    <link href="{% static 'css/style-bright.css' %}" rel="stylesheet">
     {% endblock %}
 
     <!-- MathJax for formula rendering -->
@@ -35,7 +36,7 @@
 </head>
 <body>
     <!-- 导航栏 -->
-    <nav class="navbar navbar-expand-lg navbar-dark" style="background: rgba(0, 0, 0, 0.3) !important; backdrop-filter: blur(10px); border-bottom: 1px solid rgba(255, 255, 255, 0.1);">
+    <nav id="mainNavbar" class="navbar navbar-expand-lg navbar-dark navbar-main">
         <div class="container">
             <a class="navbar-brand" href="{% url 'web:dashboard' %}">
                 <i class="fas fa-graduation-cap me-2"></i>学生学习平台
@@ -76,8 +77,14 @@
                 <ul class="navbar-nav">
                     <!-- 主题切换按钮 -->
                     <li class="nav-item">
-                        <button class="nav-link" id="themeToggle" title="切换主题" style="background: none; border: none; cursor: pointer;">
-                            <i class="fas fa-moon" id="themeIcon"></i>
+                        <button class="nav-link theme-toggle-btn" id="themeToggle" title="切换主题" style="background: none; border: none; cursor: pointer; padding: 8px; margin: 0 5px; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease;">
+                            <i class="fas fa-moon" id="themeIcon" style="font-size: 16px;"></i>
+                        </button>
+                    </li>
+                    <!-- 测试按钮 (用于调试，可以删除) -->
+                    <li class="nav-item">
+                        <button class="nav-link theme-test-btn" id="themeTestButton" title="强制测试主题" style="background: red; border: none; cursor: pointer; color: white; padding: 8px 12px; margin: 0 5px; border-radius: 20px; font-size: 12px;">
+                            测试
                         </button>
                     </li>
                     

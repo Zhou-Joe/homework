@@ -45,7 +45,7 @@
                         <h5>点击选择文件或拖拽文件到此处</h5>
                         <p class="text-muted mb-3">支持 JPG、PNG、PDF 格式</p>
                         <input type="file" id="fileInput" accept=".jpg,.jpeg,.png,.gif,.pdf" style="display: none;">
-                        <button type="button" class="btn btn-outline-primary" onclick="event.stopPropagation(); document.getElementById('fileInput').click()">
+                        <button type="button" class="btn btn-outline-primary" onclick="handleButtonClick(event)">
                             <i class="fas fa-folder-open me-2"></i>选择文件
                         </button>
                     </div>
@@ -70,9 +70,9 @@
                 </div>
 
                 <!-- 图片预览 -->
-                <div id="imagePreview" class="mb-4" style="display: none; background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px;">
+                <div id="imagePreview" class="mb-4" style="display: none; background: var(--bg-upload); backdrop-filter: blur(10px); border: 1px solid var(--border-color); border-radius: 8px;">
                     <div class="p-3">
-                        <h6 class="mb-3" style="color: #ffffff;">图片预览</h6>
+                        <h6 class="mb-3" style="color: var(--text-primary);">图片预览</h6>
                         <div class="text-center">
                             <!-- 预览内容将通过JavaScript动态插入 -->
                         </div>
@@ -194,11 +194,25 @@ function initializeUploadArea() {
     // 拖拽事件已在main.js中处理
 }
 
+// 处理按钮点击事件
+function handleButtonClick(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    document.getElementById('fileInput').click();
+}
+
 // 处理上传区域点击事件，防止双击弹出
 function handleUploadAreaClick(e) {
     // 排除按钮和按钮内的元素
-    if (!e.target.closest('button')) {
-        document.getElementById('fileInput').click();
+    if (!e.target.closest('button') && !e.target.closest('input[type="file"]')) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        // 防止重复触发
+        const fileInput = document.getElementById('fileInput');
+        if (fileInput && document.activeElement !== fileInput) {
+            fileInput.click();
+        }
     }
 }
 
@@ -293,19 +307,94 @@ async function uploadExercise() {
 
     try {
         const result = await uploadFile(selectedFile, '/exercises/upload/');
-        analysisData = result;
 
-        // 显示分析结果
-        showAnalysisResult(result);
-
-        showMessage('AI分析完成！', 'success');
+        // 检查是否为有效题目
+        if (result.is_valid_question === false) {
+            // 显示无效题目提示
+            showInvalidResult(result);
+            showMessage(result.rejection_reason || '图片内容不是有效的学生错题', 'warning');
+        } else {
+            // 有效题目，保存数据并显示分析结果
+            analysisData = result;
+            showAnalysisResult(result);
+            showMessage('AI分析完成！题目已识别', 'success');
+        }
 
     } catch (error) {
         console.error('上传失败:', error);
-        showMessage('上传失败：' + (error.message || '未知错误'), 'danger');
+
+        // 检查是否是无效题目响应
+        if (error.response && error.response.data && error.response.data.is_valid_question === false) {
+            const errorData = error.response.data;
+            showInvalidResult(errorData);
+            showMessage(errorData.rejection_reason || '图片内容不是有效的学生错题', 'warning');
+        } else {
+            showMessage('上传失败：' + (error.message || '未知错误'), 'danger');
+        }
     } finally {
         showLoading(false);
     }
+}
+
+// 显示无效题目结果
+function showInvalidResult(data) {
+    // 隐藏分析结果区域
+    document.getElementById('analysisResult').style.display = 'none';
+    document.getElementById('uploadSection').style.display = 'block';
+
+    // 创建无效题目提示区域
+    let invalidResultDiv = document.getElementById('invalidResult');
+    if (!invalidResultDiv) {
+        invalidResultDiv = document.createElement('div');
+        invalidResultDiv.id = 'invalidResult';
+        invalidResultDiv.className = 'card border-warning mt-4';
+
+        const uploadSection = document.getElementById('uploadSection');
+        uploadSection.parentNode.insertBefore(invalidResultDiv, uploadSection);
+    }
+
+    const result = data.analysis || data;
+    const rejectionReason = result.rejection_reason || '图片内容不符合学习题目的要求';
+
+    invalidResultDiv.innerHTML = `
+        <div class="card-header bg-warning text-dark">
+            <h5 class="mb-0">
+                <i class="fas fa-exclamation-triangle me-2"></i>AI识别结果
+            </h5>
+        </div>
+        <div class="card-body">
+            <div class="alert alert-warning" role="alert">
+                <h6><i class="fas fa-info-circle me-2"></i>识别结果说明</h6>
+                <p class="mb-2">AI系统判断上传的图片不是有效的学生错题。</p>
+                <p class="mb-0"><strong>拒绝原因：</strong>${rejectionReason}</p>
+            </div>
+
+            <div class="alert alert-info" role="alert">
+                <h6><i class="fas fa-lightbulb me-2"></i>建议</h6>
+                <ul class="mb-0">
+                    <li>请确保图片包含清晰的学校作业题目、练习题或考试题</li>
+                    <li>图片应包含数学题、语文题、英语题等学科题目</li>
+                    <li>避免上传风景照、人物照、聊天记录等无关内容</li>
+                    <li>如需上传其他数学题目，请确保是当前需要解答的错题</li>
+                </ul>
+            </div>
+
+            <div class="text-center">
+                <button type="button" class="btn btn-outline-primary" onclick="resetUpload()">
+                    <i class="fas fa-redo me-2"></i>重新上传
+                </button>
+                <button type="button" class="btn btn-outline-secondary ms-2" onclick="clearFile()">
+                    <i class="fas fa-times me-2"></i>清除文件
+                </button>
+            </div>
+        </div>
+    `;
+
+    // 显示无效题目提示区域
+    invalidResultDiv.style.display = 'block';
+
+    // 滚动到提示区域
+    invalidResultDiv.scrollIntoView({ behavior: 'smooth' });
 }
 
 // 显示分析结果
@@ -345,6 +434,12 @@ function showAnalysisResult(data) {
     // 标准答案
     const correctAnswer = document.getElementById('correctAnswer');
     correctAnswer.innerHTML = `<strong>${result.correct_answer || '未生成标准答案'}</strong>`;
+
+    // 隐藏无效题目提示区域
+    const invalidResultDiv = document.getElementById('invalidResult');
+    if (invalidResultDiv) {
+        invalidResultDiv.style.display = 'none';
+    }
 
     // 显示结果区域
     document.getElementById('analysisResult').style.display = 'block';
@@ -489,24 +584,24 @@ function formatFileSize(bytes) {
 <style>
 /* 上传区域样式 */
 .upload-area {
-    border: 3px dashed #007bff;
+    border: 3px dashed var(--upload-border);
     border-radius: 15px;
     padding: 3rem 2rem;
     text-align: center;
-    background: linear-gradient(135deg, #f8f9ff 0%, #e6f3ff 100%);
+    background: var(--upload-bg);
     transition: all 0.3s ease;
     cursor: pointer;
 }
 
 .upload-area:hover {
-    border-color: #0056b3;
-    background: linear-gradient(135deg, #e6f3ff 0%, #cce7ff 100%);
+    border-color: var(--upload-border);
+    background: var(--upload-hover-bg);
     transform: translateY(-2px);
 }
 
 .upload-area.dragover {
-    border-color: #0056b3;
-    background: linear-gradient(135deg, #e6f3ff 0%, #cce7ff 100%);
+    border-color: var(--upload-border);
+    background: var(--upload-hover-bg);
     transform: scale(1.02);
 }
 

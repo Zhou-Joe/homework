@@ -189,7 +189,7 @@
         <div class="row text-center">
             <div class="col-md-3 col-sm-6 mb-4">
                 <div class="stat-card">
-                    <div class="stat-number" style="color: #007bff;">
+                    <div class="stat-number" style="color: var(--color-primary);">
                         <i class="fas fa-brain fa-3x mb-3"></i>
                         1000+
                     </div>
@@ -199,7 +199,7 @@
 
             <div class="col-md-3 col-sm-6 mb-4">
                 <div class="stat-card">
-                    <div class="stat-number" style="color: #28a745;">
+                    <div class="stat-number" style="color: var(--color-success);">
                         <i class="fas fa-chart-line fa-3x mb-3"></i>
                         95%
                     </div>
@@ -209,7 +209,7 @@
 
             <div class="col-md-3 col-sm-6 mb-4">
                 <div class="stat-card">
-                    <div class="stat-number" style="color: #ffc107;">
+                    <div class="stat-number" style="color: var(--color-warning);">
                         <i class="fas fa-users fa-3x mb-3"></i>
                         500+
                     </div>
@@ -219,7 +219,7 @@
 
             <div class="col-md-3 col-sm-6 mb-4">
                 <div class="stat-card">
-                    <div class="stat-number" style="color: #17a2b8;">
+                    <div class="stat-number" style="color: var(--color-info);">
                         <i class="fas fa-trophy fa-3x mb-3"></i>
                         85%
                     </div>
@@ -251,7 +251,7 @@
 <style>
 /* Hero Section - Modern Design */
 .hero-section {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, var(--color-primary) 0%, #764ba2 100%);
     min-height: 100vh;
     position: relative;
     overflow: hidden;
@@ -322,7 +322,7 @@
 }
 
 .btn-hero-primary {
-    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    background: linear-gradient(135deg, var(--color-success) 0%, #20c997 100%);
     border: none;
     color: white;
     padding: 1rem 2rem;
@@ -448,7 +448,7 @@
     left: 50%;
     transform: translate(-50%, -50%);
     font-size: 3rem;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, var(--color-primary) 0%, #764ba2 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -460,7 +460,7 @@
     left: 50%;
     transform: translate(-50%, -50%);
     font-size: 3rem;
-    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    background: linear-gradient(135deg, var(--color-success) 0%, #20c997 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -472,7 +472,7 @@
     left: 50%;
     transform: translate(-50%, -50%);
     font-size: 3rem;
-    background: linear-gradient(135deg, #ffc107 0%, #ff6b6b 100%);
+    background: linear-gradient(135deg, var(--color-warning) 0%, #ff6b6b 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -486,7 +486,7 @@
     width: 120px;
     height: 120px;
     border-radius: 50%;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, var(--color-primary) 0%, #764ba2 100%);
     opacity: 0.1;
     animation: pulse 2s ease-in-out infinite;
 }
@@ -501,12 +501,12 @@
     font-size: 1.3rem;
     font-weight: 700;
     margin-bottom: 1rem;
-    color: #333;
+    color: var(--text-primary);
 }
 
 .hero-card-text {
     font-size: 0.95rem;
-    color: #666;
+    color: var(--text-secondary);
     line-height: 1.6;
 }
 
@@ -583,7 +583,7 @@
     width: 60px;
     height: 60px;
     border-radius: 50%;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, var(--color-primary) 0%, #764ba2 100%);
     color: white;
     display: flex;
     align-items: center;
@@ -616,13 +616,13 @@
 }
 
 .stat-label {
-    color: #6c757d;
+    color: var(--text-muted);
     font-weight: 500;
 }
 
 /* CTA Section */
 .cta-section {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, var(--color-primary) 0%, #764ba2 100%);
     color: white;
 }
 
@@ -633,7 +633,7 @@
 
 .cta-section .btn-outline-light:hover {
     background-color: white;
-    color: #667eea;
+    color: var(--color-primary);
 }
 
 /* Unique Animations for Welcome Page */

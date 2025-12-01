@@ -1,3 +1,4 @@
+import os
 from rest_framework import generics, status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
@@ -154,7 +155,15 @@ class StudentExerciseListView(generics.ListCreateAPIView):
     pagination_class = None  # 禁用分页，返回所有结果
 
     def get_queryset(self):
-        queryset = StudentExercise.objects.filter(student=self.request.user)
+        # 获取用户可访问的题目
+        accessible_exercises = Exercise.get_accessible_exercises_for_user(self.request.user)
+
+        # 查询学生自己的错题记录，但限制为可访问的题目
+        queryset = StudentExercise.objects.filter(
+            student=self.request.user,
+            exercise__in=accessible_exercises
+        )
+
         subject_id = self.request.query_params.get('subject')
         is_mistake = self.request.query_params.get('is_mistake')
 
@@ -174,13 +183,44 @@ class StudentExerciseListView(generics.ListCreateAPIView):
 @permission_classes([IsAuthenticated])
 def student_mistakes(request):
     """获取学生错题"""
-    student_exercises = StudentExercise.objects.filter(
-        student=request.user,
-        is_mistake=True
-    ).order_by('-upload_time')
+    try:
+        # 获取用户可访问的题目
+        accessible_exercises = Exercise.get_accessible_exercises_for_user(request.user)
 
-    serializer = StudentExerciseSerializer(student_exercises, many=True)
-    return Response(serializer.data)
+        # 查询学生自己的错题记录，但限制为可访问的题目
+        student_exercises = StudentExercise.objects.filter(
+            student=request.user,
+            is_mistake=True,
+            exercise__in=accessible_exercises
+        ).order_by('-upload_time')
+
+        serializer = StudentExerciseSerializer(student_exercises, many=True)
+        return Response(serializer.data)
+    except Exception as e:
+        import traceback
+        print(f"获取学生错题失败: {str(e)}")
+        print(f"错误详情: {traceback.format_exc()}")
+        return Response(
+            {'error': f'获取错题列表失败: {str(e)}'}, 
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+
+
+class ExerciseListView(generics.ListAPIView):
+    """题目列表视图 - 根据用户权限过滤"""
+    serializer_class = ExerciseSerializer
+    permission_classes = [IsAuthenticated]
+    pagination_class = None  # 禁用分页，返回所有结果
+
+    def get_queryset(self):
+        # 获取用户可访问的题目
+        return Exercise.get_accessible_exercises_for_user(self.request.user)
+
+    def get_serializer_context(self):
+        """添加request到序列化器上下文"""
+        context = super().get_serializer_context()
+        context['request'] = self.request
+        return context
 
 
 @api_view(['POST'])
@@ -193,6 +233,16 @@ def upload_exercise(request):
         if not image_file:
             return Response({'error': '请上传图片文件'}, status=status.HTTP_400_BAD_REQUEST)
 
+        # 验证文件类型
+        allowed_extensions = ['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp']
+        file_ext = os.path.splitext(image_file.name)[1].lower()
+        if file_ext not in allowed_extensions:
+            return Response({'error': '请上传图片文件（支持jpg、jpeg、png、gif、bmp、webp格式）'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # 验证文件大小（10MB）
+        if image_file.size > 10 * 1024 * 1024:
+            return Response({'error': '图片文件大小不能超过10MB'}, status=status.HTTP_400_BAD_REQUEST)
+
         # 获取用户年级
         student_grade_level = request.user.grade_level
 
@@ -200,7 +250,17 @@ def upload_exercise(request):
         vllm_service = VLLMService()
         analysis_result = vllm_service.analyze_exercise(image_file, student_grade_level)
 
-        # 创建或获取习题记录
+        # 检查AI是否识别为有效题目
+        if not analysis_result.get('is_valid_question', False):
+            # 不是有效题目，不保存到数据库，返回拒绝原因
+            return Response({
+                'message': '图片未识别为有效的学生错题',
+                'is_valid_question': False,
+                'rejection_reason': analysis_result.get('rejection_reason', '图片内容不符合学习题目的要求'),
+                'analysis': analysis_result
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        # 是有效题目，创建或获取习题记录
         exercise = _create_or_update_exercise(analysis_result, request.user, image_file)
 
         # 创建学生错题记录
@@ -221,7 +281,8 @@ def upload_exercise(request):
         exercise.save()
 
         return Response({
-            'message': '习题上传分析成功',
+            'message': '错题上传分析成功',
+            'is_valid_question': True,
             'exercise_id': exercise.id,
             'student_exercise_id': student_exercise.id,
             'analysis': analysis_result
@@ -243,6 +304,16 @@ def analyze_student_answer(request):
 
         if not answer_image:
             return Response({'error': '缺少答案图片'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # 验证文件类型
+        allowed_extensions = ['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp']
+        file_ext = os.path.splitext(answer_image.name)[1].lower()
+        if file_ext not in allowed_extensions:
+            return Response({'error': '请上传图片文件（支持jpg、jpeg、png、gif、bmp、webp格式）'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # 验证文件大小（10MB）
+        if answer_image.size > 10 * 1024 * 1024:
+            return Response({'error': '图片文件大小不能超过10MB'}, status=status.HTTP_400_BAD_REQUEST)
 
         if not exercise_id and not student_exercise_id:
             return Response({'error': '缺少习题ID或学生习题ID'}, status=status.HTTP_400_BAD_REQUEST)
@@ -437,8 +508,9 @@ def _create_or_update_exercise(analysis_result, user, image_file):
             answer_text=analysis_result.get('correct_answer', ''),
             answer_steps=analysis_result.get('answer_steps', ''),
             subject=subject,
-            grade_level=user.grade_level,
+            grade_level=user.grade_level,  # 关联用户当前年级
             difficulty=analysis_result.get('difficulty', 'medium'),
+            visibility='private',  # 用户上传的错题默认为私人可见
             created_by=user
         )
 
@@ -500,10 +572,19 @@ class StudentExerciseDetailView(generics.RetrieveAPIView):
 
 
 class ExerciseDetailView(generics.RetrieveAPIView):
-    """习题详情视图"""
-    queryset = Exercise.objects.all()
+    """习题详情视图 - 检查权限"""
     serializer_class = ExerciseSerializer
     permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        # 只返回用户可访问的题目
+        return Exercise.get_accessible_exercises_for_user(self.request.user)
+
+    def get_serializer_context(self):
+        """添加request到序列化器上下文"""
+        context = super().get_serializer_context()
+        context['request'] = self.request
+        return context
 
 
 @api_view(['GET'])

@@ -648,9 +648,24 @@ function searchUsers() {
 </script>
 
 <style>
+:root {
+    /* Text colors */
+    --text-primary: #1e293b;
+    --text-secondary: #64748b;
+    --text-muted: #94a3b8;
+    --text-white: #ffffff;
+
+    /* Background colors */
+    --bg-card: #e2e8f0;
+    --bg-skeleton-light: #f1f5f9;
+
+    /* Colors */
+    --color-primary: #007bff;
+}
+
 /* 设置页面样式 */
 .sidebar-menu .nav-link {
-    color: #495057;
+    color: var(--text-secondary);
     padding: 0.75rem 1rem;
     border-radius: 6px;
     margin-bottom: 0.25rem;
@@ -659,8 +674,8 @@ function searchUsers() {
 
 .sidebar-menu .nav-link:hover,
 .sidebar-menu .nav-link.active {
-    background-color: #007bff;
-    color: white;
+    background-color: var(--color-primary);
+    color: var(--text-white);
 }
 
 /* 卡片统计 */
@@ -671,7 +686,7 @@ function searchUsers() {
 /* 表格样式 */
 .table code {
     font-size: 0.9rem;
-    background-color: #f8f9fa;
+    background-color: var(--bg-skeleton-light);
     padding: 0.2rem 0.4rem;
     border-radius: 0.25rem;
 }
@@ -686,11 +701,11 @@ function searchUsers() {
 .empty-state {
     text-align: center;
     padding: 3rem 1rem;
-    color: #6c757d;
+    color: var(--text-muted);
 }
 
 .empty-state i {
-    color: #dee2e6;
+    color: var(--bg-skeleton-light);
 }
 
 /* 响应式调整 */

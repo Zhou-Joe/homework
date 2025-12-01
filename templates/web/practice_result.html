@@ -188,6 +188,153 @@
     </div>
 </div>
 
+<style>
+:root {
+    /* Text colors */
+    --text-primary: #1e293b;
+    --text-secondary: #64748b;
+    --text-muted: #94a3b8;
+    --text-white: #ffffff;
+
+    /* Background colors */
+    --bg-card: #e2e8f0;
+    --bg-card-light: #dbeafe;
+
+    /* Glass effect backgrounds */
+    --glass-content-light: rgba(255, 255, 255, 0.6);
+    --glass-content-medium: rgba(255, 255, 255, 0.7);
+    --glass-content-heavy: rgba(255, 255, 255, 0.8);
+
+    /* Border colors */
+    --border-light: rgba(0, 0, 0, 0.05);
+    --border-medium: rgba(0, 0, 0, 0.1);
+
+    /* Color backgrounds */
+    --bg-primary-light: rgba(99, 102, 241, 0.1);
+    --bg-success-light: rgba(16, 185, 129, 0.1);
+    --bg-danger-light: rgba(239, 68, 68, 0.1);
+    --bg-warning-light: rgba(245, 158, 11, 0.1);
+    --bg-info-light: rgba(6, 182, 212, 0.1);
+}
+
+/* 修复模态框背景和文字颜色 */
+.modal-content {
+    background: linear-gradient(135deg, var(--glass-content-heavy) 0%, var(--glass-content-medium) 100%) !important;
+    backdrop-filter: blur(20px) !important;
+    border: 1px solid var(--border-light) !important;
+    color: var(--text-primary) !important;
+}
+
+.modal-header {
+    background: var(--glass-content-light) !important;
+    border-bottom: 1px solid var(--border-light) !important;
+    color: var(--text-primary) !important;
+}
+
+.modal-title {
+    color: var(--text-primary) !important;
+    font-weight: 600;
+}
+
+.modal-body {
+    color: var(--text-primary) !important;
+    background: var(--glass-content-light) !important;
+    border-radius: 8px !important;
+    padding: 20px !important;
+    line-height: 1.6 !important;
+}
+
+.modal-footer {
+    background: var(--glass-content-light) !important;
+    border-top: 1px solid var(--border-light) !important;
+}
+
+.btn-close {
+    color: var(--text-secondary) !important;
+    opacity: 1 !important;
+}
+
+.btn-close:hover {
+    color: var(--text-primary) !important;
+}
+
+/* 确保题目内容完整显示 */
+.question-content {
+    word-wrap: break-word !important;
+    white-space: pre-wrap !important;
+    max-height: none !important;
+    overflow: visible !important;
+    line-height: 1.6 !important;
+    font-size: 1.1em !important;
+    color: var(--text-primary) !important;
+    background: var(--glass-content-light) !important;
+    border-radius: 8px !important;
+    padding: 15px !important;
+    border: 1px solid var(--border-light) !important;
+    display: block !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    margin-bottom: 20px !important;
+    clear: both !important;
+}
+
+.answer-content {
+    word-wrap: break-word !important;
+    white-space: pre-wrap !important;
+    max-height: none !important;
+    overflow: visible !important;
+    line-height: 1.6 !important;
+    font-size: 1.1em !important;
+    color: var(--text-primary) !important;
+    background: var(--glass-content-light) !important;
+    border-radius: 8px !important;
+    padding: 15px !important;
+    border: 1px solid var(--border-light) !important;
+    display: block !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    margin-bottom: 20px !important;
+    clear: both !important;
+}
+
+/* 强制每个section分行 */
+.mb-3 {
+    margin-bottom: 25px !important;
+    clear: both !important;
+    width: 100% !important;
+    display: block !important;
+}
+
+.mb-3 h5 {
+    display: block !important;
+    margin-bottom: 15px !important;
+    width: 100% !important;
+}
+
+/* 强制题目内容和答案分开 */
+.modal-body .row {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 20px !important;
+}
+
+.modal-body .row > div {
+    width: 100% !important;
+    flex: none !important;
+    margin-bottom: 20px !important;
+}
+
+.modal-body .border.rounded {
+    width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+/* 隐藏解题步骤 */
+.answer-steps {
+    display: none !important;
+}
+</style>
+
 <script>
 // 全局变量
 let practiceSession = null;
@@ -235,7 +382,7 @@ async function loadPracticeResult() {
             return;
         }
 
-        // 显示加载中状态
+        // 显示加载状态
         document.getElementById('questionList').innerHTML = `
             <div class="text-center py-5">
                 <div class="spinner-border text-primary" role="status"></div>
@@ -367,7 +514,7 @@ function displayQuestionList() {
         const questionNumber = index + 1;
 
         // 获取知识点和考点信息
-        let knowledgeInfo = '通用题';
+        let knowledgeInfo = '通用题目';
         if (record.exercise && record.exercise.knowledge_points) {
             const kps = record.exercise.knowledge_points;
             if (kps.length > 0) {
@@ -390,7 +537,7 @@ function displayQuestionList() {
         let statusBadge = '';
         let listItemClass = '';
         let dataStatus = '';
-        
+
         if (isPending) {
             statusBadge = '<span class="badge bg-warning">AI老师在分析</span>';
             listItemClass = 'list-group-item-warning';
@@ -406,8 +553,7 @@ function displayQuestionList() {
         }
 
         html += `
-            <div class="list-group-item ${listItemClass}
-                     question-item" data-status="${dataStatus}" data-record-id="${record.id}">
+            <div class="list-group-item ${listItemClass} question-item" data-status="${dataStatus}" data-record-id="${record.id}">
                 <div class="row align-items-center">
                     <div class="col-md-1">
                         <span class="badge bg-primary fs-6">${questionNumber}</span>
@@ -426,7 +572,7 @@ function displayQuestionList() {
                         <small class="text-muted">${responseTime}</small>
                     </div>
                     <div class="col-md-1">
-                        <button class="btn btn-sm btn-outline-info" onclick="showQuestionDetail(${index})" 
+                        <button class="btn btn-sm btn-outline-info" onclick="showQuestionDetail(${index})"
                                 ${isPending ? 'disabled title="AI分析中，请稍后查看"' : ''}>
                             <i class="fas fa-eye"></i>
                         </button>
@@ -608,7 +754,6 @@ function showQuestionDetail(index) {
                 </div>
             </div>
         </div>
-
     `;
 
     content.innerHTML = html;
@@ -671,7 +816,7 @@ function loadQuestionContent(index, record) {
                     // 显示题目图片
                     if (exerciseData.question_image) {
                         contentHtml += `
-                            <div class="mb-3" style="background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; padding: 15px;">
+                            <div class="mb-3" style="background: var(--glass-content-medium); backdrop-filter: blur(10px); border: 1px solid var(--border-light); border-radius: 8px; padding: 15px;">
                                 <img src="${exerciseData.question_image}" class="img-fluid rounded" alt="题目">
                             </div>
                         `;
@@ -680,9 +825,9 @@ function loadQuestionContent(index, record) {
                     // 显示题目文字
                     if (exerciseData.question_text) {
                         contentHtml += `
-                            <div class="mb-3 p-3 rounded" style="background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); color: #ffffff; line-height: 1.6;">
-                                <h5 style="color: #ffffff; margin-bottom: 15px;">题目内容</h5>
-                                <div class="question-content" style="color: rgba(255, 255, 255, 0.9); font-size: 1.1em;">${exerciseData.question_text}</div>
+                            <div class="mb-3 p-3 rounded" style="background: var(--glass-content-medium); backdrop-filter: blur(10px); border: 1px solid var(--border-light); color: var(--text-primary); line-height: 1.6;">
+                                <h5 style="color: var(--text-primary); margin-bottom: 15px;">题目内容</h5>
+                                <div class="question-content" style="color: var(--text-primary);">${exerciseData.question_text}</div>
                             </div>
                         `;
                     }
@@ -690,14 +835,14 @@ function loadQuestionContent(index, record) {
                     // 显示标准答案
                     if (exerciseData.answer_text) {
                         contentHtml += `
-                            <div class="mb-3 p-3 rounded" style="background: linear-gradient(135deg, rgba(40, 167, 69, 0.1) 0%, rgba(34, 139, 34, 0.1) 100%); backdrop-filter: blur(10px); border: 1px solid rgba(40, 167, 69, 0.2); border-radius: 8px; color: #ffffff;">
-                                <h5 style="color: #ffffff; margin-bottom: 15px;">标准答案</h5>
-                                <div class="question-content" style="color: rgba(255, 255, 255, 0.9); font-size: 1.1em;">${exerciseData.answer_text}</div>
+                            <div class="mb-3 p-3 rounded" style="background: var(--bg-success-light); backdrop-filter: blur(10px); border: 1px solid var(--border-medium); border-radius: 8px; color: var(--text-primary);">
+                                <h5 style="color: var(--text-primary); margin-bottom: 15px;">标准答案</h5>
+                                <div class="question-content" style="color: var(--text-primary);">${exerciseData.answer_text}</div>
                             </div>
                         `;
                     }
 
-                    // 调试：确保内容div存在
+                    // 尝试：确保内容div存在
                     if (contentDiv) {
                         contentDiv.innerHTML = contentHtml;
                         console.log(`Updated content for question ${index}, contentDiv exists:`, !!contentDiv);
@@ -733,20 +878,20 @@ function loadQuestionContent(index, record) {
                         const recordData = practiceRecords[index];
                         if (recordData && recordData.exercise) {
                             fallbackContent = `
-                                <div class="p-3 rounded" style="background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1);">
+                                <div class="p-3 rounded" style="background: var(--glass-content-medium); backdrop-filter: blur(10px); border: 1px solid var(--border-light);">
                                     ${recordData.exercise_question_text ?
                                         `<div class="mb-3">
-                                            <strong style="color: #ffffff; display: block; margin-bottom: 15px;">题目内容</strong>
+                                            <strong style="color: var(--text-primary); display: block; margin-bottom: 15px;">题目内容</strong>
                                             <div class="p-3 rounded mt-2 question-content">${recordData.exercise_question_text}</div>
                                         </div>` : ''
                                     }
                                     ${recordData.exercise_correct_answer ?
                                         `<div class="mb-3">
-                                            <strong style="color: #ffffff; display: block; margin-bottom: 15px;">标准答案</strong>
-                                            <div class="p-3 rounded mt-2" style="background: linear-gradient(135deg, rgba(40, 167, 69, 0.1) 0%, rgba(34, 139, 34, 0.1) 100%); backdrop-filter: blur(10px); border: 1px solid rgba(40, 167, 69, 0.2); border-radius: 8px; color: rgba(255, 255, 255, 0.9); font-size: 1.1em;">${recordData.exercise_correct_answer}</div>
+                                            <strong style="color: var(--text-primary); display: block; margin-bottom: 15px;">标准答案</strong>
+                                            <div class="p-3 rounded mt-2" style="background: var(--bg-success-light); backdrop-filter: blur(10px); border: 1px solid var(--border-medium); border-radius: 8px; color: var(--text-primary);">${recordData.exercise_correct_answer}</div>
                                         </div>` : ''
                                     }
-                                        </div>
+                                    </div>
                             `;
                         } else {
                             fallbackContent = `
@@ -784,12 +929,12 @@ function loadQuestionContent(index, record) {
 function startAutoRefresh() {
     // 获取当前会话ID
     const urlParams = new URLSearchParams(window.location.search);
-    sessionId = urlParams.get('session_id') || localStorage.getItem('last_practice_session');
-    
+    const sessionId = urlParams.get('session_id') || localStorage.getItem('last_practice_session');
+
     if (!sessionId) {
         return;
     }
-    
+
     // 每3秒检查一次AI分析状态
     autoRefreshInterval = setInterval(async () => {
         try {
@@ -803,30 +948,30 @@ function startAutoRefresh() {
 // 检查AI分析状态
 async function checkAnalysisStatus() {
     if (!sessionId) return;
-    
+
     try {
         // 获取分析状态
         const statusResponse = await apiRequest(`/practice/sessions/${sessionId}/analysis-status/`);
-        
+
         if (statusResponse.analysis_complete) {
             // AI分析完成，停止自动刷新并重新加载数据
             stopAutoRefresh();
             await loadPracticeResult();
             showMessage('AI分析已完成！', 'success');
         }
-        
+
         // 更新pending计数
         const pendingCountElement = document.getElementById('pendingCount');
         if (pendingCountElement) {
             pendingCountElement.textContent = statusResponse.pending_count;
         }
-        
+
         // 如果还有待分析的题目，更新显示
         if (statusResponse.pending_count > 0) {
             // 只更新有pending状态的题目显示
             updatePendingQuestions();
         }
-        
+
     } catch (error) {
         console.error('获取分析状态失败:', error);
     }
@@ -838,7 +983,7 @@ async function updatePendingQuestions() {
         // 重新加载答题记录
         const recordsResponse = await apiRequest(`/practice/records/?session_id=${sessionId}`);
         const newRecords = recordsResponse.results || recordsResponse;
-        
+
         // 检查是否有状态变化
         let hasChanges = false;
         newRecords.forEach((newRecord, index) => {
@@ -847,14 +992,14 @@ async function updatePendingQuestions() {
                 hasChanges = true;
             }
         });
-        
+
         // 如果有状态变化，更新显示
         if (hasChanges) {
             displayQuestionList();
             // 重新计算统计数据
             calculateStatistics();
         }
-        
+
     } catch (error) {
         console.error('更新pending题目失败:', error);
     }
@@ -878,126 +1023,6 @@ function startNewPractice() {
     stopAutoRefresh();
     window.location.href = '/practice/';
 }
-
 </script>
-
-<style>
-/* 修复模态框背景和文字颜色 */
-.modal-content {
-    background: linear-gradient(135deg, rgba(102, 126, 234, 0.95) 0%, rgba(118, 75, 162, 0.95) 100%) !important;
-    backdrop-filter: blur(20px) !important;
-    border: 1px solid rgba(255, 255, 255, 0.2) !important;
-    color: #ffffff !important;
-}
-
-.modal-header {
-    background: rgba(0, 0, 0, 0.2) !important;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
-    color: #ffffff !important;
-}
-
-.modal-title {
-    color: #ffffff !important;
-    font-weight: 600;
-}
-
-.modal-body {
-    color: #ffffff !important;
-    background: rgba(0, 0, 0, 0.1) !important;
-    border-radius: 8px !important;
-    padding: 20px !important;
-    line-height: 1.6 !important;
-}
-
-.modal-footer {
-    background: rgba(0, 0, 0, 0.2) !important;
-    border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
-}
-
-.btn-close {
-    color: rgba(255, 255, 255, 0.7) !important;
-    opacity: 1 !important;
-}
-
-.btn-close:hover {
-    color: #ffffff !important;
-}
-
-/* 确保题目内容完整显示 */
-.question-content {
-    word-wrap: break-word !important;
-    white-space: pre-wrap !important;
-    max-height: none !important;
-    overflow: visible !important;
-    line-height: 1.6 !important;
-    font-size: 1.1em !important;
-    color: rgba(255, 255, 255, 0.9) !important;
-    background: rgba(255, 255, 255, 0.05) !important;
-    border-radius: 8px !important;
-    padding: 15px !important;
-    border: 1px solid rgba(255, 255, 255, 0.1) !important;
-    display: block !important;
-    width: 100% !important;
-    box-sizing: border-box !important;
-    margin-bottom: 20px !important;
-    clear: both !important;
-}
-
-.answer-content {
-    word-wrap: break-word !important;
-    white-space: pre-wrap !important;
-    max-height: none !important;
-    overflow: visible !important;
-    line-height: 1.6 !important;
-    font-size: 1.1em !important;
-    color: rgba(255, 255, 255, 0.9) !important;
-    background: rgba(255, 255, 255, 0.05) !important;
-    border-radius: 8px !important;
-    padding: 15px !important;
-    border: 1px solid rgba(255, 255, 255, 0.1) !important;
-    display: block !important;
-    width: 100% !important;
-    box-sizing: border-box !important;
-    margin-bottom: 20px !important;
-    clear: both !important;
-}
-
-/* 强制每个section分行 */
-.mb-3 {
-    margin-bottom: 25px !important;
-    clear: both !important;
-    width: 100% !important;
-    display: block !important;
-}
-
-.mb-3 h5 {
-    display: block !important;
-    margin-bottom: 15px !important;
-    width: 100% !important;
-}
-
-/* 强制题目内容和答案分开 */
-.modal-body .row {
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 20px !important;
-}
-
-.modal-body .row > div {
-    width: 100% !important;
-    flex: none !important;
-    margin-bottom: 20px !important;
-}
-
-.modal-body .border.rounded {
-    width: 100% !important;
-    box-sizing: border-box !important;
-}
-
-/* 隐藏解题步骤 */
-.answer-steps {
-    display: none !important;
-}
-</style>
 
 {% endblock %}

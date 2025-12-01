@@ -1,0 +1,746 @@
+{% extends 'base.html' %}
+
+{% block title %}批量上传题目{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <h2 class="mb-4">批量上传题目</h2>
+
+            {% if not user.is_staff and not user.is_superuser %}
+            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                <strong>权限提示：</strong>此功能需要管理员权限才能使用。
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            {% endif %}
+
+            <!-- 功能导航 -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="btn-group w-100" role="group">
+                        <button type="button" class="btn btn-outline-primary active" id="uploadTab">
+                            <i class="fas fa-upload me-2"></i>上传识别
+                        </button>
+                        <button type="button" class="btn btn-outline-info" id="solveTab">
+                            <i class="fas fa-cogs me-2"></i>批量解答
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 上传区域 -->
+            <div id="uploadSection">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5><i class="fas fa-image me-2"></i>上传题目图片</h5>
+                    </div>
+                    <div class="card-body">
+                        <form id="uploadForm" enctype="multipart/form-data">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="gradeSelect" class="form-label">选择年级</label>
+                                        <select class="form-select" id="gradeSelect" required>
+                                            <option value="">请选择年级</option>
+                                            {% for value, label in grade_choices %}
+                                            <option value="{{ value }}">{{ label }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="imageInput" class="form-label">选择图片（可多选，最多10张）</label>
+                                        <input type="file" class="form-control" id="imageInput" accept="image/*" multiple required>
+                                    </div>
+                                </div>
+                                    </div>
+                                <div class="col-md-12">
+                                    <button type="submit" class="btn btn-primary w-100" id="analyzeBtn">
+                                        <i class="fas fa-search me-2"></i>开始识别题目
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- 进度条 -->
+                <div class="card mb-4 d-none" id="progressSection">
+                    <div class="card-header">
+                        <h5><i class="fas fa-spinner fa-spin me-2"></i>识别中...</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="progress mb-3">
+                            <div id="progressBar" class="progress-bar" role="progressbar" style="width: 0%"></div>
+                        </div>
+                        <p id="progressStatus">准备开始...</p>
+                    </div>
+                </div>
+
+                <!-- 分析结果区域 -->
+                <div class="card mb-4 d-none" id="analysisResult">
+                    <div class="card-header">
+                        <h5><i class="fas fa-check-circle me-2"></i>分析结果</h5>
+                    </div>
+                    <div class="card-body">
+                        <h6 id="resultCount" class="text-center mb-3"></h6>
+                        </div>
+                        <div id="questionsList">
+                            <!-- 题目列表将在这里显示 -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 操作按钮 -->
+                <div class="text-center d-none" id="saveSection">
+                    <button class="btn btn-success" id="saveBtn">
+                        <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                        保存全部题目
+                    </button>
+                    <button class="btn btn-secondary" id="saveSelectedBtn">
+                        保存选中题目
+                    </button>
+                    <button class="btn btn-secondary" id="resetBtn">重新上传</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 未解决题目列表 -->
+    <div class="row mt-5">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5>未解决题目列表</h5>
+                    <button class="btn btn-primary btn-sm" id="refreshUnsolvedBtn">
+                        <i class="fas fa-sync-alt"></i> 刷新列表
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div id="unsolvedExercises">
+                        <div class="text-center">
+                            <div class="spinner-border" role="status">
+                                <span class="visually-hidden">加载中...</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // 全局变量
+    let currentAnalysis = null;
+    let currentImages = [];
+
+    // DOM元素
+    const uploadForm = document.getElementById('uploadForm');
+    const imageInput = document.getElementById('imageInput');
+    const gradeSelect = document.getElementById('gradeSelect');
+    const analyzeBtn = document.getElementById('analyzeBtn');
+    const progressSection = document.getElementById('progressSection');
+    const progressBar = document.getElementById('progressBar');
+    const progressStatus = document.getElementById('progressStatus');
+    const analysisResult = document.getElementById('analysisResult');
+    const resultCount = document.getElementById('resultCount');
+    const questionsList = document.getElementById('questionsList');
+    const saveSection = document.getElementById('saveSection');
+    const saveBtn = document.getElementById('saveBtn');
+    const saveSelectedBtn = document.getElementById('saveSelectedBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const refreshUnsolvedBtn = document.getElementById('refreshUnsolvedBtn');
+    const unsolvedExercises = document.getElementById('unsolvedExercises');
+
+    // 标签页切换
+    const uploadTab = document.getElementById('uploadTab');
+    const solveTab = document.getElementById('solveTab');
+    const uploadSection = document.getElementById('uploadSection');
+
+    if (uploadTab && solveTab) {
+        uploadTab.addEventListener('click', function() {
+            uploadTab.classList.add('active', 'btn-primary');
+            uploadTab.classList.remove('btn-outline-primary');
+            solveTab.classList.remove('active', 'btn-info');
+            solveTab.classList.add('btn-outline-info');
+            uploadSection.style.display = 'block';
+        });
+
+        solveTab.addEventListener('click', function() {
+            solveTab.classList.add('active', 'btn-info');
+            solveTab.classList.remove('btn-outline-info');
+            uploadTab.classList.remove('active', 'btn-primary');
+            uploadTab.classList.add('btn-outline-primary');
+            uploadSection.style.display = 'none';
+            loadUnsolvedExercises();
+        });
+    }
+
+    // 图片上传处理
+    imageInput.addEventListener('change', function(e) {
+        const files = Array.from(e.target.files);
+        if (files.length > 10) {
+            alert('一次最多只能上传10张图片');
+            e.target.value = '';
+            return;
+        }
+        currentImages = files;
+    });
+
+    // 表单提交处理
+    uploadForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        if (!gradeSelect.value) {
+            alert('请选择年级');
+            return;
+        }
+
+        if (currentImages.length === 0) {
+            alert('请选择要上传的图片');
+            return;
+        }
+
+        await analyzeImages();
+    });
+
+    // 分析图片
+    async function analyzeImages() {
+        // 显示进度条
+        progressSection.classList.remove('d-none');
+        analysisResult.classList.add('d-none');
+        saveSection.classList.add('d-none');
+
+        // 禁用分析按钮
+        analyzeBtn.disabled = true;
+        analyzeBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>识别中...';
+
+        try {
+            const formData = new FormData();
+            currentImages.forEach(image => {
+                formData.append('images', image);
+            });
+            formData.append('grade_level', gradeSelect.value);
+
+            // 更新进度状态
+            updateProgress(10, '正在上传图片...');
+
+            const response = await fetch('/api/analyze-batch-exercise-advanced/', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken')
+                }
+            });
+
+            updateProgress(70, '正在分析题目内容...');
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const result = await response.json();
+            updateProgress(100, '分析完成！');
+
+            setTimeout(() => {
+                displayAnalysisResults(result);
+            }, 500);
+
+        } catch (error) {
+            console.error('分析失败:', error);
+            alert('分析失败: ' + error.message);
+            resetProgress();
+        } finally {
+            analyzeBtn.disabled = false;
+            analyzeBtn.innerHTML = '<i class="fas fa-search me-2"></i>开始识别题目';
+        }
+    }
+
+    // 更新进度条
+    function updateProgress(percent, status) {
+        progressBar.style.width = percent + '%';
+        progressStatus.textContent = status;
+    }
+
+    // 重置进度
+    function resetProgress() {
+        progressSection.classList.add('d-none');
+        progressBar.style.width = '0%';
+        progressStatus.textContent = '准备开始...';
+    }
+
+    // 显示分析结果
+    function displayAnalysisResults(result) {
+        currentAnalysis = result;
+
+        progressSection.classList.add('d-none');
+        analysisResult.classList.remove('d-none');
+        saveSection.classList.remove('d-none');
+
+        // 显示统计信息
+        const successRate = result.successful_analyses > 0 ?
+            Math.round((result.successful_analyses / result.total_files) * 100) : 0;
+
+        resultCount.innerHTML = `
+            <div class="alert alert-info">
+                <i class="fas fa-chart-bar me-2"></i>
+                <strong>分析统计：</strong>
+                共 ${result.total_files} 张图片，
+                成功识别 ${result.successful_analyses} 道题目，
+                失败 ${result.failed_analyses} 张，
+                成功率 ${successRate}%
+            </div>
+        `;
+
+        // 显示题目列表
+        questionsList.innerHTML = '';
+
+        result.results.forEach((item, index) => {
+            const questionCard = createQuestionCard(item, index);
+            questionsList.appendChild(questionCard);
+        });
+
+        // 滚动到结果区域
+        analysisResult.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // 创建题目卡片
+    function createQuestionCard(questionData, index) {
+        const col = document.createElement('div');
+        col.className = 'col-md-6 mb-3';
+
+        const isValid = questionData.is_valid_question;
+        const cardClass = isValid ? 'border-success' : 'border-secondary';
+        const headerClass = isValid ? 'bg-success text-white' : 'bg-secondary text-white';
+
+        col.innerHTML = `
+            <div class="card ${cardClass} h-100">
+                <div class="card-header ${headerClass} d-flex justify-content-between align-items-center">
+                    <h6 class="mb-0">
+                        <i class="fas ${isValid ? 'fa-check-circle' : 'fa-times-circle'} me-2"></i>
+                        ${questionData.file_name} (${isValid && questionData.questions ? questionData.questions.length : 0} 道题目)
+                    </h6>
+                    <div class="form-check">
+                        <input class="form-check-input file-checkbox" type="checkbox" value="${index}"
+                               id="file_${index}" ${isValid ? '' : 'disabled'}
+                               onchange="toggleFileQuestions(${index})">
+                        <label class="form-check-label" for="file_${index}">
+                            选择文件
+                        </label>
+                    </div>
+                </div>
+                <div class="card-body">
+                    ${isValid && questionData.questions && questionData.questions.length > 0 ? `
+                        <div class="question-content">
+                            ${questionData.questions.map((q, qIndex) => `
+                                <div class="question-item mb-3 p-2 border rounded">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <h6 class="mb-0"><strong>题目 ${qIndex + 1}：</strong>${q.title}</h6>
+                                        <div class="form-check">
+                                            <input class="form-check-input question-checkbox" type="checkbox"
+                                                   data-file="${index}" data-question="${qIndex}"
+                                                   id="question_${index}_${qIndex}">
+                                            <label class="form-check-label" for="question_${index}_${qIndex}">
+                                                选择
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <p><strong>学科：</strong>${q.subject}</p>
+                                    <p><strong>年级：</strong>${q.grade_level}</p>
+                                    <p><strong>难度：</strong>${getDifficultyText(q.difficulty)}</p>
+                                    <p><strong>题目内容：</strong></p>
+                                    <div class="question-text border p-2 rounded bg-light">
+                                        ${q.question_text}
+                                    </div>
+                                    ${q.knowledge_points && q.knowledge_points.length > 0 ? `
+                                        <p><strong>知识点：</strong>${q.knowledge_points.join(', ')}</p>
+                                    ` : ''}
+                                    ${q.exam_points && q.exam_points.length > 0 ? `
+                                        <p><strong>考点：</strong>${q.exam_points.join(', ')}</p>
+                                    ` : ''}
+                                </div>
+                            `).join('')}
+                        </div>
+                    ` : `
+                        <div class="text-center text-muted">
+                            <i class="fas fa-exclamation-triangle fa-2x mb-2"></i>
+                            <p>未识别到有效的题目内容</p>
+                            <p class="small">该图片可能不是题目图片或内容不清晰</p>
+                            ${questionData.rejection_reason ? `<p class="small text-danger">${questionData.rejection_reason}</p>` : ''}
+                        </div>
+                    `}
+                </div>
+            </div>
+        `;
+
+        return col;
+    }
+
+    // 获取难度文本
+    function getDifficultyText(difficulty) {
+        const difficultyMap = {
+            'easy': '简单',
+            'medium': '中等',
+            'hard': '困难'
+        };
+        return difficultyMap[difficulty] || difficulty;
+    }
+
+    // 保存全部题目
+    saveBtn.addEventListener('click', async function() {
+        if (!currentAnalysis || !currentAnalysis.results) {
+            alert('没有可保存的题目');
+            return;
+        }
+
+        // 收集所有有效题目
+        const allValidQuestions = [];
+        currentAnalysis.results.forEach(fileResult => {
+            if (fileResult.is_valid_question && fileResult.questions) {
+                fileResult.questions.forEach(question => {
+                    allValidQuestions.push(question);
+                });
+            }
+        });
+
+        if (allValidQuestions.length === 0) {
+            alert('没有有效的题目可以保存');
+            return;
+        }
+
+        console.log('准备保存全部题目:', allValidQuestions);
+        await saveQuestions(allValidQuestions);
+    });
+
+    // 保存选中题目
+    saveSelectedBtn.addEventListener('click', async function() {
+        if (!currentAnalysis || !currentAnalysis.results) {
+            alert('没有可保存的题目');
+            return;
+        }
+
+        const selectedQuestions = getSelectedQuestions();
+        if (selectedQuestions.length === 0) {
+            alert('请选择要保存的题目');
+            return;
+        }
+
+        await saveQuestions(selectedQuestions);
+    });
+
+    // 保存题目到后端
+    async function saveQuestions(selectedQuestions) {
+        // 禁用保存按钮
+        saveBtn.disabled = true;
+        saveSelectedBtn.disabled = true;
+        saveBtn.querySelector('.spinner-border').classList.remove('d-none');
+
+        try {
+            console.log('=== 开始保存题目 ===');
+            console.log('selectedQuestions类型:', typeof selectedQuestions);
+            console.log('selectedQuestions是数组:', Array.isArray(selectedQuestions));
+            console.log('selectedQuestions内容:', selectedQuestions);
+
+            // 确保selectedQuestions是数组
+            if (!Array.isArray(selectedQuestions)) {
+                console.error('selectedQuestions不是数组，尝试转换...');
+                // 如果是对象，尝试获取questions属性
+                if (selectedQuestions && selectedQuestions.questions) {
+                    selectedQuestions = selectedQuestions.questions;
+                    console.log('转换后的selectedQuestions:', selectedQuestions);
+                } else {
+                    throw new Error('选中的题目数据格式错误: 不是数组或questions属性');
+                }
+            }
+
+            if (selectedQuestions.length === 0) {
+                throw new Error('没有选择要保存的题目');
+            }
+
+            // 构建保存数据格式
+            console.log('开始构建保存数据...');
+            const saveData = {
+                batch_analysis: {
+                    results: selectedQuestions.map((question, index) => {
+                        console.log(`处理题目 ${index}:`, question);
+                        return {
+                            file_name: `保存的题目_${index + 1}`,
+                            is_valid_question: true,
+                            questions: [question]
+                        };
+                    })
+                }
+            };
+
+            console.log('发送到后端的数据:', JSON.stringify(saveData, null, 2));
+
+            const response = await fetch('/api/save-batch-exercise-advanced/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                body: JSON.stringify(saveData)
+            });
+
+            console.log('响应状态:', response.status);
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                console.error('响应错误:', errorText);
+                throw new Error(`HTTP error! status: ${response.status}, 内容: ${errorText}`);
+            }
+
+            const result = await response.json();
+            console.log('保存响应:', result);
+
+            // 显示保存结果
+            alert(`保存成功！\n保存数量: ${result.saved_count}\n失败数量: ${result.failed_count}`);
+
+            // 刷新未解决题目列表
+            if (solveTab.classList.contains('active')) {
+                loadUnsolvedExercises();
+            }
+
+            // 重置表单
+            resetForm();
+
+        } catch (error) {
+            console.error('保存失败详细错误:', error);
+            alert('保存失败: ' + error.message);
+        } finally {
+            saveBtn.disabled = false;
+            saveSelectedBtn.disabled = false;
+            saveBtn.querySelector('.spinner-border').classList.add('d-none');
+        }
+    }
+
+    // 重置表单
+    resetBtn.addEventListener('click', function() {
+        resetForm();
+    });
+
+    function resetForm() {
+        uploadForm.reset();
+        currentImages = [];
+        currentAnalysis = null;
+        resetProgress();
+        analysisResult.classList.add('d-none');
+        saveSection.classList.add('d-none');
+    }
+
+    // 加载未解决题目列表
+    async function loadUnsolvedExercises() {
+        unsolvedExercises.innerHTML = `
+            <div class="text-center">
+                <div class="spinner-border" role="status">
+                    <span class="visually-hidden">加载中...</span>
+                </div>
+            </div>
+        `;
+
+        try {
+            const response = await fetch('/api/get-unsolved-exercises/');
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const result = await response.json();
+            displayUnsolvedExercises(result.exercises || []);
+
+        } catch (error) {
+            console.error('加载未解决题目失败:', error);
+            unsolvedExercises.innerHTML = `
+                <div class="alert alert-danger">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    加载失败: ${error.message}
+                </div>
+            `;
+        }
+    }
+
+    // 显示未解决题目
+    function displayUnsolvedExercises(exercises) {
+        if (exercises.length === 0) {
+            unsolvedExercises.innerHTML = `
+                <div class="text-center text-muted">
+                    <i class="fas fa-check-circle fa-3x mb-3"></i>
+                    <p>暂无未解决的题目</p>
+                </div>
+            `;
+            return;
+        }
+
+        const html = exercises.map(exercise => `
+            <div class="col-md-6 col-lg-4 mb-3">
+                <div class="card h-100">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h6 class="mb-0">${exercise.title}</h6>
+                        <input type="checkbox" class="form-check-input" value="${exercise.id}">
+                    </div>
+                    <div class="card-body">
+                        <p><strong>学科：</strong>${exercise.subject_name}</p>
+                        <p><strong>年级：</strong>${exercise.grade_level}</p>
+                        <p><strong>难度：</strong>${getDifficultyText(exercise.difficulty)}</p>
+                        <div class="question-text small text-muted">
+                            ${exercise.question_text.substring(0, 100)}${exercise.question_text.length > 100 ? '...' : ''}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+
+        unsolvedExercises.innerHTML = `
+            <div class="row">
+                ${html}
+            </div>
+            <div class="text-center mt-3">
+                <button class="btn btn-success" id="solveSelectedBtn">
+                    <i class="fas fa-cogs me-2"></i>批量解答选中题目
+                </button>
+            </div>
+        `;
+
+        // 绑定批量解答按钮事件
+        const solveSelectedBtn = document.getElementById('solveSelectedBtn');
+        if (solveSelectedBtn) {
+            solveSelectedBtn.addEventListener('click', solveSelectedExercises);
+        }
+    }
+
+    // 刷新未解决题目列表
+    refreshUnsolvedBtn.addEventListener('click', function() {
+        loadUnsolvedExercises();
+    });
+
+    // 批量解答选中的题目
+    async function solveSelectedExercises() {
+        const checkboxes = unsolvedExercises.querySelectorAll('input[type="checkbox"]:checked');
+        if (checkboxes.length === 0) {
+            alert('请选择要解答的题目');
+            return;
+        }
+
+        // 获取选中题目的完整数据
+        const selectedExercises = Array.from(checkboxes).map(cb => {
+            const card = cb.closest('.card');
+            const exerciseData = {
+                id: parseInt(cb.value),
+                title: card.querySelector('h6').textContent.trim(),
+                subject: card.querySelector('p:nth-of-type(1)').textContent.replace('学科：', ''),
+                grade_level: card.querySelector('p:nth-of-type(2)').textContent.replace('年级：', ''),
+                question_text: card.querySelector('.question-text').textContent
+            };
+            return exerciseData;
+        });
+
+        if (!confirm(`确定要批量解答这 ${selectedExercises.length} 道题目吗？`)) {
+            return;
+        }
+
+        const btn = document.getElementById('solveSelectedBtn');
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>解答中...';
+
+        try {
+            const response = await fetch('/api/solve-exercise-batch-advanced/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                body: JSON.stringify({
+                    exercises: selectedExercises
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const result = await response.json();
+
+            alert(`批量解答完成！\n成功解答: ${result.successful_solutions}\n失败解答: ${result.failed_solutions}\n总计: ${result.total_exercises}`);
+
+            // 刷新列表
+            loadUnsolvedExercises();
+
+        } catch (error) {
+            console.error('批量解答失败:', error);
+            alert('批量解答失败: ' + error.message);
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fas fa-cogs me-2"></i>批量解答选中题目';
+        }
+    }
+
+    // 切换文件下的题目选择
+    function toggleFileQuestions(fileIndex) {
+        const fileCheckbox = document.getElementById(`file_${fileIndex}`);
+        const questionCheckboxes = document.querySelectorAll(`.question-checkbox[data-file="${fileIndex}"]`);
+
+        questionCheckboxes.forEach(checkbox => {
+            checkbox.checked = fileCheckbox.checked;
+        });
+    }
+
+    // 切换所有题目选择
+    function toggleAllQuestions() {
+        const selectAllCheckbox = document.getElementById('selectAllQuestions');
+        const fileCheckboxes = document.querySelectorAll('.file-checkbox');
+
+        fileCheckboxes.forEach(checkbox => {
+            checkbox.checked = selectAllCheckbox.checked;
+            const fileIndex = parseInt(checkbox.value);
+            toggleFileQuestions(fileIndex);
+        });
+    }
+
+    // 获取选中的题目
+    function getSelectedQuestions() {
+        const selectedQuestions = [];
+        const selectedQuestionCheckboxes = document.querySelectorAll('.question-checkbox:checked');
+
+        selectedQuestionCheckboxes.forEach(checkbox => {
+            const fileIndex = parseInt(checkbox.dataset.file);
+            const questionIndex = parseInt(checkbox.dataset.question);
+            const fileData = currentAnalysis.results[fileIndex];
+
+            if (fileData && fileData.questions && fileData.questions[questionIndex]) {
+                selectedQuestions.push(fileData.questions[questionIndex]);
+            }
+        });
+
+        return selectedQuestions;
+    }
+
+    // 获取CSRF token
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    // 初始化
+    loadUnsolvedExercises();
+});
+</script>
+{% endblock %}
