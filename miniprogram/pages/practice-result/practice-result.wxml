@@ -1,0 +1,156 @@
+<!--pages/practice-result/practice-result.wxml-->
+<view class="container">
+  <!-- AI分析状态提示 -->
+  <view class="analysis-status" wx:if="{{analysisStatus.isAnalyzing}}">
+    <view class="status-content">
+      <view class="loading-icon">
+        <view class="spinner"></view>
+      </view>
+      <view class="status-text">
+        <text class="status-title">AI分析进行中</text>
+        <text class="status-desc">老师正在认真分析您的答案，请稍候...</text>
+      </view>
+      <view class="status-count">
+        <text class="count-number">{{analysisStatus.pendingCount}}</text>
+        <text class="count-label">待分析</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 加载状态 -->
+  <view class="loading-container" wx:if="{{isLoading}}">
+    <view class="loading-spinner"></view>
+    <text class="loading-text">加载练习结果中...</text>
+  </view>
+
+  <!-- 主要内容 -->
+  <view class="content" wx:else>
+    <!-- 总体成绩卡片 -->
+    <view class="score-card">
+      <view class="score-header">
+        <text class="score-title">总体成绩</text>
+        <view class="score-icon">🏆</view>
+      </view>
+      <view class="score-content">
+        <view class="total-score">
+          <text class="score-number">{{totalScore}}</text>
+          <text class="score-unit">分</text>
+        </view>
+        <view class="score-stats">
+          <view class="stat-item">
+            <text class="stat-value correct">{{correctCount}}</text>
+            <text class="stat-label">答对</text>
+          </view>
+          <view class="stat-divider"></view>
+          <view class="stat-item">
+            <text class="stat-value total">{{totalCount}}</text>
+            <text class="stat-label">总题数</text>
+          </view>
+        </view>
+        <view class="progress-container">
+          <view class="progress-bar">
+            <view class="progress-fill" style="width: {{accuracyRate}}%"></view>
+          </view>
+          <text class="progress-text">正确率 {{accuracyRate}}%</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 统计信息 -->
+    <view class="stats-section">
+      <view class="stats-title">
+        <text>📊 练习统计</text>
+      </view>
+      <view class="stats-grid">
+        <view class="stat-card">
+          <view class="stat-icon">⏱️</view>
+          <view class="stat-info">
+            <text class="stat-number">{{totalTime}}</text>
+            <text class="stat-desc">分钟</text>
+          </view>
+          <text class="stat-label">总用时</text>
+        </view>
+        <view class="stat-card">
+          <view class="stat-icon">🔥</view>
+          <view class="stat-info">
+            <text class="stat-number">{{maxStreak}}</text>
+            <text class="stat-desc">题</text>
+          </view>
+          <text class="stat-label">连续正确</text>
+        </view>
+        <view class="stat-card">
+          <view class="stat-icon">🎯</view>
+          <view class="stat-info">
+            <text class="stat-number">{{knowledgeCount}}</text>
+            <text class="stat-desc">个</text>
+          </view>
+          <text class="stat-label">知识点覆盖</text>
+        </view>
+        <view class="stat-card">
+          <view class="stat-icon">📈</view>
+          <view class="stat-info">
+            <text class="stat-number">{{avgDifficulty}}</text>
+            <text class="stat-desc"></text>
+          </view>
+          <text class="stat-label">平均难度</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 答题详情 -->
+    <view class="questions-section">
+      <view class="section-header">
+        <text class="section-title">📝 答题详情</text>
+        <view class="section-subtitle">
+          <text class="completed-count">{{analysisStatus.completedCount}}</text>
+          <text class="separator">/</text>
+          <text class="total-count">{{totalCount}}</text>
+          <text class="completion-text">已完成</text>
+        </view>
+      </view>
+      
+      <view class="questions-list">
+        <view class="question-item" 
+              wx:for="{{practiceRecords}}" 
+              wx:key="id"
+              data-index="{{index}}"
+              bindtap="onViewQuestionDetail">
+          <view class="question-number">
+            <text class="number">{{index + 1}}</text>
+          </view>
+          <view class="question-info">
+            <text class="question-title">题目{{index + 1}}</text>
+            <text class="knowledge-info" wx:if="{{item.exercise && item.exercise.knowledge_points && item.exercise.knowledge_points.length > 0}}">
+              {{item.exercise.knowledge_points[0].name}}
+            </text>
+            <text class="knowledge-info" wx:else>通用题</text>
+          </view>
+          <view class="question-status">
+            <view class="status-badge status-{{item.status}}">
+              <text class="status-text">{{getStatusText(item.status)}}</text>
+            </view>
+          </view>
+          <view class="question-action" wx:if="{{item.status !== 'pending'}}">
+            <text class="action-icon">👁</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 操作按钮 -->
+    <view class="actions-section">
+      <button class="action-btn primary" bindtap="onRepractice">
+        <text class="btn-icon">🔄</text>
+        <text class="btn-text">再次练习</text>
+      </button>
+      <button class="action-btn secondary" bindtap="onViewHistory">
+        <text class="btn-icon">📚</text>
+        <text class="btn-text">练习历史</text>
+      </button>
+      <button class="action-btn tertiary" bindtap="onShareScore">
+        <text class="btn-icon">📤</text>
+        <text class="btn-text">分享成绩</text>
+      </button>
+    </view>
+  </view>
+</view>

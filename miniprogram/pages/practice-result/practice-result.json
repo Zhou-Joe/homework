@@ -1,0 +1,8 @@
+{
+  "navigationBarTitleText": "练习结果",
+  "navigationBarBackgroundColor": "#667eea",
+  "navigationBarTextStyle": "white",
+  "backgroundColor": "#667eea",
+  "enablePullDownRefresh": true,
+  "onReachBottomDistance": 50
+}

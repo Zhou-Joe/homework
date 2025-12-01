@@ -1,0 +1,116 @@
+/* 主题测试页面样式 */
+.container {
+  padding: 20rpx;
+  background: var(--bg-primary);
+  min-height: 100vh;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 40rpx;
+  padding: 40rpx 20rpx;
+  background: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-secondary) 100%);
+  border-radius: 20rpx;
+  color: var(--text-inverse);
+}
+
+.title {
+  display: block;
+  font-size: 40rpx;
+  font-weight: bold;
+  margin-bottom: 10rpx;
+}
+
+.subtitle {
+  display: block;
+  font-size: 26rpx;
+  opacity: 0.9;
+}
+
+.color-test {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+  margin-top: 20rpx;
+}
+
+.color-test text {
+  font-size: 28rpx;
+}
+
+.button-test {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+  margin-top: 20rpx;
+}
+
+.button-test .btn {
+  margin-bottom: 0;
+}
+
+.card-test {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+  margin-top: 20rpx;
+}
+
+.mini-card {
+  background: var(--bg-tertiary);
+  border-radius: 12rpx;
+  padding: 20rpx;
+  border: 1rpx solid var(--border-primary);
+}
+
+.card-title {
+  font-size: 28rpx;
+  font-weight: 500;
+  color: var(--text-primary);
+  margin-bottom: 8rpx;
+  display: block;
+}
+
+.card-desc {
+  font-size: 24rpx;
+  color: var(--text-secondary);
+  display: block;
+}
+
+.input {
+  margin-top: 20rpx;
+}
+
+.tag-test {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16rpx;
+  margin-top: 20rpx;
+}
+
+.avatar-test {
+  display: flex;
+  gap: 20rpx;
+  margin-top: 20rpx;
+}
+
+/* 响应式布局 */
+@media (min-width: 768rpx) {
+  .button-test {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .button-test .btn {
+    flex: 1;
+    min-width: 200rpx;
+  }
+
+  .card-test {
+    flex-direction: row;
+  }
+
+  .card-test .mini-card {
+    flex: 1;
+  }
+}

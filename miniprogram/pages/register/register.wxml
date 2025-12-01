@@ -1,0 +1,101 @@
+<view class="register-container">
+  <!-- Logo和标题 -->
+  <view class="logo-section">
+    <view class="logo">
+      <text class="logo-icon">📚</text>
+    </view>
+    <text class="app-title">注册账号</text>
+    <text class="app-subtitle">加入学生学习平台</text>
+  </view>
+
+  <!-- 注册表单 -->
+  <view class="register-form">
+    <view class="form-item">
+      <text class="label">用户名</text>
+      <input
+        class="input"
+        placeholder="请输入用户名"
+        value="{{username}}"
+        bindinput="onUsernameInput"
+        placeholder-class="placeholder"
+      />
+    </view>
+
+    <view class="form-item">
+      <text class="label">昵称</text>
+      <input
+        class="input"
+        placeholder="请输入昵称"
+        value="{{nickname}}"
+        bindinput="onNicknameInput"
+        placeholder-class="placeholder"
+      />
+    </view>
+
+    <view class="form-item">
+      <text class="label">密码</text>
+      <input
+        class="input"
+        placeholder="请输入密码"
+        value="{{password}}"
+        bindinput="onPasswordInput"
+        password="{{true}}"
+        placeholder-class="placeholder"
+      />
+    </view>
+
+    <view class="form-item">
+      <text class="label">确认密码</text>
+      <input
+        class="input"
+        placeholder="请再次输入密码"
+        value="{{passwordConfirm}}"
+        bindinput="onPasswordConfirmInput"
+        password="{{true}}"
+        placeholder-class="placeholder"
+      />
+    </view>
+
+    <view class="form-item">
+      <text class="label">出生日期</text>
+      <picker
+        mode="date"
+        value="{{birthDate}}"
+        bindchange="onBirthDateChange"
+        class="picker"
+      >
+        <view class="picker-text">
+          {{birthDate || '请选择出生日期'}}
+        </view>
+      </picker>
+    </view>
+
+    <view class="form-item">
+      <text class="label">年级</text>
+      <picker
+        range="{{gradeLevels}}"
+        value="{{gradeIndex}}"
+        bindchange="onGradeChange"
+        class="picker"
+      >
+        <view class="picker-text">
+          {{gradeLevels[gradeIndex] || '请选择年级'}}
+        </view>
+      </picker>
+    </view>
+
+    <button
+      class="register-btn"
+      bindtap="onRegister"
+      loading="{{isLoading}}"
+      disabled="{{isLoading}}"
+    >
+      {{isLoading ? '注册中...' : '注册'}}
+    </button>
+
+    <view class="login-link">
+      <text>已有账号？</text>
+      <navigator url="/pages/login/login" class="link">立即登录</navigator>
+    </view>
+  </view>
+</view>

@@ -1,0 +1,7 @@
+{
+  "navigationBarTitleText": "强化训练",
+  "usingComponents": {
+    "latex-renderer": "/components/latex-renderer/latex-renderer"
+  },
+  "enablePullDownRefresh": false
+}

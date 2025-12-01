@@ -1,0 +1,146 @@
+/* pages/register/register.wxss */
+.register-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-secondary) 100%);
+  padding: 40rpx;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* Logo区域 */
+.logo-section {
+  text-align: center;
+  margin-bottom: 60rpx;
+}
+
+.logo {
+  width: 120rpx;
+  height: 120rpx;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20rpx;
+  backdrop-filter: blur(10rpx);
+}
+
+.logo-icon {
+  font-size: 60rpx;
+}
+
+.app-title {
+  display: block;
+  font-size: 40rpx;
+  font-weight: bold;
+  color: var(--text-inverse);
+  margin-bottom: 10rpx;
+}
+
+.app-subtitle {
+  display: block;
+  font-size: 26rpx;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* 注册表单 */
+.register-form {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 24rpx;
+  padding: 50rpx 40rpx;
+  box-shadow: 0 20rpx 60rpx rgba(0, 0, 0, 0.2);
+}
+
+.form-item {
+  margin-bottom: 30rpx;
+}
+
+.label {
+  display: block;
+  font-size: 28rpx;
+  font-weight: 500;
+  color: var(--text-primary);
+  margin-bottom: 16rpx;
+}
+
+.input {
+  width: 100%;
+  height: 88rpx;
+  background: var(--bg-tertiary);
+  border: 2rpx solid var(--border-primary);
+  border-radius: 16rpx;
+  padding: 0 24rpx;
+  font-size: 28rpx;
+  box-sizing: border-box;
+  transition: all 0.3s ease;
+}
+
+.input:focus {
+  border-color: var(--brand-primary);
+  background: white;
+  box-shadow: 0 0 0 8rpx rgba(102, 126, 234, 0.1);
+}
+
+.placeholder {
+  color: #999;
+}
+
+/* 选择器样式 */
+.picker {
+  width: 100%;
+  height: 88rpx;
+  background: var(--bg-tertiary);
+  border: 2rpx solid var(--border-primary);
+  border-radius: 16rpx;
+  padding: 0 24rpx;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  transition: all 0.3s ease;
+}
+
+.picker-text {
+  font-size: 28rpx;
+  color: var(--text-primary);
+}
+
+.picker:active {
+  border-color: var(--brand-primary);
+  background: white;
+  box-shadow: 0 0 0 8rpx rgba(102, 126, 234, 0.1);
+}
+
+.register-btn {
+  width: 100%;
+  height: 88rpx;
+  background: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-secondary) 100%);
+  color: var(--text-inverse);
+  border: none;
+  border-radius: 16rpx;
+  font-size: 32rpx;
+  font-weight: 500;
+  margin-top: 20rpx;
+  box-shadow: 0 8rpx 30rpx rgba(102, 126, 234, 0.4);
+}
+
+.register-btn:active {
+  transform: translateY(2rpx);
+  box-shadow: 0 4rpx 20rpx rgba(102, 126, 234, 0.4);
+}
+
+/* 登录链接 */
+.login-link {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 30rpx;
+  font-size: 26rpx;
+  color: #666;
+}
+
+.link {
+  color: #667eea;
+  margin-left: 10rpx;
+  font-weight: 500;
+}

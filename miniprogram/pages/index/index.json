@@ -1,0 +1,7 @@
+{
+  "navigationBarTitleText": "学习驾驶舱",
+  "usingComponents": {},
+  "enablePullDownRefresh": true,
+  "backgroundColor": "#f8f9fa",
+  "backgroundTextStyle": "dark"
+}

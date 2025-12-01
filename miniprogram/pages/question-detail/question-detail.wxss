@@ -1,0 +1,534 @@
+/* pages/question-detail/question-detail.wxss */
+.container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 0;
+}
+
+/* 加载状态 */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 100px 20px;
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-top: 3px solid #ffffff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 16px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loading-text {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 16px;
+}
+
+/* 主要内容 */
+.content {
+  padding: 16px;
+  padding-bottom: 100px;
+}
+
+/* 题目头部 */
+.question-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 16px;
+  backdrop-filter: blur(20px);
+}
+
+.question-number {
+  width: 60px;
+  height: 60px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.number {
+  color: white;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.question-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.difficulty-badge {
+  padding: 6px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.response-time {
+  font-size: 14px;
+  color: #666;
+}
+
+/* 通用区块样式 */
+.section {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 16px;
+  backdrop-filter: blur(20px);
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  padding-bottom: 12px;
+}
+
+.section-icon {
+  font-size: 20px;
+  margin-right: 8px;
+}
+
+.section-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+  flex: 1;
+}
+
+/* 知识点样式 */
+.knowledge-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.knowledge-tag {
+  background: rgba(102, 126, 234, 0.1);
+  border: 1px solid rgba(102, 126, 234, 0.2);
+  border-radius: 16px;
+  padding: 6px 12px;
+}
+
+.tag-text {
+  font-size: 14px;
+  color: #667eea;
+  font-weight: 500;
+}
+
+/* 内容区域 */
+.content-body {
+  background: rgba(248, 249, 250, 0.8);
+  border-radius: 8px;
+  padding: 16px;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.text-content {
+  font-size: 16px;
+  line-height: 1.6;
+  color: #333;
+  word-wrap: break-word;
+}
+
+/* LaTeX公式样式 */
+.latex-content {
+  font-family: 'Cambria Math', 'Times New Roman', serif;
+  letter-spacing: 0.5px;
+}
+
+/* 行内公式 */
+.latex-content .inline-math {
+  font-style: italic;
+  background: rgba(102, 126, 234, 0.05);
+  padding: 2px 4px;
+  border-radius: 4px;
+  color: #667eea;
+}
+
+/* 图片控制按钮 */
+.image-control {
+  display: flex;
+  justify-content: center;
+  margin: 16px 0;
+}
+
+.image-toggle-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 25px;
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 500;
+  box-shadow: 0 3px 10px rgba(102, 126, 234, 0.3);
+  transition: all 0.3s ease;
+}
+
+.image-toggle-btn:active {
+  transform: translateY(1px);
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.4);
+}
+
+/* 图片容器 */
+.image-container {
+  margin-top: 12px;
+  text-align: center;
+}
+
+/* 图片样式 */
+.question-image {
+  width: 100%;
+  border-radius: 8px;
+  margin-top: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* 空内容状态 */
+.empty-content {
+  text-align: center;
+  padding: 30px 20px;
+  background: rgba(248, 249, 250, 0.5);
+  border-radius: 8px;
+  border: 1px dashed rgba(0, 0, 0, 0.1);
+}
+
+.empty-text {
+  font-size: 14px;
+  color: #999;
+}
+
+/* 答案区域 */
+.student-answer {
+  border-left: 4px solid #FF9500;
+}
+
+.correct-answer {
+  border-left: 4px solid #34C759;
+}
+
+/* 操作按钮 */
+.action-btn {
+  background: rgba(102, 126, 234, 0.1);
+  border: 1px solid rgba(102, 126, 234, 0.2);
+  border-radius: 6px;
+  padding: 4px 8px;
+  font-size: 12px;
+  color: #667eea;
+}
+
+.action-text {
+  font-size: 12px;
+}
+
+/* AI分析区域 */
+.analysis-content {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(102, 126, 234, 0.1);
+}
+
+.analysis-details {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.detail-title {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.detail-icon {
+  font-size: 16px;
+  margin-right: 8px;
+}
+
+.detail-text {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+}
+
+/* AI分析纯文本样式 */
+.analysis-text {
+  font-size: 16px;
+  line-height: 1.6;
+  color: #333;
+  word-wrap: break-word;
+  font-weight: 500;
+}
+
+/* 建议列表 */
+.suggestions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.suggestion-item {
+  display: flex;
+  align-items: flex-start;
+  padding: 8px;
+  background: rgba(52, 199, 89, 0.05);
+  border-radius: 6px;
+}
+
+.suggestion-bullet {
+  color: #34C759;
+  font-weight: bold;
+  margin-right: 8px;
+  margin-top: 2px;
+}
+
+.suggestion-text {
+  flex: 1;
+  font-size: 14px;
+  color: #333;
+  line-height: 1.5;
+}
+
+/* 置信度 */
+.confidence-info {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.confidence-label {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.label-icon {
+  font-size: 16px;
+  margin-right: 8px;
+}
+
+.label-text {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+}
+
+.confidence-bar {
+  width: 100%;
+  height: 8px;
+  background: #e0e0e0;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+
+.confidence-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #34C759 0%, #30D158 100%);
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+.confidence-value {
+  font-size: 14px;
+  color: #34C759;
+  font-weight: 600;
+  text-align: right;
+  display: block;
+}
+
+/* 状态区域 */
+.status-content {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.status-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.status-label {
+  font-size: 16px;
+  color: #333;
+  font-weight: 500;
+}
+
+.status-value {
+  font-size: 16px;
+  color: #666;
+}
+
+.status-badge {
+  padding: 6px 12px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.status-badge.large {
+  padding: 8px 16px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+/* 底部操作按钮 */
+.actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 24px;
+  padding: 0 16px;
+  position: fixed;
+  bottom: 20px;
+  left: 0;
+  right: 0;
+  background: rgba(255, 255, 255, 0.95);
+  padding: 16px;
+  border-radius: 16px 16px 0 0;
+  backdrop-filter: blur(20px);
+}
+
+.action-btn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 16px;
+  border-radius: 12px;
+  border: none;
+  font-size: 14px;
+  color: white;
+  transition: all 0.2s ease;
+}
+
+.action-btn:active {
+  transform: scale(0.95);
+}
+
+.action-btn.primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.action-btn.secondary {
+  background: linear-gradient(135deg, #8E8E93 0%, #636366 100%);
+}
+
+.btn-icon {
+  font-size: 20px;
+  margin-bottom: 4px;
+}
+
+.btn-text {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* 响应式设计 */
+@media (max-width: 375px) {
+  .question-header {
+    flex-direction: column;
+    gap: 12px;
+    text-align: center;
+  }
+  
+  .question-meta {
+    align-items: center;
+  }
+  
+  .actions {
+    flex-direction: column;
+    gap: 8px;
+  }
+}
+
+/* 暗色模式适配 */
+@media (prefers-color-scheme: dark) {
+  .section,
+  .question-header {
+    background: rgba(30, 30, 30, 0.95);
+    color: #ffffff;
+  }
+  
+  .section-title,
+  .text-content,
+  .status-label,
+  .detail-text,
+  .suggestion-text {
+    color: #ffffff;
+  }
+  
+  .content-body {
+    background: rgba(50, 50, 50, 0.8);
+    border-color: rgba(255, 255, 255, 0.1);
+  }
+  
+  .text-content {
+    color: #ffffff;
+  }
+}
+
+/* LaTeX公式增强样式 */
+.formula-display {
+  display: block;
+  background: rgba(102, 126, 234, 0.1);
+  border: 1px solid rgba(102, 126, 234, 0.2);
+  border-radius: 8px;
+  padding: 16px;
+  margin: 12px 0;
+  text-align: center;
+  font-size: 18px;
+  font-weight: 500;
+  color: #667eea;
+}
+
+.formula-inline {
+  background: rgba(102, 126, 234, 0.05);
+  border-radius: 4px;
+  padding: 2px 6px;
+  font-style: italic;
+  color: #667eea;
+}
+
+/* 复制提示 */
+.copy-hint {
+  position: absolute;
+  top: -30px;
+  right: 0;
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.copy-hint.show {
+  opacity: 1;
+}

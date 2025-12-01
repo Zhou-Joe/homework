@@ -1,0 +1,84 @@
+<view class="login-container">
+  <!-- Logo和标题 -->
+  <view class="logo-section">
+    <view class="logo">
+      <text class="logo-icon">📚</text>
+    </view>
+    <text class="app-title">学生学习平台</text>
+    <text class="app-subtitle">智能错题分析与练习系统</text>
+  </view>
+
+  <!-- 微信登录按钮 -->
+  <view class="login-form">
+    <view class="wechat-login-btn" bindtap="onWechatLogin">
+      <view class="wechat-icon">🟢</view>
+      <text class="wechat-text">微信一键登录</text>
+    </view>
+
+    <!-- 分隔线 -->
+    <view class="divider">
+      <view class="divider-line"></view>
+      <text class="divider-text">或</text>
+      <view class="divider-line"></view>
+    </view>
+
+    <!-- 传统登录标题 -->
+    <view class="login-section-title">
+      <text>账号密码登录</text>
+    </view>
+
+    <!-- 登录表单 -->
+    <view class="form-item">
+      <text class="label">用户名</text>
+      <input
+        class="input"
+        placeholder="请输入用户名"
+        value="{{username}}"
+        bindinput="onUsernameInput"
+        placeholder-class="placeholder"
+      />
+    </view>
+
+    <view class="form-item">
+      <text class="label">密码</text>
+      <input
+        class="input"
+        placeholder="请输入密码"
+        value="{{password}}"
+        bindinput="onPasswordInput"
+        password="{{true}}"
+        placeholder-class="placeholder"
+      />
+    </view>
+
+    <button
+      class="login-btn"
+      bindtap="onPasswordLogin"
+      loading="{{isLoading}}"
+      disabled="{{isLoading}}"
+    >
+      {{isLoading ? '登录中...' : '登录'}}
+    </button>
+
+    <view class="register-link">
+      <text>还没有账号？</text>
+      <navigator url="/pages/register/register" class="link">立即注册</navigator>
+    </view>
+  </view>
+
+  <!-- 功能介绍 -->
+  <view class="features">
+    <view class="feature-item">
+      <text class="feature-icon">📸</text>
+      <text class="feature-text">拍照上传错题</text>
+    </view>
+    <view class="feature-item">
+      <text class="feature-icon">🤖</text>
+      <text class="feature-text">AI智能分析</text>
+    </view>
+    <view class="feature-item">
+      <text class="feature-icon">🎯</text>
+      <text class="feature-text">个性化练习</text>
+    </view>
+  </view>
+</view>

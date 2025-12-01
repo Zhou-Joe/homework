@@ -1,0 +1,44 @@
+<view class="container">
+  <!-- 用户头像区域 -->
+  <view class="avatar-section">
+    <image 
+      class="user-avatar" 
+      src="{{userInfo.avatar_url || '/images/default-avatar.png'}}" 
+      mode="aspectFill"
+    ></image>
+    <text class="username">{{userInfo.username || '学生'}}</text>
+    <text class="user-grade">{{userInfo.grade_level ? userInfo.grade_level + '年级' : '未设置年级'}}</text>
+  </view>
+
+  <!-- 操作区域 -->
+  <view class="action-section">
+    <button class="action-btn" bindtap="onShareApp">
+      <text class="btn-icon">📤</text>
+      <text class="btn-text">分享给同学</text>
+    </button>
+    <button class="action-btn logout" bindtap="onLogout">
+      <text class="btn-icon">🚪</text>
+      <text class="btn-text">退出登录</text>
+    </button>
+  </view>
+
+  <!-- 平台介绍 -->
+  <view class="about-section">
+    <view class="about-header">
+      <text class="about-title">🎯 智能学习平台</text>
+    </view>
+    <view class="about-content">
+      <text class="about-text">基于AI技术的个性化学习平台，为学生提供智能化的错题管理和练习推荐服务。</text>
+      <view class="feature-list">
+        <text class="feature-item">• AI智能错题分析</text>
+        <text class="feature-item">• 个性化学习推荐</text>
+        <text class="feature-item">• 实时学习进度追踪</text>
+        <text class="feature-item">• 多学科知识点覆盖</text>
+      </view>
+    </view>
+    <view class="about-footer">
+      <text class="version-text">版本 v1.0.0</text>
+      <text class="copyright-text">© 2025 智能学习平台</text>
+    </view>
+  </view>
+</view>

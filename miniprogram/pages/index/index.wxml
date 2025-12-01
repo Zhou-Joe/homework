@@ -1,0 +1,117 @@
+<view class="container">
+  <!-- 用户信息卡片 -->
+  <view class="user-card">
+    <view class="user-info">
+      <view class="avatar">{{userInfo.nickname ? userInfo.nickname.charAt(0) : '学'}}</view>
+      <view class="user-details">
+        <text class="username">{{userInfo.nickname || '学生'}}</text>
+        <text class="grade">{{userInfo.grade_level || '未知年级'}}</text>
+      </view>
+    </view>
+    <view class="stats-overview">
+      <view class="stat-item">
+        <text class="stat-number">{{stats.total_exercises || 0}}</text>
+        <text class="stat-label">总习题</text>
+      </view>
+      <view class="stat-item">
+        <text class="stat-number">{{stats.mistake_count || 0}}</text>
+        <text class="stat-label">待攻克</text>
+      </view>
+      <view class="stat-item">
+        <text class="stat-number">{{stats.accuracy_rate || 0}}%</text>
+        <text class="stat-label">正确率</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 学科掌握度 -->
+  <view class="section-card" wx:if="{{subjectStats && subjectStats.length > 0}}">
+    <view class="section-header">
+      <text class="section-title">📊 学科掌握度分析</text>
+      <text class="section-subtitle">各科目学习情况</text>
+    </view>
+    <scroll-view class="subject-scroll" scroll-x="true" show-scrollbar="false">
+      <view class="subject-list">
+        <block wx:for="{{subjectStats}}" wx:key="subject">
+          <view class="subject-item" wx:if="{{item.total_questions > 0}}">
+            <view class="subject-info">
+              <text class="subject-name">{{item.subject_name}}</text>
+              <text class="subject-meta">{{item.total_questions}}题 | {{item.correct_answers}}对</text>
+            </view>
+            <view class="subject-progress">
+              <view class="progress-bar">
+                <view class="progress-fill" style="width: {{item.accuracy_rate}}%"></view>
+              </view>
+              <text class="progress-text">{{item.accuracy_rate}}%</text>
+            </view>
+          </view>
+        </block>
+      </view>
+    </scroll-view>
+  </view>
+
+  <!-- 薄弱知识点 -->
+  <view class="section-card" wx:if="{{weakKnowledgePoints && weakKnowledgePoints.length > 0}}">
+    <view class="section-header">
+      <text class="section-title">🎯 精准提升目标</text>
+      <text class="section-subtitle">需要重点练习的知识点</text>
+    </view>
+    <scroll-view class="knowledge-scroll" scroll-x="true" show-scrollbar="false">
+      <view class="knowledge-list">
+        <block wx:for="{{weakKnowledgePoints}}" wx:key="id">
+          <view class="knowledge-item">
+            <text class="knowledge-name">{{item.name}}</text>
+            <text class="knowledge-subject">{{item.subject_name}}</text>
+            <view class="mastery-bar">
+              <view class="mastery-fill" style="width: {{item.mastery_level}}%"></view>
+            </view>
+            <text class="mastery-text">掌握度: {{item.mastery_level}}%</text>
+          </view>
+        </block>
+      </view>
+    </scroll-view>
+  </view>
+
+  <!-- 最近错题 -->
+  <view class="section-card" wx:if="{{recentMistakes && recentMistakes.length > 0}}">
+    <view class="section-header">
+      <text class="section-title">📝 最近错题回顾</text>
+      <text class="more-link" bindtap="onUploadNewQuestion" hover-class="more-link-hover">上传新题</text>
+    </view>
+    <scroll-view class="mistake-scroll" scroll-y="true" style="max-height: 300px;">
+      <view class="mistake-list">
+        <block wx:for="{{recentMistakes}}" wx:key="id">
+          <view class="mistake-item" bindtap="onExerciseTap" data-id="{{item.id}}">
+            <view class="mistake-header">
+              <text class="mistake-title">{{item.title || '错题'}}</text>
+              <view class="mistake-badges">
+                <text class="badge badge-{{item.difficulty}}">{{item.difficulty_text}}</text>
+                <text class="badge badge-subject">{{item.subject_name}}</text>
+              </view>
+            </view>
+            <text class="mistake-time">{{item.created_at}}</text>
+          </view>
+        </block>
+      </view>
+    </scroll-view>
+  </view>
+
+  <!-- 快速操作 -->
+  <view class="action-grid">
+    <navigator url="/pages/upload/upload" class="action-item" hover-class="action-hover">
+      <view class="action-icon upload">📸</view>
+      <text class="action-title">上传错题</text>
+      <text class="action-desc">拍照识别</text>
+    </navigator>
+    <navigator url="/pages/practice/practice" class="action-item" hover-class="action-hover">
+      <view class="action-icon practice">💪</view>
+      <text class="action-title">智能训练</text>
+      <text class="action-desc">个性化推荐</text>
+    </navigator>
+    <view class="action-item" bindtap="onViewAllMistakes" hover-class="action-hover">
+      <view class="action-icon view">📚</view>
+      <text class="action-title">错题宝库</text>
+      <text class="action-desc">查看全部</text>
+    </view>
+  </view>
+</view>

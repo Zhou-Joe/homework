@@ -1,0 +1,435 @@
+/* pages/index/index.wxss */
+.container {
+  padding: 20rpx;
+  background: var(--bg-primary);
+  min-height: 100vh;
+}
+
+/* 用户信息卡片 */
+.user-card {
+  background: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-secondary) 100%);
+  border-radius: 24rpx;
+  padding: 40rpx;
+  margin-bottom: 30rpx;
+  color: var(--text-inverse);
+  box-shadow: 0 12rpx 40rpx rgba(102, 126, 234, 0.3);
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  margin-bottom: 40rpx;
+}
+
+.avatar {
+  width: 100rpx;
+  height: 100rpx;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40rpx;
+  font-weight: bold;
+  margin-right: 24rpx;
+}
+
+.user-details {
+  flex: 1;
+}
+
+.username {
+  display: block;
+  font-size: 36rpx;
+  font-weight: bold;
+  margin-bottom: 8rpx;
+}
+
+.grade {
+  display: block;
+  font-size: 26rpx;
+  opacity: 0.9;
+}
+
+.stats-overview {
+  display: flex;
+  justify-content: space-around;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 16rpx;
+  padding: 30rpx 20rpx;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.stat-number {
+  font-size: 40rpx;
+  font-weight: bold;
+  margin-bottom: 8rpx;
+}
+
+.stat-label {
+  font-size: 24rpx;
+  opacity: 0.9;
+}
+
+/* 统计网格 */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20rpx;
+  margin-bottom: 30rpx;
+}
+
+.stat-card {
+  background: var(--bg-secondary);
+  border-radius: 20rpx;
+  padding: 30rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: 0 4rpx 20rpx var(--shadow-light);
+}
+
+.stat-icon {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40rpx;
+  margin-bottom: 20rpx;
+}
+
+.stat-icon.total {
+  background: rgba(102, 126, 234, 0.1);
+  color: #667eea;
+}
+
+.stat-icon.mistake {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+}
+
+.stat-icon.practice {
+  background: rgba(16, 185, 129, 0.1);
+  color: #10b981;
+}
+
+.stat-icon.accuracy {
+  background: rgba(6, 182, 212, 0.1);
+  color: #06b6d4;
+}
+
+.stat-value {
+  font-size: 48rpx;
+  font-weight: bold;
+  color: var(--text-primary);
+  margin-bottom: 8rpx;
+}
+
+.stat-desc {
+  font-size: 24rpx;
+  color: var(--text-muted);
+}
+
+/* 区块卡片 */
+.section-card {
+  background: var(--bg-secondary);
+  border-radius: 20rpx;
+  padding: 30rpx;
+  margin-bottom: 30rpx;
+  box-shadow: 0 4rpx 20rpx var(--shadow-light);
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30rpx;
+  padding-bottom: 20rpx;
+  border-bottom: 2rpx solid var(--border-secondary);
+}
+
+.section-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: var(--text-primary);
+}
+
+.section-subtitle {
+  font-size: 24rpx;
+  color: var(--text-muted);
+  margin-top: 8rpx;
+}
+
+.more-link {
+  font-size: 26rpx;
+  color: var(--brand-primary);
+  font-weight: 500;
+  padding: 8rpx 16rpx;
+  background: rgba(102, 126, 234, 0.1);
+  border-radius: 12rpx;
+  border: 2rpx solid var(--brand-primary);
+  transition: all 0.2s ease;
+}
+
+.more-link-hover {
+  background: rgba(102, 126, 234, 0.2);
+  transform: scale(0.95);
+}
+
+/* 学科列表 */
+.subject-scroll {
+  white-space: nowrap;
+}
+
+.subject-list {
+  display: flex;
+  gap: 20rpx;
+  padding-bottom: 10rpx;
+}
+
+.subject-item {
+  min-width: 300rpx;
+  display: flex;
+  flex-direction: column;
+  padding: 24rpx;
+  background: var(--bg-tertiary);
+  border-radius: 16rpx;
+  margin-right: 20rpx;
+}
+
+.subject-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16rpx;
+}
+
+.subject-name {
+  font-size: 28rpx;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.subject-meta {
+  font-size: 24rpx;
+  color: var(--text-muted);
+}
+
+.subject-progress {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+}
+
+.progress-bar {
+  flex: 1;
+  height: 16rpx;
+  background: var(--border-primary);
+  border-radius: 8rpx;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-secondary) 100%);
+  transition: width 0.6s ease;
+}
+
+.progress-text {
+  font-size: 24rpx;
+  font-weight: 500;
+  color: var(--brand-primary);
+  min-width: 60rpx;
+}
+
+/* 知识点列表 */
+.knowledge-scroll {
+  white-space: nowrap;
+}
+
+.knowledge-list {
+  display: flex;
+  gap: 20rpx;
+  padding-bottom: 10rpx;
+}
+
+.knowledge-item {
+  min-width: 280rpx;
+  background: var(--bg-tertiary);
+  border-radius: 16rpx;
+  padding: 24rpx;
+  display: flex;
+  flex-direction: column;
+  margin-right: 20rpx;
+}
+
+.knowledge-name {
+  font-size: 26rpx;
+  font-weight: 500;
+  color: var(--text-primary);
+  margin-bottom: 8rpx;
+}
+
+.knowledge-subject {
+  font-size: 22rpx;
+  color: var(--text-muted);
+  margin-bottom: 16rpx;
+}
+
+.mastery-bar {
+  height: 12rpx;
+  background: var(--border-primary);
+  border-radius: 6rpx;
+  overflow: hidden;
+  margin-bottom: 12rpx;
+}
+
+.mastery-fill {
+  height: 100%;
+  background: linear-gradient(135deg, var(--danger) 0%, #dc2626 100%);
+  transition: width 0.6s ease;
+}
+
+.mastery-text {
+  font-size: 22rpx;
+  color: var(--text-secondary);
+}
+
+/* 错题列表 */
+.mistake-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+}
+
+.mistake-item {
+  background: var(--bg-tertiary);
+  border-radius: 16rpx;
+  padding: 24rpx;
+  border-left: 8rpx solid var(--danger);
+}
+
+.mistake-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12rpx;
+}
+
+.mistake-title {
+  flex: 1;
+  font-size: 28rpx;
+  font-weight: 500;
+  color: var(--text-primary);
+  margin-right: 20rpx;
+}
+
+.mistake-badges {
+  display: flex;
+  gap: 10rpx;
+}
+
+.badge {
+  padding: 4rpx 16rpx;
+  border-radius: 20rpx;
+  font-size: 22rpx;
+  font-weight: 500;
+}
+
+.badge-easy {
+  background: rgba(16, 185, 129, 0.1);
+  color: var(--success);
+}
+
+.badge-medium {
+  background: rgba(245, 158, 11, 0.1);
+  color: var(--warning);
+}
+
+.badge-hard {
+  background: rgba(239, 68, 68, 0.1);
+  color: var(--danger);
+}
+
+.badge-subject {
+  background: rgba(102, 126, 234, 0.1);
+  color: var(--brand-primary);
+}
+
+.mistake-time {
+  font-size: 22rpx;
+  color: var(--text-muted);
+}
+
+/* 快速操作网格 */
+.action-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20rpx;
+  margin-bottom: 40rpx;
+}
+
+.action-item {
+  background: var(--bg-secondary);
+  border-radius: 20rpx;
+  padding: 30rpx 20rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: 0 4rpx 20rpx var(--shadow-light);
+  transition: all 0.3s ease;
+}
+
+.action-item:active {
+  transform: scale(0.95);
+}
+
+.action-hover {
+  transform: translateY(-4rpx);
+  box-shadow: 0 8rpx 30rpx var(--shadow-medium);
+}
+
+.action-icon {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40rpx;
+  margin-bottom: 20rpx;
+}
+
+.action-icon.upload {
+  background: rgba(102, 126, 234, 0.1);
+  color: var(--brand-primary);
+}
+
+.action-icon.practice {
+  background: rgba(16, 185, 129, 0.1);
+  color: var(--success);
+}
+
+.action-icon.view {
+  background: rgba(6, 182, 212, 0.1);
+  color: var(--info);
+}
+
+.action-title {
+  font-size: 26rpx;
+  font-weight: 500;
+  color: var(--text-primary);
+  margin-bottom: 8rpx;
+}
+
+.action-desc {
+  font-size: 22rpx;
+  color: var(--text-muted);
+}

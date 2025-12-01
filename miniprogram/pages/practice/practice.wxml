@@ -1,0 +1,193 @@
+<view class="container">
+  <!-- 标题区域 -->
+  <view class="header">
+    <text class="title">💪 强化训练</text>
+    <text class="subtitle">基于AI分析，个性化推荐练习</text>
+  </view>
+
+  <!-- 练习设置 -->
+  <view class="settings-card">
+    <text class="settings-title">⚙️ 练习设置</text>
+    
+    <!-- 练习模式和学科选择 -->
+    <view class="setting-row">
+      <view class="setting-item half">
+        <text class="setting-label">练习模式</text>
+        <picker 
+          class="mode-picker" 
+          bindchange="onModeChange" 
+          value="{{modeIndex}}" 
+          range="{{practiceModes}}"
+          range-key="name"
+        >
+          <view class="picker-content">
+            <text class="picker-text">{{practiceModes[modeIndex].name}}</text>
+            <text class="picker-arrow">▼</text>
+          </view>
+        </picker>
+        <text class="picker-desc">{{practiceModes[modeIndex].desc}}</text>
+      </view>
+
+      <view class="setting-item half">
+        <text class="setting-label">选择学科</text>
+        <picker 
+          class="subject-picker" 
+          bindchange="onSubjectChange" 
+          value="{{subjectIndex}}" 
+          range="{{subjects}}"
+          range-key="name"
+        >
+          <view class="picker-content">
+            <text class="picker-text">{{subjects[subjectIndex] ? subjects[subjectIndex].name : '全部学科'}}</text>
+            <text class="picker-arrow">▼</text>
+          </view>
+        </picker>
+      </view>
+    </view>
+
+    <!-- 题目数量 -->
+    <view class="setting-item">
+      <text class="setting-label">题目数量: {{questionCount}}题</text>
+      <slider 
+        class="count-slider" 
+        min="2" 
+        max="10" 
+        value="{{questionCount}}" 
+        bindchange="onCountChange"
+        show-value
+      />
+    </view>
+
+    <!-- 开始练习按钮 -->
+    <button class="start-btn" bindtap="onStartPractice" loading="{{isLoading}}" disabled="{{isLoading}}">
+      {{isLoading ? '加载中...' : '开始练习'}}
+    </button>
+  </view>
+
+  <!-- 练习界面 -->
+  <view class="practice-interface" wx:if="{{isPracticing}}">
+    <!-- 题目卡片 -->
+    <view class="question-card">
+      <view class="question-header">
+        <view class="question-badges">
+          <text class="badge badge-{{currentQuestion.difficulty}}">{{currentQuestion.difficulty_text}}</text>
+          <text class="badge badge-subject">{{currentQuestion.subject_name}}</text>
+        </view>
+      </view>
+      
+      <view class="question-content">
+        <!-- 题目文本显示 -->
+        <block wx:if="{{currentQuestion.question_text && currentQuestion.question_text.length > 0}}">
+          <!-- LaTeX渲染器显示 -->
+          <view class="latex-content">
+            <latex-renderer
+              content="{{currentQuestion.question_text}}"
+              font-size="16"
+            ></latex-renderer>
+          </view>
+        </block>
+        
+        <!-- 图片控制按钮和图片 -->
+        <block wx:if="{{currentQuestion.question_image}}">
+          <view class="image-control">
+            <button class="image-toggle-btn" bindtap="toggleQuestionImage">
+              <text class="btn-icon">{{showQuestionImage ? '👁️' : '🖼️'}}</text>
+              <text class="btn-text">{{showQuestionImage ? '隐藏图片' : '显示图片'}}</text>
+            </button>
+          </view>
+          
+          <view class="image-container" wx:if="{{showQuestionImage}}">
+            <image class="question-image" src="http://127.0.0.1:8000{{currentQuestion.question_image}}" mode="widthFix"></image>
+          </view>
+        </block>
+        
+        <!-- 如果既没有文本也没有图片，显示提示 -->
+        <block wx:if="{{!currentQuestion.question_text && !currentQuestion.question_image}}">
+          <view class="empty-question">
+            <text class="empty-text">题目内容加载失败</text>
+            <text class="empty-hint">请检查网络连接或联系技术支持</text>
+            <button class="retry-btn" bindtap="onStartPractice">重新加载</button>
+          </view>
+        </block>
+      </view>
+    </view>
+
+    <!-- 答题区域 -->
+    <view class="answer-card">
+      <text class="answer-title">📝 请在此作答</text>
+      
+      <!-- 文字答案输入 -->
+      <textarea 
+        class="answer-input" 
+        placeholder="请输入你的答案..."
+        value="{{answerText}}"
+        bindinput="onAnswerInput"
+        maxlength="1000"
+      ></textarea>
+
+      <!-- 图片答案上传 -->
+      <view class="image-upload" bindtap="onChooseAnswerImage">
+        <block wx:if="{{!answerImage}}">
+          <text class="upload-icon">📷</text>
+          <text class="upload-text">上传答题图片（可选）</text>
+        </block>
+        <block wx:else>
+          <image class="answer-image-preview" src="{{answerImage}}" mode="aspectFit"></image>
+          <text class="reupload-text">点击重新选择</text>
+        </block>
+      </view>
+
+      <!-- 提交按钮 -->
+      <view class="answer-actions">
+        <button class="skip-btn" bindtap="onSkipQuestion">跳过</button>
+        <button class="submit-btn" bindtap="onSubmitAnswer" disabled="{{!answerText && !answerImage}}">
+          提交答案
+        </button>
+      </view>
+    </view>
+  </view>
+
+  <!-- 答题结果区域已隐藏 - 提交后直接跳转下一题 -->
+
+  <!-- 练习历史 -->
+  <view class="history-card" wx:if="{{!isPracticing}}">
+    <view class="history-header">
+      <text class="history-title">📚 练习历史</text>
+      <text class="history-subtitle">最近练习记录</text>
+    </view>
+    
+    <scroll-view class="history-scroll" scroll-y="true" style="max-height: 400px;">
+      <view class="history-list">
+        <block wx:for="{{practiceHistory}}" wx:key="id">
+          <view class="history-item">
+            <view class="history-info">
+              <text class="history-date">{{item.date}}</text>
+              <text class="history-mode">{{item.mode_text}}</text>
+            </view>
+            <view class="history-stats">
+              <text class="stat">{{item.total_questions}}题</text>
+              <text class="stat">{{item.correct_answers}}对</text>
+              <text class="accuracy">{{item.accuracy_rate}}%</text>
+            </view>
+          </view>
+        </block>
+      </view>
+      
+      <block wx:if="{{practiceHistory.length === 0}}">
+        <view class="empty-state">
+          <text class="empty-icon">📚</text>
+          <text class="empty-text">还没有练习记录</text>
+          <text class="empty-hint">开始你的第一次练习吧！</text>
+        </view>
+      </block>
+    </scroll-view>
+  </view>
+
+  <!-- 加载状态 -->
+  <view class="loading-modal" wx:if="{{isLoading}}">
+    <view class="loading-content">
+      <view class="loading-spinner"></view>
+      <text class="loading-text">正在加载题目...</text>
+    </view>
+  </view>
+</view>

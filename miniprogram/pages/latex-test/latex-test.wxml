@@ -1,0 +1,119 @@
+<view class="container">
+  <!-- 标题 -->
+  <view class="header">
+    <text class="title">🧪 LaTeX渲染测试</text>
+    <text class="subtitle">测试数学公式在小程序中的显示效果</text>
+  </view>
+
+  <!-- 控制面板 -->
+  <view class="control-panel">
+    <view class="control-group">
+      <text class="control-label">字体大小: {{fontSize}}px</text>
+      <slider
+        class="font-slider"
+        min="12"
+        max="24"
+        value="{{fontSize}}"
+        bindchange="adjustFontSize"
+        show-value
+      />
+    </view>
+
+    <button class="debug-btn" bindtap="toggleDebug">
+      {{showDebug ? '隐藏' : '显示'}}调试信息
+    </button>
+  </view>
+
+  <!-- 测试用例选择 -->
+  <view class="case-selector">
+    <scroll-view class="case-list" scroll-x="true">
+      <block wx:for="{{testCases}}" wx:key="index">
+        <button
+          class="case-item {{currentCase === index ? 'active' : ''}}"
+          bindtap="switchCase"
+          data-index="{{index}}"
+        >
+          {{item.name}}
+        </button>
+      </block>
+    </scroll-view>
+  </view>
+
+  <!-- 当前测试内容 -->
+  <view class="test-content">
+    <view class="test-header">
+      <text class="test-title">{{testCases[currentCase].name}}</text>
+      <button
+        class="copy-btn"
+        bindtap="copyLatex"
+        data-content="{{testCases[currentCase].content}}"
+      >
+        复制
+      </button>
+    </view>
+
+    <!-- 调试信息 -->
+    <view class="debug-info" wx:if="{{showDebug}}">
+      <text class="debug-title">🔍 调试信息</text>
+      <view class="debug-item">
+        <text class="debug-label">原始内容:</text>
+        <text class="debug-value" bindtap="testRawText" data-content="{{testCases[currentCase].content}}">
+          点击查看完整内容
+        </text>
+      </view>
+      <view class="debug-item">
+        <text class="debug-label">字体大小:</text>
+        <text class="debug-value">{{fontSize}}px</text>
+      </view>
+    </view>
+
+    <!-- 测试区域 -->
+    <view class="test-section">
+      <!-- 1. 直接文本显示 -->
+      <view class="test-block">
+        <text class="block-title">1. 直接文本显示</text>
+        <view class="text-only" style="font-size: {{fontSize}}px;">
+          {{testCases[currentCase].content}}
+        </view>
+      </view>
+
+      <!-- 2. LaTeX组件渲染 -->
+      <view class="test-block">
+        <text class="block-title">2. LaTeX组件渲染</text>
+        <view class="latex-wrapper">
+          <latex-renderer
+            content="{{testCases[currentCase].content}}"
+            font-size="{{fontSize}}"
+          />
+        </view>
+      </view>
+
+      <!-- 3. 带样式的LaTeX组件 -->
+      <view class="test-block">
+        <text class="block-title">3. 带样式的LaTeX组件</text>
+        <view class="latex-wrapper styled">
+          <latex-renderer
+            content="{{testCases[currentCase].content}}"
+            font-size="{{fontSize}}"
+          />
+        </view>
+      </view>
+
+      <!-- 4. 简单LaTeX测试 -->
+      <view class="test-block">
+        <text class="block-title">4. 简单LaTeX: {{testCases[currentCase].latex}}</text>
+        <view class="latex-wrapper">
+          <latex-renderer
+            content="{{testCases[currentCase].latex}}"
+            font-size="{{fontSize}}"
+          />
+        </view>
+      </view>
+    </view>
+
+    <!-- 状态提示 -->
+    <view class="status-tip">
+      <text class="tip-text">💡 如果以上显示不一致，说明LaTeX组件可能存在问题</text>
+    </view>
+  </view>
+</view>

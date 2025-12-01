@@ -1,0 +1,162 @@
+<!--pages/question-detail/question-detail.wxml-->
+<view class="container">
+  <!-- 加载状态 -->
+  <view class="loading-container" wx:if="{{isLoading}}">
+    <view class="loading-spinner"></view>
+    <text class="loading-text">加载题目详情中...</text>
+  </view>
+
+  <!-- 主要内容 -->
+  <view class="content" wx:else>
+    <!-- 题目头部信息 -->
+    <view class="question-header">
+      <view class="question-number">
+        <text class="number">{{questionData.questionNumber}}</text>
+      </view>
+      <view class="question-meta">
+        <view class="difficulty-badge" style="background-color: {{getDifficultyColor(questionData.exercise.difficulty)}}; color: white;">
+          <text class="difficulty-text">{{getDifficultyText(questionData.exercise.difficulty)}}</text>
+        </view>
+        <text class="response-time">用时：{{formatResponseTime(questionData.responseTime)}}</text>
+      </view>
+    </view>
+
+    <!-- 知识点信息 -->
+    <view class="section knowledge-section" wx:if="{{questionData.knowledgePoints.length > 0}}">
+      <view class="section-header">
+        <text class="section-icon">📚</text>
+        <text class="section-title">知识点</text>
+      </view>
+      <view class="knowledge-tags">
+        <view class="knowledge-tag" wx:for="{{questionData.knowledgePoints}}" wx:key="id">
+          <text class="tag-text">{{item.name}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 题目内容 -->
+    <view class="section content-section" wx:if="{{questionData.exercise.question_text || questionData.exercise.question_image}}">
+      <view class="section-header">
+        <text class="section-icon">📝</text>
+        <text class="section-title">题目内容</text>
+        <view class="action-btn" bindtap="toggleAnalysis">
+          <text class="action-icon">🤖</text>
+        </view>
+      </view>
+      <view class="content-body">
+        <!-- 总是显示文本内容（如果存在） -->
+        <view class="text-content" wx:if="{{questionData.exercise.question_text}}">
+          <latex-renderer
+            content="{{questionData.exercise.question_text}}"
+            font-size="16"
+          ></latex-renderer>
+        </view>
+        
+        <!-- 图片控制按钮 -->
+        <view class="image-control" wx:if="{{questionData.exercise.question_image}}">
+          <button class="image-toggle-btn" bindtap="toggleQuestionImage">
+            <text class="btn-icon">{{showQuestionImage ? '👁️' : '🖼️'}}</text>
+            <text class="btn-text">{{showQuestionImage ? '隐藏图片' : '显示图片'}}</text>
+          </button>
+        </view>
+        
+        <!-- 图片容器 -->
+        <view class="image-container" wx:if="{{questionData.exercise.question_image && showQuestionImage}}">
+          <image 
+            class="question-image" 
+            src="{{questionData.exercise.question_image}}" 
+            mode="widthFix"
+            data-url="{{questionData.exercise.question_image}}"
+            bindtap="onViewImage"
+          ></image>
+        </view>
+        
+        <!-- 如果既没有文本也没有图片，显示提示 -->
+        <view class="empty-content" wx:if="{{!questionData.exercise.question_text && !questionData.exercise.question_image}}">
+          <text class="empty-text">题目内容加载失败</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 学生答案 -->
+    <view class="section answer-section" wx:if="{{questionData.studentAnswer}}">
+      <view class="section-header">
+        <text class="section-icon">✏️</text>
+        <text class="section-title">你的答案</text>
+        <view class="action-btn" data-text="{{questionData.studentAnswer}}" bindtap="onCopyText">
+          <text class="action-text">复制</text>
+        </view>
+      </view>
+      <view class="content-body student-answer">
+        <latex-renderer
+          content="{{questionData.studentAnswer}}"
+          font-size="16"
+        ></latex-renderer>
+      </view>
+    </view>
+
+    <!-- 正确答案 -->
+    <view class="section correct-answer-section" wx:if="{{questionData.correctAnswer}}">
+      <view class="section-header">
+        <text class="section-icon">✅</text>
+        <text class="section-title">标准答案</text>
+        <view class="action-btn" data-text="{{questionData.correctAnswer}}" bindtap="onCopyText">
+          <text class="action-text">复制</text>
+        </view>
+      </view>
+      <view class="content-body correct-answer">
+        <latex-renderer
+          content="{{questionData.correctAnswer}}"
+          font-size="16"
+        ></latex-renderer>
+      </view>
+    </view>
+
+
+  <view class="section solution-section" wx:if="{{questionData.llmAnalysis.feedback}}">
+      <view class="section-header">
+        <text class="section-icon">📝</text>
+        <text class="section-title">AI分析</text>
+        <view class="action-btn" data-text="{{questionData.llmAnalysis.feedback}}" bindtap="onCopySolutionSteps">
+          <text class="action-text">复制</text>
+        </view>
+      </view>
+      <view class="content-body solution-steps">
+        <latex-renderer
+          content="{{questionData.llmAnalysis.feedback}}"
+          font-size="16"
+        ></latex-renderer>
+      </view>
+    </view>
+
+
+    <!-- 解题步骤（替换原来的答题状态） -->
+    <view class="section solution-section" wx:if="{{questionData.exercise.answer_steps}}">
+      <view class="section-header">
+        <text class="section-icon">📝</text>
+        <text class="section-title">解题步骤</text>
+        <view class="action-btn" data-text="{{questionData.exercise.answer_steps}}" bindtap="onCopySolutionSteps">
+          <text class="action-text">复制</text>
+        </view>
+      </view>
+      <view class="content-body solution-steps">
+        <latex-renderer
+          content="{{questionData.exercise.answer_steps}}"
+          font-size="16"
+        ></latex-renderer>
+      </view>
+    </view>
+
+    <!-- 操作按钮 -->
+    <view class="actions">
+      <button class="action-btn primary" bindtap="onShareQuestion">
+        <text class="btn-icon">📤</text>
+        <text class="btn-text">分享题目</text>
+      </button>
+      <button class="action-btn secondary" bindtap="onGoBack">
+        <text class="btn-icon">⬅️</text>
+        <text class="btn-text">返回</text>
+      </button>
+    </view>
+  </view>
+</view>

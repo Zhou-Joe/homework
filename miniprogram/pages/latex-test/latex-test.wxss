@@ -1,0 +1,244 @@
+/* pages/latex-test/latex-test.wxss */
+.container {
+  padding: 20rpx;
+  background: #f8f9fa;
+  min-height: 100vh;
+}
+
+/* 头部 */
+.header {
+  text-align: center;
+  margin-bottom: 30rpx;
+}
+
+.title {
+  display: block;
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 10rpx;
+}
+
+.subtitle {
+  display: block;
+  font-size: 28rpx;
+  color: #666;
+}
+
+/* 控制面板 */
+.control-panel {
+  background: white;
+  border-radius: 16rpx;
+  padding: 30rpx;
+  margin-bottom: 30rpx;
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.08);
+}
+
+.control-group {
+  margin-bottom: 20rpx;
+}
+
+.control-label {
+  display: block;
+  font-size: 28rpx;
+  color: #333;
+  margin-bottom: 10rpx;
+  font-weight: 500;
+}
+
+.font-slider {
+  width: 100%;
+}
+
+.debug-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 12rpx;
+  font-size: 28rpx;
+  padding: 20rpx 40rpx;
+}
+
+/* 测试用例选择 */
+.case-selector {
+  margin-bottom: 30rpx;
+}
+
+.case-list {
+  white-space: nowrap;
+  background: white;
+  border-radius: 16rpx;
+  padding: 20rpx;
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.08);
+}
+
+.case-item {
+  display: inline-block;
+  margin-right: 20rpx;
+  padding: 16rpx 32rpx;
+  border-radius: 30rpx;
+  font-size: 26rpx;
+  background: #f8f9fa;
+  color: #666;
+  border: 2rpx solid transparent;
+  transition: all 0.3s ease;
+}
+
+.case-item.active {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  transform: scale(1.05);
+}
+
+/* 测试内容 */
+.test-content {
+  background: white;
+  border-radius: 16rpx;
+  padding: 30rpx;
+  margin-bottom: 30rpx;
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.08);
+}
+
+.test-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30rpx;
+  padding-bottom: 20rpx;
+  border-bottom: 2rpx solid #eee;
+}
+
+.test-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+.copy-btn {
+  background: #10b981;
+  color: white;
+  border: none;
+  border-radius: 8rpx;
+  font-size: 24rpx;
+  padding: 12rpx 24rpx;
+}
+
+/* 调试信息 */
+.debug-info {
+  background: #f3f4f6;
+  border-radius: 12rpx;
+  padding: 20rpx;
+  margin-bottom: 30rpx;
+  border: 2rpx dashed #d1d5db;
+}
+
+.debug-title {
+  display: block;
+  font-size: 28rpx;
+  font-weight: bold;
+  color: #374151;
+  margin-bottom: 15rpx;
+}
+
+.debug-item {
+  display: flex;
+  margin-bottom: 10rpx;
+  align-items: center;
+}
+
+.debug-label {
+  font-size: 26rpx;
+  color: #6b7280;
+  margin-right: 15rpx;
+  min-width: 150rpx;
+}
+
+.debug-value {
+  font-size: 26rpx;
+  color: #1f2937;
+  background: white;
+  padding: 8rpx 16rpx;
+  border-radius: 6rpx;
+  border: 1rpx solid #e5e7eb;
+  font-family: monospace;
+}
+
+/* 测试区域 */
+.test-section {
+  margin-top: 30rpx;
+}
+
+.test-block {
+  margin-bottom: 40rpx;
+  padding: 25rpx;
+  background: #fafbfc;
+  border-radius: 12rpx;
+  border-left: 6rpx solid #667eea;
+}
+
+.block-title {
+  display: block;
+  font-size: 28rpx;
+  font-weight: bold;
+  color: #1f2937;
+  margin-bottom: 20rpx;
+}
+
+.text-only {
+  padding: 20rpx;
+  background: white;
+  border-radius: 8rpx;
+  line-height: 1.6;
+  color: #000000;
+  border: 1rpx solid #e5e7eb;
+  word-wrap: break-word;
+  font-weight: 500;
+}
+
+.latex-wrapper {
+  padding: 20rpx;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.03) 100%);
+  border-radius: 8rpx;
+  border: 1rpx solid rgba(102, 126, 234, 0.1);
+  min-height: 60rpx;
+  box-shadow: 0 2rpx 8rpx rgba(102, 126, 234, 0.08);
+}
+
+.latex-wrapper.styled {
+  border: 2rpx solid #667eea;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.08) 0%, rgba(118, 75, 162, 0.06) 100%);
+  box-shadow: 0 4rpx 12rpx rgba(102, 126, 234, 0.15);
+}
+
+/* 状态提示 */
+.status-tip {
+  background: #fef3c7;
+  border-radius: 12rpx;
+  padding: 20rpx;
+  border-left: 6rpx solid #f59e0b;
+}
+
+.tip-text {
+  font-size: 26rpx;
+  color: #92400e;
+  line-height: 1.5;
+}
+
+/* 响应式设计 */
+@media (max-width: 750rpx) {
+  .control-panel, .test-content {
+    padding: 20rpx;
+  }
+
+  .case-item {
+    margin-right: 15rpx;
+    padding: 14rpx 28rpx;
+    font-size: 24rpx;
+  }
+
+  .test-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15rpx;
+  }
+}

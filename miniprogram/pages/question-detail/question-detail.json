@@ -1,0 +1,11 @@
+{
+  "navigationBarTitleText": "题目详情",
+  "navigationBarBackgroundColor": "#667eea",
+  "navigationBarTextStyle": "white",
+  "backgroundColor": "#f8f9fa",
+  "enablePullDownRefresh": false,
+  "disableScroll": false,
+  "usingComponents": {
+    "latex-renderer": "/components/latex-renderer/latex-renderer"
+  }
+}
